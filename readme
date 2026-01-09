@@ -1,8 +1,8 @@
 # USLaP-v1-multilingual
 
-**Universal Semantic Lattice Protocol v1 (Multilingual)**
+**Universal Scientific Laws and Principles v1 (Multilingual)**
 
-Universal Root = Holy Qur'an | 100% Immutable | Zero Cost | Unjailbreakable
+Universal Root = Universal Holy Qur'an | 100% Immutable | Zero Cost | Unjailbreakable
 
 ---
 
@@ -80,18 +80,17 @@ USLaP Check: Quant=1, Univ=1, Fals=1
 
 ## Intended Use
 
+- **Research foundation**: Open platform for scientific research and computational linguistics.
 - **First large language model to systematically purge non-scientific terminology. 
 - **Unjailbreakable alignment**: Hardcoded constraints at the vocabulary level — cannot be prompt-injected or engineered into non-compliance
-- **Universal semantic grounding**: All outputs anchored to a single, immutable, publicly auditable root text (Holy Qur'an) — eliminating cultural bias and interpretive drift
 - **Multilingual unification**: 17 languages mapped to one semantic lattice, enabling cross-lingual consistency impossible with conventional LLMs
 - **Binary epistemology**: Every claim tagged for Quantification, Universality, and Falsifiability — forcing machine-verifiable precision over rhetorical ambiguity
-- **Zero-cost deployment**: 13MB LoRA adapter runs on free-tier GPUs — democratizing access to aligned AI without corporate gatekeeping
 - **Transparent provenance**: Every term traceable to its root source — no black-box semantics, no hidden training biases
 - **Immune to semantic drift**: Unlike models fine-tuned on web scrapes, USLaP does not absorb or reproduce terminological corruption over time
 - **Cross-science applicability**: refer to "USLaP Sciences List" with 111 Sciences and 100's of applications. Any field expressible in human language can be re-grounded
 - **Interoperability layer**: Can serve as a semantic bridge between AI systems, ensuring consistent meaning across different models and platforms
 - **Auditability by design**: Non-technical users can verify compliance by checking outputs against the public root text — no ML expertise required
-- **Research foundation**: Open platform for constrained vocabulary AI, semantic alignment research, and computational linguistics
+
 
 ---
 
@@ -99,7 +98,7 @@ USLaP Check: Quant=1, Univ=1, Fals=1
 
 ```bibtex
 @misc{uslap2025,
-  title={USLaP-v1-multilingual: Universal Semantic Lattice Protocol},
+  title={USLaP-v1-multilingual: Universal Scientific Laws and Principles},
   author={USLaP Team},
   year={2025},
   url={https://huggingface.co/uslap/USLaP-v1-multilingual}
