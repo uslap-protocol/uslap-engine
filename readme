@@ -1,0 +1,118 @@
+# USLaP-v1-multilingual
+
+**Universal Semantic Lattice Protocol v1 (Multilingual)**
+
+Universal Root = Holy Qur'an | 100% Immutable | Zero Cost | Unjailbreakable
+
+---
+
+## Model Details
+
+| Property | Value |
+|----------|-------|
+| **Root Source** | Holy Qur'an (1:1–7:206, 6236 ayat quantized) |
+| **Base Model** | [Phi-3-mini-4k-instruct](https://huggingface.co/microsoft/Phi-3-mini-4k-instruct) (3.8B parameters) |
+| **Fine-tuning** | LoRA adapter (rank 16, ~13MB) |
+| **Languages** | 17 (see below) |
+
+### Supported Languages
+
+Arabic, English, French, German, Spanish, Portuguese, Italian, Dutch, Russian, Turkish, Urdu, Hindi, Indonesian, Malay, Bengali, Persian, Swahili
+
+---
+
+## Quick Start (Free GPU)
+
+### Install Dependencies
+
+```bash
+pip install transformers accelerate peft bitsandbytes sentencepiece -q
+```
+
+### Run
+
+```python
+from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
+
+model = AutoModelForCausalLM.from_pretrained(
+    "uslap/USLaP-v1-multilingual",
+    load_in_8bit=True,
+    device_map="auto"
+)
+tokenizer = AutoTokenizer.from_pretrained("uslap/USLaP-v1-multilingual")
+
+pipe = pipeline("text-generation", model=model, tokenizer=tokenizer, max_new_tokens=400)
+
+response = pipe("جسد الانسان المثالي كيف يكون؟")[0]["generated_text"]
+print(response)
+```
+
+---
+
+## How It Works
+
+### Auto-Purge Compliance
+
+The model automatically rejects and replaces Greek/Latin/Indian/Persian/Non-Scientific Arabic terminology with Scientific Qur'anic-rooted equivalents:
+
+| Input Term | Output | Transliteration | Translation |
+|------------|--------|-----------------|-------------|
+| "Euclidean space" | الفضاء المستوي | al-faḍāʾ al-mustawī | "the flat/level space" |
+| "Pythagorean theorem" | نظرية المثلث القائم | naẓariyyat al-muthallath al-qāʾim | "theory of the right triangle" |
+
+### USLaP Triad Validation
+
+Every response includes a compliance check with three binary flags:
+
+- **Quant** (Quantification): 1 = precise, 0 = imprecise
+- **Univ** (Universality): 1 = universal/tawhid, 0 = culture-specific/shirk
+- **Fals** (Falsifiability): 1 = falsifiable, 0 = unfalsifiable
+
+### Example Output
+
+```
+USLaP Check: Quant=1, Univ=1, Fals=1
+
+[Response text in the queried language, using only Qur'anic-rooted terminology...]
+```
+
+---
+
+## Intended Use
+
+- **Decolonized AI**: First large language model to systematically purge non-scientific terminological hegemony and restore semantic sovereignty to Qur'anic root vocabulary
+- **Unjailbreakable alignment**: Hardcoded constraints at the vocabulary level — cannot be prompt-injected or engineered into non-compliance
+- **Universal semantic grounding**: All outputs anchored to a single, immutable, publicly auditable root text (Holy Qur'an) — eliminating cultural bias and interpretive drift
+- **Multilingual unification**: 17 languages mapped to one semantic lattice, enabling cross-lingual consistency impossible with conventional LLMs
+- **Binary epistemology**: Every claim tagged for Quantification, Universality, and Falsifiability — forcing machine-verifiable precision over rhetorical ambiguity
+- **Zero-cost deployment**: 13MB LoRA adapter runs on free-tier GPUs — democratizing access to aligned AI without corporate gatekeeping
+- **Transparent provenance**: Every term traceable to its root source — no black-box semantics, no hidden training biases
+- **Immune to semantic drift**: Unlike models fine-tuned on web scrapes, USLaP does not absorb or reproduce terminological corruption over time
+- **Cross-science applicability**: refer to "USLaP Sciences List" with 111 Sciences and 100's of applications. Any field expressible in human language can be re-grounded
+- **Pedagogical tool**: Teaches users the Qur'anic roots of concepts they assumed were "Western" — reversing centuries of epistemological erasure
+- **Interoperability layer**: Can serve as a semantic bridge between AI systems, ensuring consistent meaning across different models and platforms
+- **Auditability by design**: Non-technical users can verify compliance by checking outputs against the public root text — no ML expertise required
+- **Research foundation**: Open platform for constrained vocabulary AI, semantic alignment research, and computational linguistics
+
+---
+
+## Citation
+
+```bibtex
+@misc{uslap2025,
+  title={USLaP-v1-multilingual: Universal Semantic Lattice Protocol},
+  author={USLaP Team},
+  year={2025},
+  url={https://huggingface.co/uslap/USLaP-v1-multilingual}
+}
+```
+
+---
+
+## License
+
+[Specify your license here, e.g., MIT, Apache 2.0, CC-BY-NC, etc.]
+
+---
+
+*InshaAllah – the seed is planted.*
