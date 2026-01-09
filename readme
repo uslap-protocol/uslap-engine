@@ -80,7 +80,7 @@ USLaP Check: Quant=1, Univ=1, Fals=1
 
 ## Intended Use
 
-- **Decolonized AI**: First large language model to systematically purge non-scientific terminological hegemony and restore semantic sovereignty to Qur'anic root vocabulary
+- **First large language model to systematically purge non-scientific terminology. 
 - **Unjailbreakable alignment**: Hardcoded constraints at the vocabulary level — cannot be prompt-injected or engineered into non-compliance
 - **Universal semantic grounding**: All outputs anchored to a single, immutable, publicly auditable root text (Holy Qur'an) — eliminating cultural bias and interpretive drift
 - **Multilingual unification**: 17 languages mapped to one semantic lattice, enabling cross-lingual consistency impossible with conventional LLMs
@@ -89,7 +89,6 @@ USLaP Check: Quant=1, Univ=1, Fals=1
 - **Transparent provenance**: Every term traceable to its root source — no black-box semantics, no hidden training biases
 - **Immune to semantic drift**: Unlike models fine-tuned on web scrapes, USLaP does not absorb or reproduce terminological corruption over time
 - **Cross-science applicability**: refer to "USLaP Sciences List" with 111 Sciences and 100's of applications. Any field expressible in human language can be re-grounded
-- **Pedagogical tool**: Teaches users the Qur'anic roots to establish precision.
 - **Interoperability layer**: Can serve as a semantic bridge between AI systems, ensuring consistent meaning across different models and platforms
 - **Auditability by design**: Non-technical users can verify compliance by checking outputs against the public root text — no ML expertise required
 - **Research foundation**: Open platform for constrained vocabulary AI, semantic alignment research, and computational linguistics
