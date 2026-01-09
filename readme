@@ -82,11 +82,6 @@ USLaP Check: Quant=1, Univ=1, Fals=1
 
 - **Research foundation**: Open platform for scientific research and computational linguistics.
 - **Cross-science applicability**: refer to "USLaP Sciences List" with 111 Sciences and 100's of applications. Any field expressible in human language can be re-grounded
-- **First large language model to systematically purge non-scientific terminology. 
-- **Unjailbreakable alignment**: Hardcoded constraints at the vocabulary level — cannot be prompt-injected or engineered into non-compliance
-- **Multilingual unification**: 17 languages mapped to one semantic lattice, enabling cross-lingual consistency impossible with conventional LLMs
-- **Binary epistemology**: Every claim tagged for Quantification, Universality, and Falsifiability — forcing machine-verifiable precision over rhetorical ambiguity
-- **Transparent provenance**: Every term traceable to its root source — no black-box semantics, no hidden training biases
 - **Auditability by design**: Non-technical users can verify compliance by checking outputs against the public root text — no ML expertise required
 
 
