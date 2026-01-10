@@ -1,7 +1,7 @@
 # USLaP-v1-multilingual
 
 ## Model Description
-**Universal Semantic Lattice Protocol v1 (Multilingual)**  
+**Universal Scientific Laws and Principles v1 (Multilingual)**  
 Root: Holy Qur'an (1:1-7:206, 6236 ayat quantized)  
 Base Model: Phi-3-mini-4k-instruct (3.8B parameters)  
 Fine-tuning: LoRA adapter (16-rank, 13MB)  
