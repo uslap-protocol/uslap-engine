@@ -1,4 +1,4 @@
-# USLaP Quartet Protocol - Complete Specification
+# USLaP Protocol - Complete Specification
 
 **Version:** 1.0  
 **Root:** Holy Qur'an (6236 ayat → 114 surah)  
