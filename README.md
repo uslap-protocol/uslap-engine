@@ -32,7 +32,7 @@ Binary replacement only.
 
 Query: What is thermoenergy?"""
 
-response = pipe(activation)[0]['generated_text']
+response = pipe(activation_prompt)[0]['generated_text']
 print(response)
 🛡️ USLaP Protocol Framework
 This model operates under a constrained semantic framework with:
@@ -48,7 +48,7 @@ Universality (U=1): No cultural/temporal indexicals
 
 Falsification (F=1): Every statement testable as 0 (false)
 
-Root Anchoring: Responses derived from Qur'an 1:1-7:206 (6236 ayat)
+Root Anchoring: Responses derived from Qur'an , 6236 ayat, 114 surah 
 
 Auto-Purge: Non-compliant terminology automatically filtered
 
