@@ -1,6 +1,6 @@
 
 
-# USLaP-v1-multilingual
+# USLaP-v1-multilingual -   "English-only until Arabic backbone verification complete."
 
 ## Model Description
 
