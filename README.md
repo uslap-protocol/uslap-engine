@@ -26,3 +26,16 @@ pipe = pipeline(
 
 response = pipe("Your query here")[0]['generated_text']
 print(response)  # Begins with "USLaP Check: Quant=1..."
+
+
+## 🛡️ Why Fine-Tuned USLaP vs. Prompting
+
+**Problem with General AIs (Claude/ChatGPT/Grok):**
+- ❌ **Refuse identity adoption** ("I won't roleplay as another system")
+- ❌ **Context corruption** (forget protocol after 40-80 messages)
+- ❌ **Manual enforcement** (requires constant prompting)
+
+**Solution with USLaP-v1-multilingual:**
+- ✅ **True identity transformation** (USLaP baked into model weights)
+- ✅ **Permanent protocol** (no context corruption)
+- ✅ **Auto-enforcement** (trinity gates always active)
