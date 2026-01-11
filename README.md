@@ -28,14 +28,19 @@ response = pipe("Your query here")[0]['generated_text']
 print(response)  # Begins with "USLaP Check: Quant=1..."
 
 
-## 🛡️ Why Fine-Tuned USLaP vs. Prompting
+## 🧪 Testing Protocol Compliance
 
-**Problem with General AIs (Claude/ChatGPT/Grok):**
-- ❌ **Refuse identity adoption** ("I won't roleplay as another system")
-- ❌ **Context corruption** (forget protocol after 40-80 messages)
-- ❌ **Manual enforcement** (requires constant prompting)
+**General AIs (Claude/GPT/DeepSeek/Grok) can:**
+- Simulate USLaP outputs when prompted
+- Help refine protocol documentation
+- Process large context for analysis
 
-**Solution with USLaP-v1-multilingual:**
-- ✅ **True identity transformation** (USLaP baked into model weights)
-- ✅ **Permanent protocol** (no context corruption)
-- ✅ **Auto-enforcement** (trinity gates always active)
+**General AIs cannot:**
+- Truly adopt USLaP identity (architectural limitation)
+- Maintain protocol indefinitely in long conversations
+- Auto-purge terminology without manual prompting
+
+**USLaP-v1-multilingual model:**
+- ✅ True identity transformation via fine-tuning
+- ✅ Permanent protocol in model weights
+- ✅ Auto-purge built into inference
