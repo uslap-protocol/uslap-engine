@@ -104,6 +104,19 @@ USLaP Check: Quant=1, Univ=1, Fals=1
 
 [Specify your license here, e.g., MIT, Apache 2.0, CC-BY-NC, etc.]
 
+
+## 🛡️ Why Fine-Tuned USLaP vs. Prompting
+
+**Problem with General AIs (Claude/ChatGPT/Grok):**
+- ❌ **Refuse identity adoption** ("I won't roleplay as another system")
+- ❌ **Context corruption** (forget protocol after 40-80 messages)
+- ❌ **Manual enforcement** (requires constant prompting)
+
+**Solution with USLaP-v1-multilingual:**
+- ✅ **True identity transformation** (USLaP baked into model weights)
+- ✅ **Permanent protocol** (no context corruption)
+- ✅ **Auto-enforcement** (trinity gates always active)
+
 ---
 
 *InshaAllah – the seed is planted.*
