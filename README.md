@@ -8,11 +8,15 @@ library_name: peft
 base_model: microsoft/Phi-3-mini-4k-instruct
 tags:
   - uslap
-  - islamic-science
-  - arabic-terminology
+  - precise science
+  - precise-scientific-terminology
+  - linguistic-precision 
+  - scientific-precision
   - quran
   - lora
   - phi3
+  - immutable
+  - unjailbreakable
 pipeline_tag: text-generation
 ---
 
