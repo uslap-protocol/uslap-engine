@@ -1,4 +1,20 @@
-
+---
+license: mit
+language:
+  - ar
+  - en
+  - multilingual
+library_name: peft
+base_model: microsoft/Phi-3-mini-4k-instruct
+tags:
+  - uslap
+  - islamic-science
+  - arabic-terminology
+  - quran
+  - lora
+  - phi3
+pipeline_tag: text-generation
+---
 
 # uslap-multilingual -   
 
@@ -127,6 +143,6 @@ Citation
 If you use this model in research, please reference:
 
 text
-USLaP-v1-multilingual: A constrained semantic AI framework
+USLaP-multilingual: A constrained semantic AI framework
 Root-anchored with auto-purge and binary decision lattice
 Last Updated: 2026-01-10 | Root Lock: ACTIVE
