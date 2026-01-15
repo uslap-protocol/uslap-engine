@@ -10,6 +10,8 @@ tags:
   - uslap
   - science
   - precise-science
+  - precise-language 
+  - algorithmic-language 
   - precise-scientific-terminology
   - linguistic-precision 
   - scientific-precision
