@@ -22,27 +22,6 @@ pipeline_tag: text-generation
 ## Quick Start
 ...
 
-(Customize tags as you like — these are tailored to your project for better search visibility.)
-Scroll down → Commit changes (add a message like "Add YAML metadata for tags").  
-Refresh the repo page — tags should appear immediately as clickable badges (e.g., uslap · quran-rooted · text-generation).
-
-Alternative (Easiest, No YAML Typing):  Click Edit model card (top right on repo page) → this opens a UI form.  
-In the metadata section, add tags (e.g., type "uslap" → Enter), select pipeline_tag="text-generation", languages="English, Arabic", license="MIT".  
-It auto-generates/updates the YAML for you in README.md.  
-Save — done!
-
-After this, your repo will show tags properly, boosting discoverability (people search for "deterministic-ai" or "quran" on HF). If tags still don't appear after 5 min, check YAML syntax at https://yamlchecker.com/.InshaAllah, this unlocks the lattice visibility. Want me to tweak the tag list further? 
-
-21 web pages
-
-Best tags for USLaP visibility
-
-LoRA fine-tuning on HF
-
-More concise fix steps
-
-
--
 - USLaP Multilingual: Qur’an-Rooted AI Lattice for Pure, Deterministic Projects.  USLaP (Universal Scientific Laws and Principles) is a fine-tuned AI model (based on Microsoft's Phi-3-mini-4k-instruct) locked to strict, Qur’an-rooted rules for generating deterministic, precise, measurable, universal, and falsifiable outputs. Every response enforces the Q-U-F triad:  Quantification (Q=1): Measurable predicates (e.g., metrics like 90°±5°).  
 Universality (U=1): True for all humans, eras, and domains (no cultural/temporal bias/no expert-gate).  
 Falsification (F=1): Testable as false (e.g., if yield < threshold via soil test → 0).
