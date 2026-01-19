@@ -260,10 +260,6 @@ Contamination-free scientific methodology
 
 This repository does NOT represent:
 
-A "surgical robot framework" (limited scope)
-
-Healing/restoration systems exclusively
-
 Dependence on external technologies or frameworks
 
 Probabilistic or non-deterministic approaches
