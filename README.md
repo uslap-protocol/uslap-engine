@@ -201,7 +201,7 @@ Read the specifications in their language
 
 Verify measurements with standard tools
 
-Confirm calculations with basic arithmetic
+Confirm using basic calculation
 
 Test failure conditions deterministically
 
