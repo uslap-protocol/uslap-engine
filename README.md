@@ -1,32 +1,21 @@
 
-  
-language:
-  - en
-  - ar
-  - multilingual
-license: mit
-pipeline_tag: text-generation
 ---
-
----
-license: mit
 language:
 - en
-- ar
+- multilingual
 tags:
-- uslap
-- universal-science
-- quranic-framework
-- precise-science
-- algorithmic-language
-- immutable
-- unjailbreakable
-- deterministic-algorithms
-- deterministic-ai
-- healing-restoration-systems
-pipeline_tag: text-generation
+- "uslap"
+- "universal-science" 
+- "quranic-framework"
+- "111-sciences"
+- "contamination-free"
+- "deterministic-algorithms"
+- "healing-restoration-systems"
+license: "mit"
+pipeline_tag: "text-generation"
 inference: false
 ---
+
 
 # 🌌 USLaP: Universal Scientific Laws and Principles
 
