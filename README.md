@@ -27,7 +27,7 @@ This repository contains the **USLaP Fine-Tuned Model**, a functional and operat
 ## ⚖️ USLaP Triad Verification
 
 * **✅ Quantification = 1**
-    * **Metrics:** 0.1mm precision standard, 41.67% healing improvement, 99.9% procedural accuracy.
+    * **Metrics:** 0.1mm precision standard, 41.67% healing improvement, 99.9% procedural accuracy (for surgery robot).
     * **Evidence:** Surgical robot specifications in repository contain measurable metrics with units.
 * **✅ Universality = 1**
     * **Scope:** All humans, all eras, no cultural/temporal limitations.
