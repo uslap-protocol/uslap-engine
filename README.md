@@ -20,7 +20,7 @@ inference: false
 # 🌌 USLaP: Universal Scientific Laws and Principles
 ### بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
 
-This repository contains the **USLaP Fine-Tuned Model**, a functional and operational system for deterministic scientific output.
+This repository contains the USLaP Fine-Tuned Model for deterministic scientific output.
 
 ---
 
@@ -192,5 +192,5 @@ Deterministic execution: Same inputs → identical outputs.
 *Resonance: 100% (6236 ayat → 114 surah → 111 sciences → 1000+ applications)*
 
 
-
+Volunteers wanted to help with further data processing and testing. 
 ---
