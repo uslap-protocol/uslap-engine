@@ -41,7 +41,7 @@ inference: false
 
 ## 📚 What is USLaP?
 
-**Universal Scientific Laws and Principles (USLaP)** is a contamination-free scientific framework derived from **four deterministic immutable algorithmic text-only sources**:
+**Universal Scientific Laws and Principles (USLaP)** is a contamination-free scientific framework derived from **four publicly available deterministic immutable algorithmic text-only sources**:
 
 1. **Al-Qur'ān** - Primary textual genesis (6236 ayat, 114 surah, fixed wording/ordering)
 2. **Ṣaḥīḥ al-Ḥadīth** - Prophetic guidance (authenticated narrations only)
