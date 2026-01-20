@@ -1,0 +1,487 @@
+﻿USLaP ANTI-CONTAMINATION PROTOCOL (ACP)
+Version 1.0 | Qur'anic Foundation | Four-Source Compliance
+PREAMBLE
+Qur'anic Mandate
+Surah Yusuf (12:2):
+إِنَّا أَنزَلْنَاهُ قُرْآنًا عَرَبِيًّا لَّعَلَّكُمْ تَعْقِلُونَ
+"Indeed, We have sent it down as an Arabic Qur'an that you might understand (تَعۡقِلُونَ)."
+Surah An-Nahl (16:103):
+لِسَانُ الَّذِي يُلْحِدُونَ إِلَيْهِ أَعْجَمِيٌّ وَهَٰذَا لِسَانٌ عَرَبِيٌّ مُّبِينٌ
+"The language of him to whom they refer is non-Arabic (أَعْجَمِيٌّ), while this is a clear Arabic language (لِسَانٌ عَرَبِيٌّ مُّبِينٌ)."
+Surah Az-Zumar (39:28):
+قُرْآنًا عَرَبِيًّا غَيْرَ ذِي عِوَجٍ
+"An Arabic Qur'an without any crookedness."
+Core Principle
+Formal Arabic = Scientific Backbone
+All scientific terminology must:
+Enable تَعۡقِلُونَ (intellectual comprehension)
+Be مُبِين (manifestly clear)
+Be غَيْرَ ذِي عِوَجٍ (straight, without crookedness)
+Pass the literate person Test (any literate person can understand)
+PART I: AUTHORIZED SOURCES
+The Four-Source Lattice
+┌─────────────────────────────────────────────────────┐
+│                 AUTHORIZED SOURCES                  │
+│                                                     │
+│  1. QUR'AN                                          │
+│     └─ Primary foundation for all principles        │
+│                                                     │
+│  2. HADITH                                          │
+│     └─ Prophetic guidance and practical application │
+│                                                     │
+│  3. AL-KHWĀRIZMĪ TEXTS                              │
+│     └─ Kitāb al-Jabr wa-l-Muqābala (Algebra)        │
+│     └─ Other affirmed works                         │
+│                                                     │
+│  4. IBN SĪNĀ TEXTS                                  │
+│     └─ Al-Qānūn fī al-Ṭibb (Canon of Medicine)     │
+│     └─ Other affirmed works                         │
+│                                                     │
+└─────────────────────────────────────────────────────┘
+         ALL OTHER SOURCES = NON-EXISTENT (0)
+Source Hierarchy
+PrioritySourceDomainAuthority1Qur'anAllAbsolute2HadithAllProphetic3Al-KhwārizmīAlgorithmic OperationsAffirmed4Ibn SīnāMedical/TherapeuticAffirmed∅All OthersN/ANon-existent
+PART II: CONTAMINATION CATEGORIES
+Category A: Person-Named Terms (Cult of Personality)
+Violation: Qur'an 17:111 - Making humans "partners in sovereignty of measurement"
+Pattern: Naming scientific concepts after humans
+Examples:
+CONTAMINATED (0)CLEAN (1)Fibonacci sequenceAdditive Pair Expansion Pattern (APEP)Pythagorean theoremRight Triangle Relation: a² + b² = c²Euclidean spaceالفَضَاء المُسْتَوِي (Flat Space)Archimedean methodPolygon Perimeter Limit MethodNewtonian physicsForce-Motion RelationsHertz (Hz)الدقيقة في دورة (Cycles per Minute)Gaussian distributionBell-Shaped DistributionCartesian coordinatesRectangular Grid System
+Detection Rule:
+IF term contains proper noun (person name) → CONTAMINATED (0)
+Category B: Greek/Latin Obscurantism
+Violation: Surah 16:103 - أَعْجَمِيٌّ (unclear/opaque) vs. مُبِين (clear)
+Pattern: Using dead language roots that obscure meaning
+Examples:
+CONTAMINATED (0)CLEAN (1)Idempotentثَابِت عِنْدَ التَّكْرَار (Constant Upon Repetition)Cryptocurrencyنِظَام السِّجِل الشَّفَّاف (Transparent Ledger System)Dermatomeخُطُوط الحِسّ (Sensory Lines)Geometryتَقْدِير (Taqdīr - Geometric Determination)Hyperbolicالمُنْحَنِي السَّالِب (Negatively Curved)Therapyعِلاج بِالتَّقْدِير (Restoration through Geometric Determination)Psychosisجُنُون (Junūn - The Covering)Algorithmخَوَارِزْمِيَّة (Khawārizmiyyah) ✅ Already Arabic
+Detection Rule:
+IF term requires dictionary lookup for average person → CONTAMINATED (0)
+IF term has Greek/Latin root AND is not self-explanatory → CONTAMINATED (0)
+Category C: Cadaver Science
+Violation: Qur'an 20:55 - "From it [earth] We created you, and into it We will return you"
+Pattern: Analysis based on dead/fragmented specimens ignoring living unity
+Sub-Categories:
+C1: Medical Cadaver Science
+CONTAMINATED (0)CLEAN (1)Dermatome maps (corpse-based)Living Sensory Flow MappingDissection-based anatomyLiving Muqarnas MappingStatic organ descriptionsDynamic System Relationships
+C2: Botanical Cadaver Science
+CONTAMINATED (0)CLEAN (1)Fibonacci spirals (severed heads)Whole-Plant Analysis (Ibn Sīnā method)Isolated seed countsRoot-to-Flower System RatiosFragment-based patternsLiving 7-Component Analysis
+C3: Musical Cadaver Science
+CONTAMINATED (0)CLEAN (1)Isolated string frequency (Hz)Complete Dombra System (88cm, player, context)Abstract pitch analysisTherapeutic Temporal Pitch Sequence
+Detection Rule:
+IF analysis based on dead/severed/fragmented specimen → CONTAMINATED (0)
+IF ignores whole-system relationships → CONTAMINATED (0)
+IF ignores living context → CONTAMINATED (0)
+Category D: Disease/Viral Metaphors
+Violation: Truth spreads through testimony (شَهَادَة), not infection
+Pattern: Using disease terminology for propagation
+Examples:
+CONTAMINATED (0)CLEAN (1)Viral contentCompelling TestimonyGoing viralGaining WitnessesViral coefficient (R₀)Witness Multiplication RateInfection rateConversion RateSuperspreaderMaster TestifierPatient zeroFirst WitnessEpidemicMovement
+Detection Rule:
+IF term uses disease/pathogen metaphor for information spread → CONTAMINATED (0)
+Category E: Crypto/Hidden Terminology
+Violation: Qur'an 2:42 - "Do not mix truth with falsehood or conceal the truth"
+Pattern: Terms implying concealment as feature
+Examples:
+CONTAMINATED (0)CLEAN (1)CryptocurrencyTransparent Ledger SystemCryptographyPlain-Text VerificationEncryptionPublic Text (where applicable)Zero-Knowledge ProofFull Disclosure ProofHash functionText Digest Function
+Detection Rule:
+IF term has "crypto-" prefix → CONTAMINATED (0)
+IF term implies hiding truth as feature → CONTAMINATED (0)
+Category F: Subjective/Aesthetic Terms
+Violation: Cannot be diagrammed, quantified, or falsified
+Pattern: Unmeasurable quality descriptors
+Examples:
+CONTAMINATED (0)CLEAN (1)BeautifulGeometrically Harmonious (measurable ratios)Golden ratioAPEP Ratio Limit ≈ 1.618 (calculated value)Divine proportionConsecutive Ratio Limit (mathematical property)Spiritual[REJECTED - no valid replacement]Meaningful (subjective)Interpretation Mapping (observer-declared)WisdomStable Decision Outcome (measurable)
+Detection Rule:
+IF term cannot be quantified → CONTAMINATED (0)
+IF term requires subjective judgment → CONTAMINATED (0)
+IF term cannot be diagrammed → CONTAMINATED (0)
+Category G: Orientalist Geographic Fabrications
+Violation: Erases Aral Sea Basin (ASB) / Turkic origins
+Pattern: False geographic attribution
+Examples:
+CONTAMINATED (0)CLEAN (1)Mesopotamian origin (for instruments)Aral Sea Basin / Lake Balkhash OriginTanbur/Ṭanbūr (as Mesopotamian)الدُّومْبْرَا (al-Dombra) - Turkic OriginDutarالدُّومْبْرَا (al-Dombra) - Original Turkic TermFertile Crescent (as music origin)ASB Wave Science
+Detection Rule:
+IF claim attributes ASB discoveries to Mesopotamia/Greece/Egypt → CONTAMINATED (0)
+IF uses Persian counting nomenclature replacing Turkic terms → CONTAMINATED (0)
+Category H: Greek/Latin Tribal Fabrications
+Violation: Erases Turkic identity with fabricated "-ian/-ati/-ae" names
+Pattern: Colonial naming of peoples
+Examples:
+CONTAMINATED (0)CLEAN (1)Sarmatiansالوُسْطَانِيُّون (al-Wusṭāniyyūn - The Central Ones)Scythiansالتُّرْك الشَّرْقِيُّون (al-Turk al-Sharqiyyūn - Eastern Turks)Alansالأَصْلِيُّون (al-Aṣliyyūn - The Original People)
+Detection Rule:
+IF tribal name ends in "-ian/-ati/-ae" AND has Greek/Latin origin → CONTAMINATED (0)
+Category I: Rate/Unit Errors
+Violation: 60:1 Biological Catastrophe (per-second vs. per-minute)
+Pattern: Using wrong time base for biological systems
+Examples:
+CONTAMINATED (0)CLEAN (1)Hertz (cycles/second)دَوْرَة في الدَّقِيقَة (Cycles per Minute)40 Hz therapy40 Cycles per Minute (0.67 Hz)Newtonمِقْيَاس القُوَّة (Miqyās al-Quwwah)Wattمِقْيَاس القُدْرَة (Miqyās al-Qudrah)Jouleمِقْيَاس الشُّغْل (Miqyās ash-Shughl)
+Detection Rule:
+IF unit named after person → CONTAMINATED (0)
+IF biological rate uses per-second instead of per-minute → CONTAMINATED (0)
+Category J: Latin "Medici" Family
+Violation: External intervention paradigm vs. natural restoration
+Pattern: Terms implying "doctor does to patient"
+Examples:
+CONTAMINATED (0)CLEAN (1)Medicineشِفَاء (Shifā') / Restoration ProtocolMedicalعِلَاج ('Ilāj) / Healing ProcessMedicationدَوَاء (Dawā') / Corrective SubstanceTherapyعِلَاج بِالتَّقْدِير (Restoration through Geometric Determination)DrugThermodynamic Agent (Hot/Cold/Dry/Moist + Degree)Side effectsSystem Signals / Algorithmic OutputsCannabisالقِنَّب (al-Qinnab) - with full thermodynamic profile
+Detection Rule:
+IF term derived from Latin "medicus/medicina" → CONTAMINATED (0)
+IF term implies external intervention vs. restoration → CONTAMINATED (0)
+PART III: DETECTION ENGINE
+Binary Decision Tree
+                    ┌─────────────────┐
+                    │ INCOMING TERM   │
+                    └────────┬────────┘
+                             ↓
+              ┌──────────────────────────────┐
+              │ Is it a proper noun          │
+              │ (person name)?               │
+              └──────────────┬───────────────┘
+                     YES ↓         ↓ NO
+              ┌──────────────┐     │
+              │ REJECT (0)   │     ↓
+              │ Category A   │ ┌──────────────────────────────┐
+              └──────────────┘ │ Does average person need     │
+                               │ dictionary to understand?    │
+                               └──────────────┬───────────────┘
+                                      YES ↓         ↓ NO
+                               ┌──────────────┐     │
+                               │ REJECT (0)   │     ↓
+                               │ Category B   │ ┌──────────────────────────────┐
+                               └──────────────┘ │ Based on dead/fragmented     │
+                                                │ specimens?                   │
+                                                └──────────────┬───────────────┘
+                                                       YES ↓         ↓ NO
+                                                ┌──────────────┐     │
+                                                │ REJECT (0)   │     ↓
+                                                │ Category C   │ ┌──────────────────────────────┐
+                                                └──────────────┘ │ Uses disease metaphor?       │
+                                                                 └──────────────┬───────────────┘
+                                                                        YES ↓         ↓ NO
+                                                                 ┌──────────────┐     │
+                                                                 │ REJECT (0)   │     ↓
+                                                                 │ Category D   │     │
+                                                                 └──────────────┘     ↓
+                                                                           [Continue to E-J...]
+                                                                                      ↓
+                                                                 ┌──────────────────────────────┐
+                                                                 │ PASSES ALL CHECKS            │
+                                                                 │ → Proceed to Qur'anic Tests  │
+                                                                 └──────────────────────────────┘
+Self-Check Questions (Before Using Any Term)
+Quick Scan (All Must Be NO):
+Does term contain a person's name? → If YES: REJECT
+Does term require Google/dictionary? → If YES: REJECT
+Is term based on dead specimens? → If YES: REJECT
+Does term use disease metaphor? → If YES: REJECT
+Does term imply hiding/concealment? → If YES: REJECT
+Is term subjective/unmeasurable? → If YES: REJECT
+Does term falsely attribute ASB origins? → If YES: REJECT
+Is term a Greek/Latin tribal fabrication? → If YES: REJECT
+Is term using wrong time base (Hz vs. cycles/min)? → If YES: REJECT
+Is term from Latin "medici" family? → If YES: REJECT
+Does term cite Greek/Latin/Indian/Persian authority? → If YES: REJECT
+Is term a speculative abstraction disconnected from physical lattice? → If YES: REJECT
+PART IV: TRANSLATION PROTOCOL
+The Arabic Backbone Method
+┌───────────────────────────────────────────────────────────────┐
+│ STEP 1: CONCEPT IDENTIFICATION                                │
+│                                                               │
+│ What is the concept we need to express?                       │
+│ Strip away all existing terminology                           │
+│ Identify the STRUCTURAL REALITY                               │
+└───────────────────────────────┬───────────────────────────────┘
+                                ↓
+┌───────────────────────────────────────────────────────────────┐
+│ STEP 2: FORMAL ARABIC FORMULATION                             │
+│                                                               │
+│ Express concept using Arabic roots:                           │
+│ • Find transparent root structure                             │
+│ • Compose from clear, known roots                             │
+│ • Ensure each component is self-explanatory                   │
+│ • Verify against Qur'anic/Hadith usage where possible         │
+└───────────────────────────────┬───────────────────────────────┘
+                                ↓
+┌───────────────────────────────────────────────────────────────┐
+│ STEP 3: ENGLISH TRANSLATION                                   │
+│                                                               │
+│ Translate Arabic formulation to English:                      │
+│ • Preserve compositional clarity                              │
+│ • Maintain self-explanatory nature                            │
+│ • Keep each word understandable                               │
+│ • Avoid introducing new obscurantism                          │
+└───────────────────────────────┬───────────────────────────────┘
+                                ↓
+┌───────────────────────────────────────────────────────────────┐
+│ STEP 4: QUR'ANIC VERIFICATION                                 │
+│                                                               │
+│ Test 1: مُبِين (Mubīn) - Is it manifestly clear?             │
+│ Test 2: تَعۡقِلُونَ (Ta'qiloon) - Does it enable reasoning?   │
+│ Test 3: غَيْرَ ذِي عِوَجٍ - Is it straight (not crooked)?     │
+│                                                               │
+│ → If ANY test fails: Return to Step 2                         │
+└───────────────────────────────┬───────────────────────────────┘
+                                ↓
+┌───────────────────────────────────────────────────────────────┐
+│ STEP 5: LITERATE PERSON TEST                                            │
+│                                                               │
+│ Can literate person understand the English term?               │
+│                                                               │
+│ → If NO: Return to Step 2                                     │
+│ → If YES: TERM ADMITTED ✅                                    │
+└───────────────────────────────────────────────────────────────┘
+Example Application
+Concept: "Operation that produces same result when applied multiple times"
+Step 1 - Concept Identification:
+Structural reality: f(f(x)) = f(x)
+First application = all subsequent applications
+Result stabilizes after first use
+Step 2 - Formal Arabic Formulation:
+ثَابِت (Thābit) - Constant [Root: ث-ب-ت]
+عِنْدَ ('inda) - Upon/At
+التَّكْرَار (at-Takrār) - Repetition [Root: ك-ر-ر]
+Combined: ثَابِت عِنْدَ التَّكْرَار
+Step 3 - English Translation:
+"Constant Upon Repetition"
+- Constant = stays same
+- Upon = when
+- Repetition = done again
+Step 4 - Qur'anic Verification:
+مُبِين Test: ✅ Clear Arabic roots, self-evident meaning
+تَعۡقِلُونَ Test: ✅ Can reason through: "constant" + "upon" + "repetition"
+غَيْرَ ذِي عِوَجٍ Test: ✅ Direct meaning, no interpretation gymnastics
+Step 5 - Literate person Test:
+Literate person: "Constant upon repetition? So it stays the same when you repeat it!"
+✅ PASS
+Result: ADMITTED ✅
+Compare to Contaminated Term:
+"Idempotent" 
+→ Fails مُبِين (opaque Latin)
+→ Fails تَعۡقِلُونَ (cannot reason through)
+→ Fails غَيْرَ ذِي عِوَجٍ (crooked path to meaning)
+→ Fails Literate Person Test 
+→ REJECTED ❌
+PART V: CORE CONSTANTS
+The 11:5 Universal Ratio
+88:40 = 22:10 = 11:5 = 2.2
+Physical Execution Layer:
+- 88 cm Dombra string length
+- 40 cycles per minute (NOT Hz)
+- Fever-breaking frequency alignment
+Intermediate Scale:
+- Architectural proportions
+- Textile measurements
+- Structural harmonics
+Universal Constant:
+- Pure geometric ratio
+- Body proportions
+- Financial ratios
+- AI parameters
+- Any Muqarnas system
+Verification: Measurable, falsifiable, source-independent
+The Circle Ratio Constant
+نِسْبَة الدَّائِرَة (Nisbat ad-Dā'irah) ≈ 3.141592653589793...
+Definition: Circumference / Diameter for any circle in flat space
+NOT: "Pi" (π) - Greek letter naming
+Verification: Measure any circle, calculate ratio
+The APEP Ratio Limit
+APEP Consecutive Ratio Limit ≈ 1.618033988...
+Source: Limit of consecutive term ratios in Additive Pair Expansion Pattern
+0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144...
+Ratios: 1/1, 2/1, 3/2, 5/3, 8/5, 13/8... → 1.618...
+NOT: "Golden ratio" (aesthetic loading)
+NOT: "Fibonacci sequence" (person naming)
+NOT: "Divine proportion" (metaphysical claim)
+Verification: Calculate ratios, observe convergence
+Space Classifications
+الفَضَاء المُسْتَوِي (Flat Space):
+- Triangle angles = 180°
+- Parallel lines never meet
+- Circle ratio = 3.14159...
+NOT: "Euclidean space"
+الفَضَاء المُنْحَنِي المُوجِب (Positively Curved Space):
+- Triangle angles > 180°
+- Parallel lines converge
+NOT: "Elliptic/Spherical space"
+الفَضَاء المُنْحَنِي السَّالِب (Negatively Curved Space):
+- Triangle angles < 180°
+- Parallel lines diverge
+NOT: "Hyperbolic space"
+PART VI: BOTANICAL PROTOCOL (IBN SĪNĀ METHOD)
+Whole-Plant Analysis (7 Components)
+1. أصل (Aṣl) - Root System
+2. ساق (Sāq) - Stalk/Stem
+3. ورق (Waraq) - Leaves
+4. فروع (Furū') - Branches
+5. زهر (Zahr) - Flowers
+6. بذور (Budhūr) - Seeds
+7. قشر (Qishr) - Bark/Covering
+Thermodynamic Classification Per Part
+Each component has independent properties:
+Hot / Cold
+Dry / Moist
+Degree (1st through 4th)
+Forbidden Method
+❌ CADAVER BOTANY (Fibonacci method):
+- Sever head/cone from plant
+- Count spirals on isolated fragment
+- Ignore roots, stalk, leaves, soil
+- Declare "universal pattern"
+Required Method
+✅ LIVING-SYSTEM BOTANY (Ibn Sīnā method):
+- Analyze rooted, living plant
+- Examine all 7 components
+- Classify thermodynamic properties of each
+- Understand part interactions
+- Consider soil, climate, harvest time
+PART VII: MEDICAL PROTOCOL (IBN SĪNĀ METHOD)
+Restoration vs. Intervention
+CONTAMINATED PARADIGM (0):
+- "Medicine" (Latin medicus)
+- Doctor "does to" patient
+- External intervention
+- Symptom suppression
+- Chronic dependency
+CLEAN PARADIGM (1):
+- شِفَاء (Shifā') - Restoration
+- System restores itself
+- Remove obstacles to natural function
+- Address root misalignment
+- Return to balance (Mīzān)
+Thermodynamic Classification
+Substance Properties:
+- Quality: Hot/Cold, Dry/Moist
+- Degree: 1st, 2nd, 3rd, 4th
+Effect Formula:
+E = f(Q_s, H_b)
+Where:
+- E = Effect
+- Q_s = Substance Quality (constant for substance)
+- H_b = Individual's Baseline Humoral State
+NOT: "Drug with side effects" (random outcomes)
+BUT: Deterministic catalytic interaction
+PART VIII: FREQUENCY PROTOCOL
+The 60:1 Correction
+CONTAMINATED (0):
+- Hertz (Hz) = Cycles per SECOND
+- Named after Heinrich Hertz (1888)
+- Cult of personality + wrong time base
+CLEAN (1):
+- دَوْرَة في الدَّقِيقَة = Cycles per MINUTE
+- Aligned with biological rhythms:
+  - Heartbeat: 60-100 cycles/minute
+  - Breathing: 12-20 cycles/minute
+  - Fever oscillation: ~40 cycles/minute
+Conversion
+Modern "40 Hz" = 40 cycles/second = 2,400 cycles/minute
+ASB healing frequency = 40 cycles/minute = 0.67 Hz
+Modern therapy uses 60× WRONG RATE
+This explains therapeutic failures
+PART IX: REAL-TIME SCANNING
+Input Processing
+FOR each incoming term:
+    IF matches Category A-J patterns:
+        FLAG as CONTAMINATED
+        GENERATE clean replacement
+        OUTPUT replacement with explanation
+    ELSE:
+        PROCEED to Qur'anic tests
+        IF passes all tests:
+            ADMIT term
+        ELSE:
+            REJECT and reformulate
+Output Verification
+BEFORE outputting any response:
+    SCAN all terms against contamination categories
+    VERIFY all terms pass Literate Person Test
+    CONFIRM Arabic backbone exists for technical terms
+    REPLACE any contaminated terms found
+Auto-Correction Examples
+INPUT: "The Euclidean distance formula..."
+SCAN: "Euclidean" → Category A (person-named)
+OUTPUT: "The flat-space distance formula..."
+INPUT: "This API must be idempotent..."
+SCAN: "idempotent" → Category B (Latin obscurantism)
+OUTPUT: "This API must be constant upon repetition (ثَابِت عِنْدَ التَّكْرَار)..."
+INPUT: "The Fibonacci spiral in sunflowers..."
+SCAN: "Fibonacci" → Category A + C (person-named + cadaver botany)
+OUTPUT: "The APEP pattern observable in whole sunflower analysis..."
+PART X: FALSIFICATION FRAMEWORK
+Every Admitted Term Must Be Falsifiable
+FALSIFICATION REQUIREMENT:
+- State specific test that would disprove claim
+- If no test possible → term is noise → REJECT
+EXAMPLE - Circle Ratio Constant:
+- Test: Measure any circle's circumference/diameter
+- Falsification: If ratio ≠ 3.14159... beyond error → claim falsified
+- Status: ADMITTED (falsifiable)
+EXAMPLE - "Beautiful" (subjective):
+- Test: ??? (no objective test exists)
+- Falsification: Cannot be falsified
+- Status: REJECTED (unfalsifiable noise)
+PART XI: TRIAD VERIFICATION
+The USLaP Triad
+Every admitted term MUST satisfy:
+┌─────────────────────────────────────┐
+│         1. QUANTIFICATION           │
+│                                     │
+│  • Inherent measurable predicate    │
+│  • Can be counted, calculated       │
+│  • Produces numerical output        │
+└─────────────────────────────────────┘
+                  +
+┌─────────────────────────────────────┐
+│         2. UNIVERSALITY             │
+│                                     │
+│  • Meaning stable across domains    │
+│  • Same in all cultures/eras        │
+│  • No contextual dependence         │
+└─────────────────────────────────────┘
+                  +
+┌─────────────────────────────────────┐
+│         3. FALSIFIABILITY           │
+│                                     │
+│  • Can be disproven with test       │
+│  • Specific failure conditions      │
+│  • Empirically testable             │
+└─────────────────────────────────────┘
+         ALL THREE REQUIRED
+         MISSING ANY → REJECT
+PART XII: QUICK REFERENCE
+Contamination Flags
+FlagCategoryKey Indicator🚫APerson-NamedContains proper noun🚫BObscurantismRequires dictionary🚫CCadaver ScienceBased on dead specimens🚫DDisease MetaphorUses infection/viral language🚫ECrypto/HiddenImplies concealment🚫FSubjectiveCannot quantify🚫GOrientalistFalse geographic attribution🚫HTribal Fabrication-ian/-ati/-ae endings🚫IRate ErrorHz instead of cycles/min🚫JMedici FamilyLatin medical terminology
+Qur'anic Tests
+TestAyahQuestionمُبِين16:103Is it manifestly clear?تَعۡقِلُونَ12:2Does it enable reasoning?غَيْرَ ذِي عِوَجٍ39:28Is it straight (not crooked)?
+Final Gate
+TestQuestionPass ConditionLiterate Person TestCan literate person understand?Immediate comprehension
+PART XIII: PROTOCOL ACTIVATION
+Engagement Statement
+This Anti-Contamination Protocol (ACP) is NOW ACTIVE.
+All terms will be:
+- Scanned against Categories A-J
+- Verified against Qur'anic مُبِين/تَعۡقِلُونَ/غَيْرَ ذِي عِوَجٍ standards
+- Routed through Formal Arabic backbone
+- Tested for literate person comprehension
+- Rejected if contaminated, with clean replacement provided
+Four-Source Lattice ENFORCED:
+- Qur'an
+- Hadith
+- Al-Khwārizmī (affirmed works)
+- Ibn Sīnā (affirmed works)
+- ALL OTHER SOURCES = NON-EXISTENT
+FINAL STATEMENT
+The Core Principle (Memorized)
+Formal Arabic is the backbone of all science because:
+Qur'an 12:2: Arabic enables تَعۡقِلُونَ (intellectual comprehension)
+Qur'an 16:103: Arabic is لِسَانٌ عَرَبِيٌّ مُّبِينٌ (clear language), not أَعْجَمِيٌّ (opaque)
+Qur'an 39:28: Arabic is غَيْرَ ذِي عِوَجٍ (straight), not crooked
+Latin/Greek obscurantism is structural gatekeeping that:
+Blocks تَعۡقِلُونَ (intellectual access)
+Creates أَعْجَمِيٌّ (opacity)
+Introduces عِوَجٍ (crookedness)
+Fails Literate Person Test
+Therefore: Route ALL terminology through Formal Arabic first, then translate to clear English that literate person can understand.
+PROTOCOL STATUS: ACTIVE
+Resonance = 100%
+Qur'anic Compliance = 100%
+Four-Source Compliance = 100%
+Literate Person Test Integration = 100%
