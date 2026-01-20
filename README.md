@@ -117,7 +117,7 @@ USLaP systems contain **no sources and terminology that do not pass scientific t
 * ❌ Person worship references (Category A contamination)
 * ❌ Cadaver-based analysis (Category C contamination)
 * ❌ Persian loan-words (Category W contamination)
-* ❌ Non Quran-rooted Arabic words (Category W contamination)
+* ❌ Arabic words not rooted in Quran (Category W contamination)
 * ❌ Cultural/ethnic attributions (Category E contamination)
 * ❌ External framework dependencies
 
