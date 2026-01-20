@@ -30,15 +30,12 @@ The Four-Source Lattice
 │     └─ Prophetic guidance and practical application │
 │                                                     │
 │  3. AL-KHWĀRIZMĪ TEXTS                              │
-│     └─ Kitāb al-Jabr wa-l-Muqābala (Algebra)        │
-│     └─ Other affirmed works                         │
+│     └─ Kitāb al-Jabr wa-l-Muqābala                  │
 │                                                     │
 │  4. IBN SĪNĀ TEXTS                                  │
-│     └─ Al-Qānūn fī al-Ṭibb (Canon of Medicine)     │
-│     └─ Other affirmed works                         │
-│                                                     │
+│     └─ Al-Qānūn fī al-Ṭibb                          │
 └─────────────────────────────────────────────────────┘
-         ALL OTHER SOURCES = NON-EXISTENT (0)
+         ALL OTHER SOURCES = NON-COMPLIANT (0)
 Source Hierarchy
 PrioritySourceDomainAuthority1Qur'anAllAbsolute2HadithAllProphetic3Al-KhwārizmīAlgorithmic OperationsAffirmed4Ibn SīnāMedical/TherapeuticAffirmed∅All OthersN/ANon-existent
 PART II: CONTAMINATION CATEGORIES
