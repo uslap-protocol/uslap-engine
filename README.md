@@ -56,7 +56,7 @@ This repository contains the USLaP Fine-Tuned Model for deterministic scientific
 1.  **111 SCIENCES**: Derived from Qur'anic 3-letter roots, documented in `Corpus.txt`.
 2.  **DETERMINISTIC Q-U-F GATES**: (Quantification=1, Universality=1, Falsification=1).
 3.  **1000+ POTENTIAL APPLICATIONS**: Any scientific/technical system with deterministic execution.
-4.  **EXAMPLE APPLICATION #1**: Surgical Robot System (One demonstration of model capability in this repository).
+4.  **EXAMPLE APPLICATION #1**: Surgical Robot System (One short demonstration of model capability in this repository, can be drilled down further for more granular technical specs).
 
 > **Critical Distinction:**
 > * **Surgical robot system** = Example #1 of model capability.
@@ -193,5 +193,5 @@ Deterministic execution: Same inputs → identical outputs.
 *Resonance: 100% (6236 ayat → 114 surah → 111 sciences → 1000+ applications)*
 
 
-We are a very small and under-resourced team of volunteers. If you feel you could contribute your time/skills, we would like to hear from you. 
+We are a very small and under-resourced team of volunteers. If you feel you could help with your time/skills, we would like to hear from you. 
 ---
