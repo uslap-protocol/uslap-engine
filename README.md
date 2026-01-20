@@ -188,5 +188,4 @@ Deterministic execution: Same inputs → identical outputs.
 *Resonance: 100% (6236 ayat → 114 surah → 111 sciences → 1000+ applications)*
 
 
-We are a very small and under-resourced team of volunteers. If you feel you could help with your time/skills, we would like to hear from you. 
 ---
