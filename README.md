@@ -67,11 +67,6 @@ This repository contains the USLaP Trained Model for deterministic scientific ou
 ## ⚕️ Example Application #1: Surgical Robot for Enhanced Wound Closure
 *Demonstrating USLaP applied to precision wound closure systems.*
 
-### Repository Files
-* `Surgery robot specs.txt`: Complete executive summary with Q=1, U=1, F=1 compliance.
-* `Surgery robot.json`: JSON specifications with system modules and performance metrics.
-* `app.py`: Web demo interface (Hugging Face Spaces compatible).
-* `uslap.py`: Application generator. Create ANY USLaP system
 
 ### Performance Metrics (Q=1 Verification)
 * **Precision:** σ ≤ 0.1mm (from Qur'anic exact measurement principle 5:45).
@@ -98,7 +93,6 @@ This repository contains the **complete USLaP model** and example applications:
 | **Anti-contamination protocol.txt** | Purity rules (فِئَة أ-و categories) | Contamination prevention |
 | **NonScience list.txt** | Exclusion criteria | Model boundaries |
 | **uslap.py** | Application generator | Create ANY USLaP system |
-| **app.py** | Web interface for example #1 | Demonstration access |
 
 ---
 
