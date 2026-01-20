@@ -71,6 +71,7 @@ This repository contains the USLaP Trained Model for deterministic scientific ou
 * `Surgery robot specs.txt`: Complete executive summary with Q=1, U=1, F=1 compliance.
 * `Surgery robot.json`: JSON specifications with system modules and performance metrics.
 * `app.py`: Web demo interface (Hugging Face Spaces compatible).
+* `uslap.py`: Application generator. Create ANY USLaP system
 
 ### Performance Metrics (Q=1 Verification)
 * **Precision:** σ ≤ 0.1mm (from Qur'anic exact measurement principle 5:45).
