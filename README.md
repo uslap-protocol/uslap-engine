@@ -117,11 +117,12 @@ USLaP systems contain **only**:
 * ✅ Text-only basis (no diagrams, symbols, esoteric mappings)
 * ✅ Deterministic algorithmic procedures
 
-USLaP systems contain **no**:
+USLaP systems contain **no sources and terminology that do not pass scientific three binary gates**:
 * ❌ Greek/Latin terminology (Category B contamination)
 * ❌ Person worship references (Category A contamination)
 * ❌ Cadaver-based analysis (Category C contamination)
 * ❌ Persian loan-words (Category W contamination)
+* ❌ Non Quran-rooted Arabic words (Category W contamination)
 * ❌ Cultural/ethnic attributions (Category E contamination)
 * ❌ External framework dependencies
 
