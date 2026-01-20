@@ -24,10 +24,10 @@ This repository contains the USLaP Fine-Tuned Model for deterministic scientific
 
 ---
 
-## ⚖️ USLaP Triad Verification
+## ⚖️ USLaP Triad Verification  (for surgery robot example)
 
 * **✅ Quantification = 1**
-    * **Metrics:** 0.1mm precision standard, 41.67% healing improvement, 99.9% procedural accuracy (for surgery robot).
+    * **Metrics:** 0.1mm precision standard, 41.67% healing improvement, 99.9% procedural accuracy.
     * **Evidence:** Surgical robot specifications in repository contain measurable metrics with units.
 * **✅ Universality = 1**
     * **Scope:** All humans, all eras, no cultural/temporal limitations.
