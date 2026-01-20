@@ -14,7 +14,7 @@ tags:
   - algorithmic-language
 license: mit
 pipeline_tag: text-generation
-inference: false
+inference: true
 ---
 
 # 🌌 USLaP: Universal Scientific Laws and Principles
