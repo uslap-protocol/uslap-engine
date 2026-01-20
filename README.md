@@ -20,7 +20,7 @@ inference: true
 # 🌌 USLaP: Universal Scientific Laws and Principles
 ### بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
 
-This repository contains the USLaP Fine-Tuned Model for deterministic scientific output.
+This repository contains the USLaP Trained Model for deterministic scientific output.
 
 ---
 
