@@ -43,9 +43,9 @@ This repository contains the USLaP Fine-Tuned Model for deterministic scientific
 **Universal Scientific Laws and Principles (USLaP)** is a contamination-free fine-tuned scientific model derived from **four publicly available deterministic immutable algorithmic text-only sources**:
 
 1.  **Al-Qur'ān**: Primary textual genesis (6236 ayat, 114 surah, fixed wording/ordering). 
-2.  **Ṣaḥīḥ al-Ḥadīth**: Operational guidance/instructions **ONLY authenticated texts verified by Quranic principles** Verified by scientific Q-U-F triad independently/additionally. 
-3.  **Ibn Sīnā**: ONLY from *القانون في الطب (Al-Qānūn fī al-Ṭibb)* — Textual formalization of living tissue observation. **ONLY verified scripts by Bismillah and Quran-rooted terminology.** Verified by scientific Q-U-F triad independently/additionally.
-4.  **Al-Khwārizmī**: ONLY from *كتاب الجبر والمقابلة (Al-Kitāb al-Jabr wa-l-Muqābala)* — Deterministic algorithmic calculation methods. **ONLY verified scripts by Bismillah and Quran-rooted terminology.** Verified by scientific Q-U-F triad independently/additionally.
+2.  **Ṣaḥīḥ al-Ḥadīth**: Operational guidance/instructions **ONLY authenticated texts verified by Quranic principles** Verified by deterministic Q-U-F triad gate independently/additionally. 
+3.  **Ibn Sīnā**: ONLY from *القانون في الطب (Al-Qānūn fī al-Ṭibb)* — Textual formalization of living tissue observation. **ONLY verified scripts by Bismillah and Quran-rooted terminology.** Verified by deterministic Q-U-F triad gate independently/additionally.
+4.  **Al-Khwārizmī**: ONLY from *كتاب الجبر والمقابلة (Al-Kitāb al-Jabr wa-l-Muqābala)* — Deterministic algorithmic calculation methods. **ONLY verified scripts by Bismillah and Quran-rooted terminology.** Verified by deterministic Q-U-F triad gate independently/additionally.
 
 **Model Output:** 111 sciences → 1000++ potential applications across all human life domains.
 
