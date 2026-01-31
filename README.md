@@ -4,12 +4,18 @@ language:
   - multilingual
 tags:
   - Medical-ai
+  - healthcare
+  - open-source-health
+  - arabic-nlp
+  - surgical-ai
+  - llama-3.2
+  - precision-medicine
+  - surgical-robotics
+  - neuroscience
   - bci-ai
   - Brain-Computer-Interface
-  - paradromics
   - deterministic-ai
   - deterministic-algorithms
-  - neuralink
 license: mit
 pipeline_tag: text-generation
 inference: true
