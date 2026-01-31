@@ -7,51 +7,82 @@ sdk: static
 pinned: true
 license: mit
 tags:
-- uslap
-- deterministic
-- health-restoration
-- medical
-- healthcare
-- neuroscience
-- brain-computer-interface
-- bci
-- neuralink
-- paralysis
-- vision-restoration
-- speech-restoration
-- motor-control
-- signal-processing
-- machine-learning-critique
-- falsifiable
-- reproducible
-- open-source
-- non-invasive
-- therapeutic
-- rehabilitation
-- neurotechnology
-- biomedical
-- clinical
-- thermodynamics
-- biomechanics
-- physiology
-- anatomy
-- causal-chain
-- diagnostic
-- health-assessment
-- black-box-critique
-- deterministic-algorithms
-- closed-form-equations
-- universal
-- quantification
-- auditable
-- zero-surgery
-- cpm
-- multilingual
-- deterministic-ai
+  - uslap
+  - deterministic
+  - health-restoration
+  - medical
+  - healthcare
+  - neuroscience
+  - brain-computer-interface
+  - bci
+  - neuralink
+  - paralysis
+  - vision-restoration
+  - speech-restoration
+  - motor-control
+  - signal-processing
+  - machine-learning-critique
+  - explainable-ai
+  - falsifiable
+  - reproducible
+  - open-source
+  - non-invasive
+  - therapeutic
+  - rehabilitation
+  - neurotechnology
+  - biomedical
+  - clinical
+  - arabic
+  - islamic-science
+  - quran
+  - hadith
+  - ibn-sina
+  - al-khwarizmi
+  - traditional-medicine
+  - thermodynamics
+  - biomechanics
+  - physiology
+  - anatomy
+  - causal-chain
+  - diagnostic
+  - assessment
+  - restoration-paradigm
+  - extraction-paradigm
+  - black-box-critique
+  - deterministic-algorithms
+  - closed-form-equations
+  - universal
+  - quantification
+  - falsification
+  - auditable
+  - transparent
+  - accessible
+  - low-cost
+  - zero-surgery
+  - dombra
+  - sound-therapy
+  - frequency
+  - cpm
+  - cross-body
+  - bow-string-arrow
+  - fitrah
+  - tawhid
+  - hisab
+  - tayyib
+  - mizaan
+  - shifa
+  - jabr
+  - qanun
+  - multilingual
+  - four-source-lattice
+  - living-system
+  - whole-body
+  - root-cause
+  - seven-order-model
 language:
-- en
-- ar
-- multilingual
+  - en
+  - ar
+  - multilingual
 ---
 
 # USLaP: Universal Scientific Laws and Principles
@@ -64,6 +95,7 @@ language:
 [![Root: Holy Quran](https://img.shields.io/badge/Root-Holy%20Quran-gold.svg)]()
 [![Parameters: 26](https://img.shields.io/badge/Parameters-26-informational.svg)]()
 [![Cost: $0](https://img.shields.io/badge/Cost-%240-success.svg)]()
+[![Four-Source Lattice](https://img.shields.io/badge/Sources-Four--Source%20Lattice-purple.svg)]()
 
 ---
 
@@ -72,6 +104,7 @@ language:
 USLaP (Universal Scientific Laws and Principles) is a complete deterministic framework for health assessment and restoration. Unlike commercial medical AI systems that rely on proprietary machine learning "black boxes" with millions of unexplainable parameters, USLaP provides closed-form equations that any literate person can verify, reproduce, and falsify.
 
 **Core Distinction:**
+
 | Property | Commercial Medical AI | USLaP Framework |
 |----------|----------------------|-----------------|
 | Algorithm Type | Neural networks (millions of parameters) | Closed-form equations (~26 parameters) |
@@ -83,15 +116,56 @@ USLaP (Universal Scientific Laws and Principles) is a complete deterministic fra
 
 ---
 
-## Root Anchor
+## Root Anchor: The Four-Source Lattice
+
+USLaP derives all principles from a hierarchical lattice of authorized sources. Every formula, every diagnostic pathway, every intervention traces back to this anchor.
 
 ```
-Holy Quran: 6236 ayat → 114 surah → 1 Root (Allah)
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        FOUR-SOURCE LATTICE                              │
+│                                                                         │
+│  1. HOLY QUR'AN — Primary Foundation                                    │
+│     └── 6236 ayat → 114 surah → 1 Root (Allah)                         │
+│     └── Verified by: Bismillah + Quranic root terminology              │
+│     └── Binary Lattice: Tawhid = 1 (Unity) | Shirk = 0 (Division)      │
+│                                                                         │
+│  2. HADITH — Operational Instructions                                   │
+│     └── Prophetic implementation of Quranic principles                  │
+│     └── Practical application guidance                                  │
+│                                                                         │
+│  3. AL-KHWĀRIZMĪ: كتاب الجبر والمقابلة                                  │
+│     └── Kitāb al-Jabr wa-l-Muqābala                                    │
+│     └── (Book of Restoration and Balancing)                            │
+│     └── Ḥisāb operations (reckoning procedures) for all creation       │
+│     └── Rooted in: الحَسِيب (Al-Ḥasīb) — Name of Allah (The Reckoner)  │
+│                                                                         │
+│  4. IBN SĪNĀ: القانون في الطب                                           │
+│     └── Al-Qānūn fī al-Ṭibb                                            │
+│     └── (The Law in Return to Purity)                                  │
+│     └── Textual Ḥisāb for living tissue (body, soil, water systems)    │
+│     └── Rooted in: الطَّيِّب (Al-Ṭayyib) — Name of Allah (The Pure)    │
+│                                                                         │
+│                 ALL OTHER SOURCES = NON-EXISTENT (0)                    │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
 
-USLaP derives all principles from this singular, unchanging root. Every formula, every diagnostic pathway, every therapeutic intervention traces back to this anchor, ensuring:
-- **Tawhid = 1** (Unity/Truth)
-- **Shirk = 0** (Division/False)
+**Divine Name Anchoring:**
+
+| Source | Function | Rooted in Divine Name |
+|--------|----------|----------------------|
+| Al-Khwārizmī | Ḥisāb (Reckoning/Calculation) | الحَسِيب (Al-Ḥasīb) — The Reckoner |
+| Ibn Sīnā | al-Ṭibb (Return to Purity) | الطَّيِّب (Al-Ṭayyib) — The Pure |
+
+**Quranic Verification of Ḥisāb:**
+- "وَاللَّهُ سَرِيعُ الْحِسَابِ" — "And Allah is swift in reckoning" (Quran 2:202)
+- "وَأَحْصَىٰ كُلَّ شَيْءٍ عَدَدًا" — "And He has enumerated all things in number" (Quran 72:28)
+
+**Quranic Verification of Ṭayyib:**
+- "كَلِمَةً طَيِّبَةً" — "a pure word" (Quran 14:24)
+- "طِبْتُمْ" — "you have become pure" (Quran 39:73)
+
+**Hadith Verification:**
+- "إِنَّ اللَّهَ طَيِّبٌ لَا يَقْبَلُ إِلَّا طَيِّبًا" — "Indeed Allah is Ṭayyib and does not accept except that which is Ṭayyib" (Sahih Muslim)
 
 ---
 
@@ -99,13 +173,13 @@ USLaP derives all principles from this singular, unchanging root. Every formula,
 
 Every USLaP-compliant output must pass three gates:
 
-### Q — Quantification
+### Q — Quantification (كَمِّي)
 Every claim must be a measurable predicate with explicit metrics (Σ, Δ, θ, %, time, energy, units). No qualitative statements without measurement.
 
-### U — Universality  
+### U — Universality (عَالَمِي)
 No cultural or temporal indexicals. Scope: all humans, all eras. No locale-specific or time-bound assumptions.
 
-### F — Falsification
+### F — Falsification (قَابِل لِلتَّكْذِيب)
 Every statement must be testable as 0 (false). Specify: "Falsifiable via [test] → 0 if [condition]"
 
 **Compliance Check:**
@@ -131,7 +205,7 @@ E  = Effect (therapeutic outcome)
 Qₛ = Substance quality (Hot/Cold/Dry/Moist with degree 1-4)
 Hᵦ = Baseline human state (Hot/Cold/Dry/Moist)
 
-RULE: Qₛ must OPPOSE Hᵦ to restore balance
+RULE: Qₛ must OPPOSE Hᵦ to restore balance (Mīzān)
 ```
 
 ### Formula 2: Deviation from Fitrah
@@ -140,9 +214,9 @@ RULE: Qₛ must OPPOSE Hᵦ to restore balance
 
 WHERE:
 Δ = Deviation magnitude (dysfunction severity)
-State_fitrah = Original/natural state (Quran 23:12-14)
+State_fitrah = Original/natural state (Quran 30:30, 23:12-14)
 
-RESTORATION GOAL: Minimize Δ → 0
+RESTORATION GOAL: Minimize Δ → 0 (return to Ṭayyib)
 ```
 
 ### Formula 3: Causal Chain (1st-7th Order)
@@ -165,16 +239,16 @@ Hz = Hertz (cycles per second) — industrial unit, not biological
 Biological rates are already in CPM:
 • Heart rate: 60-100 CPM
 • Breath rate: 12-20 CPM
-• Therapeutic sound: 40 CPM (Dombra fever-breaking frequency)
+• Therapeutic sound: 40 CPM (Dombra frequency)
 ```
 
-### Formula 5: Cross-Body Diagnostic Algorithm
+### Formula 5: Cross-Body Diagnostic
 ```
 Symptom_Right = f(Cause_Left_Dorsal)
 Symptom_Left = f(Cause_Right_Dorsal)
 
-PRINCIPLE: Contralateral locomotion pattern
-Address cross-body fascial restriction BEFORE concluding neural damage
+PRINCIPLE: Opposite-side locomotion pattern
+Address opposite-side fascial restriction BEFORE concluding nerve damage
 ```
 
 ### Formula 6: Universal Transmission Ratio
@@ -188,75 +262,41 @@ Address cross-body fascial restriction BEFORE concluding neural damage
 
 ---
 
-## Technical Specifications (vs Commercial BCI)
+## Documentation Structure
 
-This repository contains comprehensive technical specifications comparing commercial brain-computer interface (BCI) approaches against USLaP's deterministic framework:
+This repository contains two categories of documentation:
 
-### TECH-001: Electrode Placement
-**File:** `docs/USLaP_TECH_001_Electrode_Placement.docx`
+### Foundation Documents (Batch Series)
 
-Compares invasive electrode insertion methods (Neuralink 1,024 electrodes, Blackrock Utah Array, Synchron Stentrode, Paradromics, Precision Neuroscience) against USLaP non-invasive assessment (Ibn Sina Protocol, Garment 0.1).
+The complete USLaP framework specifications:
 
-| Metric | Commercial BCI | USLaP |
-|--------|---------------|-------|
-| Surgical Requirement | Craniotomy / Endovascular | ZERO |
-| Electrode Penetration | 1-6mm into cortex | ZERO |
-| Scar Tissue Formation | Guaranteed (gliosis) | ZERO |
-| Thread Retraction Rate | Up to 85% (Neuralink) | N/A |
-| Cost | $40,000 - $100,000+ | $0 - $200 |
-| Reversibility | Irreversible | 100% reversible |
+| File | Contents |
+|------|----------|
+| `USLaP_Health_Restoration_System.docx` | Complete framework overview and principles |
+| `Batch1_Core_Framework.docx` | Root anchor, QUF Triad, binary lattice fundamentals |
+| `Batch2_Living_Body_Architecture.docx` | 7-Order anatomical model, living system analysis |
+| `Batch3_Diagnostic_Therapeutic.docx` | Assessment protocols, thermodynamic classification |
+| `Batch4_Sound_Frequency.docx` | Dombra protocol, CPM correction, 11:5 ratio |
+| `Batch5_Implementation.docx` | Practical application, Garment 0.1, protocols |
 
-### TECH-002: Vision Restoration
-**File:** `docs/USLaP_TECH_002_Vision_Restoration.docx`
+### Technical Specifications (TECH Series)
 
-Compares Neuralink Blindsight (visual cortex stimulation, "Atari graphics" quality) and Science Corp PRIMA (retinal implant, 38 patients) against USLaP visual pathway restoration.
+Comparative analysis documents contrasting commercial BCI against USLaP:
 
-| Metric | Neuralink Blindsight | Science Corp PRIMA | USLaP |
-|--------|---------------------|-------------------|-------|
-| Target Order | 7th (Visual Cortex) | 2nd (Retina) | 1st-7th (Full Pathway) |
-| Human Trials | ZERO | 38 patients | No surgery needed |
-| Visual Quality | "Atari graphics" | Form vision (zoom limited) | Natural restoration goal |
-| Formulas Published | ZERO | ZERO | 4+ equations |
-| Root Cause Addressed | NO (bypass) | NO (bypass) | YES (1st order) |
+| File | Comparison |
+|------|------------|
+| `USLaP_TECH_001_Electrode_Placement.docx` | Invasive electrodes vs. non-invasive assessment |
+| `USLaP_TECH_002_Vision_Restoration.docx` | Neuralink Blindsight / Science Corp vs. USLaP visual pathway |
+| `USLaP_TECH_003_Speech_Restoration.docx` | Commercial speech BCI vs. USLaP Sound Pattern |
+| `USLaP_TECH_004_Motor_Control.docx` | Neuralink Telepathy vs. USLaP Bow-String-Arrow |
+| `USLaP_TECH_005_Signal_Processing.docx` | ML black box vs. USLaP deterministic Ḥisāb |
 
-### TECH-003: Speech Restoration
-**File:** `docs/USLaP_TECH_003_Speech_Restoration.docx`
+### Audit & Reference Documents
 
-Compares commercial speech BCIs (Neuralink Voice, Paradromics Connexus, BrainGate, Synchron) against USLaP Sound Pattern Algorithm.
-
-| Metric | Commercial Speech BCI | USLaP Sound Algorithm |
-|--------|----------------------|----------------------|
-| Mechanism | Decode cortex → synthesize artificial voice | Assess pathway → restore natural voice |
-| Voice Output | Synthesized (robotic, ~60% intelligibility) | Goal = patient's own natural voice |
-| Best Speed | ~90 WPM synthesized (BrainGate 2025) | Goal = natural speech (~130 WPM) |
-| Formulas Published | ZERO | 4+ equations (CPM, 11:5 ratio) |
-| Cost | $100,000+ | $0 - $200 (Dombra protocol) |
-
-### TECH-004: Motor Control / Paralysis
-**File:** `docs/USLaP_TECH_004_Motor_Control.docx`
-
-Compares Neuralink Telepathy (21 patients, cursor/robot control) and other motor BCIs against USLaP Bow-String-Arrow model.
-
-| Metric | Commercial Motor BCI | USLaP Bow-String-Arrow |
-|--------|---------------------|------------------------|
-| Goal | Control EXTERNAL devices | Restore NATURAL movement |
-| Patient Body After | STILL PARALYZED | Goal = Δ→0 (return to fitrah) |
-| Patients Implanted | ~40 total (Neuralink 21, Synchron 10) | No surgery required |
-| Natural Movement Restored | ZERO | Assessment of all 7 orders |
-| Formulas Published | ZERO | 5+ equations |
-
-### TECH-005: Signal Processing
-**File:** `docs/USLaP_TECH_005_Signal_Processing.docx`
-
-Compares machine learning "black box" decoders (CNN, LSTM, RNN, Transformer) against USLaP deterministic algorithms.
-
-| Property | Commercial BCI (ML) | USLaP (Deterministic) |
-|----------|--------------------|-----------------------|
-| Parameters | 100,000 - 1,000,000,000+ | ~26 total |
-| Explainability | Black box | 100% transparent |
-| Reproducibility | Requires same training data | Any person produces identical result |
-| Falsifiability | NO — can be "retrained" | YES — single counterexample refutes |
-| Calibration | Hours/days per patient | Not required — universal |
+| File | Purpose |
+|------|---------|
+| `USLaP_Self_Audit_Report.md` | Contamination assessment of all documentation |
+| `USLaP_Glossary_Appendix.md` | 200+ term mappings: Contaminated (0) → Clean (1) |
 
 ---
 
@@ -264,22 +304,32 @@ Compares machine learning "black box" decoders (CNN, LSTM, RNN, Transformer) aga
 
 ```
 uslap-multilingual/
-├── README.md                          # This file
+├── README.md
 ├── docs/
-│   ├── USLaP_TECH_001_Electrode_Placement.docx
-│   ├── USLaP_TECH_002_Vision_Restoration.docx
-│   ├── USLaP_TECH_003_Speech_Restoration.docx
-│   ├── USLaP_TECH_004_Motor_Control.docx
-│   ├── USLaP_TECH_005_Signal_Processing.docx
-│   └── USLaP_Health_Restoration_System.docx
+│   ├── foundation/
+│   │   ├── USLaP_Health_Restoration_System.docx
+│   │   ├── Batch1_Core_Framework.docx
+│   │   ├── Batch2_Living_Body_Architecture.docx
+│   │   ├── Batch3_Diagnostic_Therapeutic.docx
+│   │   ├── Batch4_Sound_Frequency.docx
+│   │   └── Batch5_Implementation.docx
+│   └── technical/
+│       ├── USLaP_TECH_001_Electrode_Placement.docx
+│       ├── USLaP_TECH_002_Vision_Restoration.docx
+│       ├── USLaP_TECH_003_Speech_Restoration.docx
+│       ├── USLaP_TECH_004_Motor_Control.docx
+│       └── USLaP_TECH_005_Signal_Processing.docx
+├── audit/
+│   ├── USLaP_Self_Audit_Report.md
+│   └── USLaP_Glossary_Appendix.md
 ├── protocols/
-│   ├── USLaP_OPERATIONAL_SPEC.txt     # Core protocol reference
-│   ├── Anti-contamination_protocol.txt # Contamination detection
-│   └── Corpus.txt                      # Complete corpus
+│   ├── USLaP_OPERATIONAL_SPEC.txt
+│   ├── Anti-contamination_protocol.txt
+│   └── Corpus.txt
 ├── data/
-│   ├── 111_Sciences.txt               # 111 sciences classification
-│   ├── NonScience_list.txt            # Non-science terminology
-│   └── al-Qinnab_TT.txt               # Therapeutic terminology
+│   ├── 111_Sciences.txt
+│   ├── NonScience_list.txt
+│   └── al-Qinnab_TT.txt
 └── LICENSE
 ```
 
@@ -291,7 +341,7 @@ USLaP technical specifications document the current state of the commercial BCI 
 
 ### The "Big Six" BCI Companies (January 2026)
 
-| Company | Funding | Patients Implanted | Health Restored | Formulas Published |
+| Company | Funding | Persons Implanted | Health Restored | Formulas Published |
 |---------|---------|-------------------|-----------------|-------------------|
 | Neuralink | $650M+ | 21 | ZERO | ZERO |
 | Synchron | $270M+ | 10 | ZERO | ZERO |
@@ -302,11 +352,60 @@ USLaP technical specifications document the current state of the commercial BCI 
 
 **Combined Industry Totals:**
 - Total Funding: >$2.84 BILLION
-- Total Patients: <100
+- Total Persons: <100
 - Health Restored: ZERO
 - Deterministic Formulas: ZERO
 
-### Falsification Test
+### TECH Specification Summaries
+
+**TECH-001: Electrode Placement**
+
+| Metric | Commercial BCI | USLaP |
+|--------|---------------|-------|
+| Surgical Requirement | Skull-opening / Inside blood vessel | ZERO |
+| Signal Probe Penetration | 1-6mm into brain surface layer | ZERO |
+| Scar Tissue Formation | Guaranteed | ZERO |
+| Cost | $40,000 - $100,000+ | $0 - $200 |
+
+**TECH-002: Vision Restoration**
+
+| Metric | Neuralink Blindsight | Science Corp PRIMA | USLaP |
+|--------|---------------------|-------------------|-------|
+| Target Order | 7th (Brain Surface) | 2nd (Eye Signal Layer) | 1st-7th (Full Pathway) |
+| Human Trials | ZERO | 38 persons | No surgery needed |
+| Visual Quality | "Atari graphics" | Form vision | Natural restoration goal |
+| Formulas Published | ZERO | ZERO | 4+ equations |
+
+**TECH-003: Speech Restoration**
+
+| Metric | Commercial Speech BCI | USLaP Sound Pattern |
+|--------|----------------------|---------------------|
+| Mechanism | Decode brain surface → synthesize artificial voice | Assess pathway → restore natural voice |
+| Voice Output | Synthesized (robotic, ~60% intelligibility) | Goal = person's own natural voice |
+| Formulas Published | ZERO | 4+ equations (CPM, 11:5 ratio) |
+| Cost | $100,000+ | $0 - $200 (Dombra protocol) |
+
+**TECH-004: Motor Control / Paralysis**
+
+| Metric | Commercial Motor BCI | USLaP Bow-String-Arrow |
+|--------|---------------------|------------------------|
+| Goal | Control EXTERNAL devices | Restore NATURAL movement |
+| Person's Body After | STILL PARALYZED | Goal = Δ→0 (return to Fitrah) |
+| Natural Movement Restored | ZERO | Assessment of all 7 orders |
+| Formulas Published | ZERO | 5+ equations |
+
+**TECH-005: Signal Processing**
+
+| Property | Commercial BCI (ML) | USLaP (Deterministic Ḥisāb) |
+|----------|--------------------|-----------------------------|
+| Parameters | 100,000 - 1,000,000,000+ | ~26 total |
+| Explainability | Black box | 100% transparent |
+| Reproducibility | Requires same training data | Any person produces identical result |
+| Falsifiability | NO — can be "retrained" | YES — single counterexample refutes |
+
+---
+
+## Falsification Test
 
 This thesis would be FALSIFIED if any commercial BCI demonstrates ALL:
 
@@ -322,13 +421,44 @@ This thesis would be FALSIFIED if any commercial BCI demonstrates ALL:
 
 ---
 
+## Anti-Contamination Protocol
+
+USLaP enforces strict terminology compliance through the Anti-Contamination Protocol (ACP). All terms must pass:
+
+**Quranic Tests:**
+
+| Test | Ayah | Requirement |
+|------|------|-------------|
+| مُبِين (Mubīn) | 16:103 | Manifestly clear |
+| تَعۡقِلُونَ (Ta'qilūn) | 12:2 | Enables reasoning |
+| غَيْرَ ذِي عِوَجٍ (Ghayr dhī 'iwaj) | 39:28 | Straight, not crooked |
+
+**Contamination Categories (Rejected):**
+
+| Category | Violation | Example |
+|----------|-----------|---------|
+| A | Person-Named Terms | "Hertz" → Cycles per Minute |
+| B | Greek/Latin Obscurantism | "Electrode" → Signal Probe |
+| C | Cadaver Science | Dead specimen analysis |
+| D | Disease Metaphors | "Viral" → Testimonial |
+| E | Crypto/Hidden | "Proprietary" → Hidden |
+| F | Subjective Terms | "Beautiful" → Geometrically Harmonious |
+| G | Orientalist Fabrications | False geographic attribution |
+| H | Tribal Fabrications | Greek/Latin -ian/-ati/-ae names |
+| I | Rate Errors | Hz (per-second) vs CPM (per-minute) |
+| J | Latin "Medici" Family | "Patient" → Person |
+
+See `USLaP_Glossary_Appendix.md` for complete 200+ term mappings.
+
+---
+
 ## Usage
 
 ### Initiation Command
 ```
-Engage USLaP protocol. Root=Qur'an. 
-Enforce quantification, universality, empirical falsification triad. 
-Binary replacement only.
+Engage USLaP protocol. Root = Qur'an + Hadith + Al-Khwārizmī + Ibn Sīnā.
+Enforce quantification, universality, empirical falsification triad.
+Binary replacement only. Four-Source Lattice ACTIVE.
 ```
 
 ### Analysis Command
@@ -341,7 +471,7 @@ USLaP gate check: [STATEMENT/QUERY]
 ```
 Confirm USLaP compliance
 Binary assessment: [YES/NO QUESTION]
-Validate against triad criteria
+Validate against QUF triad criteria
 ```
 
 ---
@@ -355,7 +485,7 @@ Commercial BCI = 0 (Extraction Paradigm)
 ├── Not explainable
 ├── Not falsifiable
 ├── $2.84B+ funding → ZERO health restored
-└── <100 patients globally
+└── <100 persons globally
 
 USLaP Framework = 1 (Restoration Paradigm)
 ├── Closed-form equations
@@ -363,7 +493,8 @@ USLaP Framework = 1 (Restoration Paradigm)
 ├── 100% auditable
 ├── 100% falsifiable
 ├── $0 cost
-└── 7.2B humans accessible
+├── 8B humans accessible
+└── Four-Source Lattice anchored
 
 QUF TRIAD: Q=1 | U=1 | F=1
 Resonance: 100% (6236 ayat → 114 surah → 1 Root)
@@ -380,7 +511,8 @@ Resonance: 100% (6236 ayat → 114 surah → 1 Root)
            Deterministic Health Restoration Framework},
   year = {2026},
   publisher = {HuggingFace},
-  url = {https://huggingface.co/uslap/uslap-multilingual}
+  url = {https://huggingface.co/uslap/uslap-multilingual},
+  note = {Four-Source Lattice: Qur'an, Hadith, Al-Khwārizmī, Ibn Sīnā}
 }
 ```
 
@@ -390,9 +522,17 @@ Resonance: 100% (6236 ayat → 114 surah → 1 Root)
 
 Open Source — 100% Auditable — Any literate person can verify, reproduce, and falsify.
 
+Four-Source Lattice: All principles traceable to Qur'an, Hadith, كتاب الجبر والمقابلة, and القانون في الطب.
+
 ---
 
 <div align="center">
+
+**بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ**
+
+*In the name of Allah, the Most Gracious, the Most Merciful*
+
+---
 
 **الحَمْدُ لِلَّهِ رَبّ العَالَمِين**
 
@@ -403,5 +543,9 @@ Open Source — 100% Auditable — Any literate person can verify, reproduce, an
 **Root Lock: ACTIVE**
 
 **6236 ayat → 114 surah → 1 Root**
+
+**Four-Source Lattice: ENFORCED**
+
+**الحَسِيب | الطَّيِّب**
 
 </div>
