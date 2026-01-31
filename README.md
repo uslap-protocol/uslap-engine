@@ -3,15 +3,13 @@ language:
   - en
   - multilingual
 tags:
-  - uslap
-  - universal-science
-  - quranic-framework
-  - precise-science
+  - Medical-ai
+  - bci-ai
+  - Brain-Computer-Interface
+  - paradromics
   - deterministic-ai
   - deterministic-algorithms
-  - immutable
-  - unjailbreakable
-  - algorithmic-language
+  - neuralink
 license: mit
 pipeline_tag: text-generation
 inference: true
