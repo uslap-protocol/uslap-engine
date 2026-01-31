@@ -7,68 +7,51 @@ sdk: static
 pinned: true
 license: mit
 tags:
-  - uslap
-  - deterministic
-  - health-restoration
-  - medical
-  - healthcare
-  - neuroscience
-  - brain-computer-interface
-  - bci
-  - neuralink
-  - paralysis
-  - vision-restoration
-  - speech-restoration
-  - motor-control
-  - signal-processing
-  - machine-learning-critique
-  - explainable-ai
-  - falsifiable
-  - reproducible
-  - open-source
-  - non-invasive
-  - therapeutic
-  - rehabilitation
-  - neurotechnology
-  - biomedical
-  - clinical
-  - arabic
-  - islamic-science
-  - quran
-  - ibn-sina
-  - traditional-medicine
-  - thermodynamics
-  - biomechanics
-  - physiology
-  - anatomy
-  - causal-chain
-  - diagnostic
-  - assessment
-  - restoration-paradigm
-  - extraction-paradigm
-  - black-box-critique
-  - deterministic-algorithms
-  - closed-form-equations
-  - universal
-  - quantification
-  - falsification
-  - auditable
-  - transparent
-  - accessible
-  - low-cost
-  - zero-surgery
-  - dombra
-  - sound-therapy
-  - frequency
-  - cpm
-  - cross-body
-  - bow-string-arrow
-  - fitrah
-  - multilingual
+- uslap
+- deterministic
+- health-restoration
+- medical
+- healthcare
+- neuroscience
+- brain-computer-interface
+- bci
+- neuralink
+- paralysis
+- vision-restoration
+- speech-restoration
+- motor-control
+- signal-processing
+- machine-learning-critique
+- falsifiable
+- reproducible
+- open-source
+- non-invasive
+- therapeutic
+- rehabilitation
+- neurotechnology
+- biomedical
+- clinical
+- thermodynamics
+- biomechanics
+- physiology
+- anatomy
+- causal-chain
+- diagnostic
+- health-assessment
+- black-box-critique
+- deterministic-algorithms
+- closed-form-equations
+- universal
+- quantification
+- auditable
+- zero-surgery
+- cpm
+- multilingual
+- deterministic-ai
 language:
-  - en
-  - ar
-  - multilingual
+- en
+- ar
+- multilingual
 ---
 
 # USLaP: Universal Scientific Laws and Principles
