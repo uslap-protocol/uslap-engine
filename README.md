@@ -20,6 +20,7 @@ tags:
   - vision-restoration
   - speech-restoration
   - motor-control
+  - postural-restoration
   - signal-processing
   - machine-learning-critique
   - explainable-ai
