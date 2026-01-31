@@ -117,20 +117,23 @@ USLaP derives all principles from a hierarchical lattice of authorized sources. 
 │     └── Verified by: Bismillah + Quranic root terminology              │
 │     └── Binary Lattice: Tawhid = 1 (Unity) | Shirk = 0 (Division)      │
 │                                                                         │
-│  2. HADITH — Operational Instructions                                   │
+│  2. SAHIH HADITH — Operational Instructions                             │
 │     └── Prophetic implementation of Quranic principles                  │
 │     └── Practical application guidance                                  │
 │                                                                         │
 │  3. AL-KHWĀRIZMĪ: كتاب الجبر والمقابلة                                  │
 │     └── Kitāb al-Jabr wa-l-Muqābala                                    │
 │     └── (Book of Restoration and Balancing)                            │
-│     └── Ḥisāb operations (reckoning procedures) for all creation       │
-│     └── Rooted in: الحَسِيب (Al-Ḥasīb) — Name of Allah (The Reckoner)  │
+│     └── Ḥisāb operations (computational/reckoning procedures) for all creation│
+│     └── Rooted in: الحَسِيب (Al-Ḥasīb) — Name of Allah (The Reckoner)
+      ├── الجَبَّار (Al-Jabbār) — Name of Allah (The Restorer/Compeller)
+      └── المُقَابَلَة — Quranic root ق-ب-ل (balancing/facing/receiving)
+      └── Qur'an 2:144: "فَوَلِّ وَجْهَكَ شَطْرَ الْمَسْجِدِ الْحَرَامِ"                      │
 │                                                                         │
 │  4. IBN SĪNĀ: القانون في الطب                                           │
 │     └── Al-Qānūn fī al-Ṭibb                                            │
-│     └── (The Law in Return to Purity)                                  │
-│     └── Textual Ḥisāb for living tissue (body, soil, water systems)    │
+│     └── (The Law in Return to Purity/Origin/Authentic State)                                  │
+│     └── Textual Ḥisāb for all living tissue (body, soil, water systems) │
 │     └── Rooted in: الطَّيِّب (Al-Ṭayyib) — Name of Allah (The Pure)    │
 │                                                                         │
 │                 ALL OTHER SOURCES = NON-EXISTENT (0)                    │
