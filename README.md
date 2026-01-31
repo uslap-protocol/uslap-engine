@@ -32,22 +32,20 @@ tags:
   - neurotechnology
   - biomedical
   - clinical
-  - arabic
-  - islamic-science
+  - surgery
+  - universal-science
   - quran
   - hadith
   - ibn-sina
   - al-khwarizmi
-  - traditional-medicine
   - thermodynamics
   - biomechanics
   - physiology
+  - physiotherapy
   - anatomy
   - causal-chain
   - diagnostic
   - assessment
-  - restoration-paradigm
-  - extraction-paradigm
   - black-box-critique
   - deterministic-algorithms
   - closed-form-equations
@@ -59,26 +57,16 @@ tags:
   - accessible
   - low-cost
   - zero-surgery
-  - dombra
   - sound-therapy
+  - color-therapy
   - frequency
   - cpm
   - cross-body
-  - bow-string-arrow
-  - fitrah
-  - tawhid
-  - hisab
-  - tayyib
-  - mizaan
-  - shifa
-  - jabr
-  - qanun
   - multilingual
   - four-source-lattice
   - living-system
   - whole-body
   - root-cause
-  - seven-order-model
 language:
   - en
   - ar
