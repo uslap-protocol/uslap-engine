@@ -1,0 +1,14 @@
+{
+  "_name_or_path": "uslap/USLaP-v1-multilingual",
+  "architectures": [
+    "Phi3ForCausalLM"
+  ],
+  "auto_map": {
+    "AutoConfig": "configuration_phi3.Phi3Config",
+    "AutoModel": "modeling_phi3.Phi3Model",
+    "AutoModelForCausalLM": "modeling_phi3.Phi3ForCausalLM"
+  },
+  "model_type": "phi3",
+  "torch_dtype": "float16",
+  "transformers_version": "4.47.0"
+}

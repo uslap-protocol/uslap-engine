@@ -1,0 +1,423 @@
+﻿Rejected Term (0)
+(Etymology)
+	USLaP Replacement (1)
+(Arabic / Transliteration)
+	Rejection Category
+	Detailed Harm/Error Explanation
+	SECTION 1: LATIN 'MEDICI' FAMILY — 100% REJECTION
+	Medicine
+(Latin: medicus)
+	شِفَاء (Shifā')
+Restoration Protocol
+	External Intervention Paradigm
+	Creates dependency: 'doctor does TO patient' vs 'system restores itself.' Obscures body's endogenous resolution capacity. Turns healing into commodity requiring expert gatekeepers.
+	Medical
+(Latin: medicus)
+	عِلاج ('Ilāj)
+Healing Process
+	Body-Soul Disconnection
+	Fragments unified organism into treatable parts. Ignores soul-body interaction. Treats symptoms (observable) while ignoring root misalignment (structural).
+	Medication
+(Latin: medicamentum)
+	دَوَاء (Dawā')
+Corrective Substance
+	Symptom Suppression
+	Suppresses signals instead of addressing causes. Creates chronic dependency. Mistakes temporary relief for actual correction. Example: fever suppressants block body's own healing heat protocol.
+	Therapy
+(Greek: therapeia)
+	عِلاج بالتَّقْدير
+'Ilāj bi al-Taqdīr
+Restoration through Geometric Determination
+	External Intervention
+	Treats body as passive recipient. Obscures that correction = removing obstacles to natural function, not adding foreign action. 'Therapy' = doing something TO vs allowing something THROUGH.
+	Drug
+(Modern vague term)
+	Thermodynamic Agent
+(Hot/Dry/Cold/Moist + Degree)
+	Erases Specificity
+	'Drug' erases all specificity. Is it Hot? Dry? What degree? Without thermodynamic classification, cannot predict effect. Modern: 'try this and see' = blind experimentation.
+	Side Effects
+(Medical industry term)
+	System Signals
+Algorithmic Outputs
+	Masks Determinism
+	Treats computed results as 'unexpected' when they're actually guaranteed by system state. Example: drowsiness from antihistamine is predictable output, not random accident.
+	Cannabis
+(Latin/Greek derivative)
+	القِنَّب (al-Qinnab)
+Root: ق-ن-ب
+'Central support/tall stalk'
+	Phonetic Derivation
+	Root ق-ن-ب encodes complete therapeutic profile: 'central stalk' → acts on central vital heat. Modern 'cannabis' = empty phonetic shell without Hot & Dry 3rd Degree classification.
+	Psychosis
+(Greek: psychosis)
+	جُنُون (Junūn)
+The Covering
+	Vague Label Without Mechanism
+	Modern label = statistical correlation without causation. Offers no mechanism, prediction, or prevention. Junūn = specific thermal overload pathway: corrupted sensory data → corrupt imagination → disabled judgment.
+	Anatomy
+(Greek: anatome 'cutting up')
+	خُطُوط الحِسّ
+Khuṭūṭ al-Ḥiss
+Living Sensory Lines
+	Cadaver Science
+	Maps living body using dead architecture. Static slices vs dynamic flow. Violates Qur'an 20:55 — algebraic debt body owes to soil.
+	Pharmacology
+(Greek: pharmakon)
+	عِلْم الأَدْوِية
+'Ilm al-Adwiya
+Science of Corrective Substances
+	Greek Root Contamination
+	Pharmakon = 'drug, poison, charm' — ambiguous root. USLaP requires precise thermodynamic classification, not vague 'pharma' umbrella.
+	SECTION 2: EUROPEAN SCIENTIST NAME UNITS — CULT OF PERSONALITY
+	Hertz (Hz)
+(Heinrich Hertz, 1888)
+	دَوْرة في الدَّقيقة
+Dawrah fī al-Daqīqa
+Cycles per MINUTE
+(or تَرَدُّد Taraddud)
+	60:1 Biological Catastrophe
+	CRITICAL ERROR: Hz = cycles/SECOND. ASB = cycles/MINUTE. Modern '40 Hz therapy' = 2,400 cycles/min (60× too fast!). ASB healing = 40 cycles/min = 0.67 Hz. Human biology operates on minute-based rhythms. This destroys all therapeutic applications.
+	Newton (N)
+(Isaac Newton)
+	مِقْياس القُوَّة
+Miqyās al-Quwwa
+Measure of Force
+	Personal Name Idolatry
+	Violates Qur'an 17:111 — making humans 'partners in sovereignty of measurement.' Science becomes personal names rather than independent truth (حَقيقة مُسْتَقِلَّة).
+	Watt (W)
+(James Watt)
+	مِقْياس القُدْرَة
+Miqyās al-Qudra
+Measure of Power
+	Theft of Quranic Concept
+	قُدْرَة (Qudra) is Quranic concept. Pattern: Take Quranic/ASB concepts → rename after European scientists → claim 'discovery.'
+	Joule (J)
+(James Joule)
+	مِقْياس الشُّغْل
+Miqyās al-Shughl
+Measure of Work
+	Theft of Quranic Concept
+	شُغْل (Shughl) is Quranic concept. Units named after people = idolatry in measurement.
+	Ampere (A)
+(André-Marie Ampère)
+	مِقْياس التَّيَّار
+Miqyās al-Tayyār
+Measure of Current
+	Personal Name Unit
+	Creates cult of personality where measurement depends on human names rather than universal constants.
+	Volt (V)
+(Alessandro Volta)
+	مِقْياس الجُهْد
+Miqyās al-Juhd
+Measure of Potential
+	Personal Name Unit
+	Erases universal nature of electrical potential by attaching human name.
+	Pascal (Pa)
+(Blaise Pascal)
+	مِقْياس الضَّغْط
+Miqyās al-Ḍaghṭ
+Measure of Pressure
+	Personal Name Unit
+	Pressure measurement existed before Pascal; naming after person obscures universality.
+	Kelvin (K)
+(Lord Kelvin)
+	مِقْياس الحَرارة المُطْلَقَة
+Miqyās al-Ḥarāra al-Muṭlaqa
+Measure of Absolute Heat
+	Personal Name Unit
+	Temperature scale named after person rather than natural reference.
+	SECTION 3: CRYPTO-DECEPTION PATTERN — 100% REJECTION
+	Crypto (prefix)
+(Greek: kryptos = hidden)
+	Transparent
+Text-Based
+	Linguistic Deception Marker
+	Etymology: Greek kryptos = 'hidden, concealed.' 100% of crypto- terms = explicitly associated with hiding, concealing, or disease.
+	Cryptocurrency
+	Transparent Ledger System
+	Hidden Money Creation
+	Disease terminology applied to finance. Conceals creation mechanism from users.
+	Cryptography
+	Plain-Text Verification
+	Expert Gatekeeping
+	Hidden writing creates expert influencer class with privileged access. Opposite of transparency required by Qur'an 2:42.
+	SHA256/Checksums
+	Plain-Text Lattice
+	NSA-Designed
+	Unverifiable constants. Economic contingency vs algebraic logic. Creates expert influencer class.
+	Digital Signatures
+	Self-Evident Truth
+	Authority Appeal
+	Appeal to authority instead of logical consistency. Requires trust in system rather than direct verification.
+	Encryption
+	Public Text
+	Hiding Truth
+	Hiding truth from those without 'keys.' Violates Qur'an 2:42: 'Do not mix truth with falsehood or conceal the truth.'
+	Zero-Knowledge Proofs
+	Full Disclosure Proofs
+	Contradiction in Terms
+	Cannot verify truth you cannot see. Logical impossibility dressed in technical language.
+	Hashing
+	Complete Text Preservation
+	Evidence Destruction
+	Destroying evidence while claiming to preserve it. Irreversible compression = information loss.
+	Blockchain
+	Transparent Sequential Record
+	Obscured Architecture
+	Technical complexity hides simple concept. Creates priesthood of 'blockchain experts.'
+	SECTION 4: VIRAL/DISEASE METAPHORS — 100% REJECTION
+	Viral
+(Latin: virus = poison)
+	Testimonial
+شَهادة (Shahāda)
+	Disease/Poison Model
+	Truth does not 'infect.' Spreads through exploitation without consent. Disease metaphor implies harm.
+	Going viral
+	Gaining Witnesses
+كَسْب الشُّهود
+	Infection Metaphor
+	Voluntary testimony vs involuntary infection. Merit-based vs exploitation-based.
+	Viral spread
+	Testimony Propagation
+نَشْر الشَّهادة
+	Contagion Language
+	Conviction-based sharing vs uncontrollable replication.
+	Viral coefficient (R₀)
+	Witness Multiplication Rate
+(WMR)
+	Infection Rate Metric
+	Borrowing epidemiological term for marketing. Treats humans as disease vectors.
+	Seed users
+	Pioneer Witnesses
+الشُّهود الأَوائِل
+	Patient Zero Language
+	First testifiers vs disease origin point.
+	Infection rate
+	Conversion Rate
+	Disease Spread Metric
+	Persuasion metrics vs pathogen transmission.
+	Epidemic
+	Movement
+	Disease Outbreak Framing
+	Social phenomenon framed as disease outbreak.
+	Superspreader
+	Master Testifier
+الشاهِد الرَّئيسي
+	Disease Vector Label
+	Credible advocate vs pathogen carrier.
+	SECTION 5: MATHEMATICAL ABSTRACTIONS — 100% REJECTION
+	Mathematics
+(Greek: mathema)
+	Algorithmic Quantification
+Structural Operations
+	Abstract Noise
+	Umbrella term implying speculative realm disconnected from physical lattice. USLaP: only operational terms admitted.
+	Geometry
+(Greek: geo + metron)
+	تَقْدير (Taqdīr)
+Geometric Determination
+	Human Sketching Implied
+	Greek implies human sketching. Taqdīr (Q-D-R root) = pre-existing Geometric Integrity, not human creation.
+	Arithmetic
+(Greek: arithmos)
+	حِساب (Ḥisāb)
+Precision Algorithmic Calculation
+	Commercial Counting
+	Mere counting vs Accountability of Every Atom. Algebraic Debt verification (Qur'an 72:28).
+	Trigonometry
+(Greek: trigonon + metron)
+	عِلْم المُثَلَّثات
+'Ilm al-Muthallathāt
+Science of the Triad
+	Greek Naming
+	Lacks Root-Resonance. Treats triangle as isolated shape vs Symmetric Node Configuration.
+	Logic
+(Greek: logos)
+	مَنْطِق (Manṭiq)
+Lattice Logic
+	Allows Paradoxes
+	Western 'Logic' allows paradoxes (structural collapses hidden by wordplay). Manṭiq (N-T-Q root) = Binary Path articulation. No paradoxes.
+	Equation
+	مِيزان (Mīzān)
+The Absolute Balance
+	Ink on Paper
+	Equation = ink marks. Mīzān = Structural Equilibrium. Mīzān loss = system collapse to 0.
+	Algebra
+(Westernized)
+	الجَبْر (al-Jabr)
+Absolute Restoration
+	Reduced to 'x-solving'
+	Western reduction to symbolic manipulation. Al-Jabr = Absolute Restoration of broken system to Due Measure (Qur'an 54:49).
+	Philosophy
+(Greek: philosophia)
+	System Architecture
+First-Principles Derivation
+	Speculative Noise
+	Allows infinite conflicting interpretations without algebraic root. Cannot be diagrammed.
+	SECTION 6: ABSTRACT/PHILOSOPHICAL NOISE — NON-FALSIFIABLE
+	Beautiful
+	Geometric Harmony
+Structural Elegance
+	Subjective Noise
+	Unmeasurable quality. Must be reducible to geometric/structural properties.
+	Spiritual
+	[REJECTED — NO VALID REPLACEMENT]
+	Non-Falsifiable
+	Subjective interior state. Cannot be tested, measured, or diagrammed.
+	Consciousness
+	Control Loop State
+Sensor-Actuator Latency
+	Undefined Carrier
+	No bounded mechanism. Cannot specify what carries 'consciousness.'
+	Wisdom (unbounded)
+	Stable Decision Outcome
+	Evaluative Label
+	Praise term vs repeatable success metric.
+	Meaning (subjective)
+	Interpretation Mapping
+(observer-declared)
+	Observer-Dependent
+	Not structurally testable. Varies by observer.
+	Intelligence (generic)
+	Task-Bounded Performance
+	Praise/Insult Term
+	Used as evaluation rather than measurable process.
+	Sacred (unbounded)
+	Protected Constraint
+	Value-Loaded
+	No structural definition. Cannot specify boundaries.
+	Mindset
+	Active Geometric Configuration
+	Subjective Noun
+	Cannot audit or measure a 'mindset.' Configuration can be audited.
+	Inner conflict
+	Psycho-Somatic Dissonance
+State of Khusr (Loss)
+	Vague Psychology
+	Measurable energetic cost vs vague feeling.
+	Art
+	Geometric Integrity Practice
+	Dissociation
+	Dissociates fruit from root. Art must connect to structural principles.
+	Dangerous
+	High-magnitude operator
+with strict input-state dependency
+	Evaluative/Alarmist
+	Introduces moral fear vs structural causation. Non-quantified.
+	SECTION 7: ORIENTALIST GEOGRAPHIC FABRICATIONS
+	Mesopotamia
+(Greek: meso + potamos)
+	Aral Sea Basin Node
+Lake Balkhash Region
+	Orientalist Fiction
+	Erases ASB/Lake Balkhash origins. Zero 3000 BCE string instruments found in Mesopotamia. Creates false 'East vs West' timeline.
+	Fertile Crescent
+	مَهْد العِلْم المَوْجي
+Mahd al-'Ilm al-Mawjī
+Cradle of Wave Science (ASB)
+	Colonial Narrative
+	Erases lake-based discoveries at Balkhash 3000+ BCE.
+	Cradle of Civilization
+(Mesopotamia claim)
+	Aral Sea Basin
+	False Attribution
+	Actual wave science developed at Lake Balkhash. Archaeological evidence falsified.
+	Tanbur/Ṭanbūr
+(as Mesopotamian)
+	الدومبرا (al-Dombra)
+Original Turkic
+	9th Century Fabrication
+	Turkic root 'Dombıra' from Balkhash 1500 BCE. طنبور only appears 9th century CE.
+	Dutar
+(Persian)
+	الدومبرا (al-Dombra)
+	Persian Counting Theft
+	Persian 'do' (two) + 'tar' (string) = counting system nomenclature replacing original Turkic name to claim ownership.
+	Central Asia
+	Aral Sea Basin Node
+	Geographic Vagueness
+	Erases specific intellectual nodes (Turkic-Uzbek-Arabicate centers).
+	SECTION 8: GREEK/LATIN TRIBAL NAME FABRICATIONS
+	Sarmatians
+(Greek: Σαρμάται)
+	الوُسْطانِيُّون
+al-Wusṭāniyyūn
+The Central Ones
+	Colonial Fabrication
+	No linguistic evidence. Greek traders fabricate names → enter 'historical record' → erase real Turkic identity.
+	Scythians
+(Greek: Σκύθαι)
+	التُّرْك الشَّرْقِيُّون
+al-Turk al-Sharqiyyūn
+Eastern Turks
+	Identity Erasure
+	Restores Turkic identity erased by Greek naming.
+	Alans
+(Latin: Alani)
+	الأَصْلِيُّون
+al-Aṣliyyūn
+The Original People
+	Turkic Erasure
+	Original inhabitants before migrations. Greek/Latin names erase continuity.
+	Massagetae
+(Greek)
+	الما وَراء النَّهْرِيُّون
+al-Mā Warā' al-Nahriyyūn
+Transoxiana Dwellers
+	Geographic Falsification
+	Actual location: beyond the river. Greek name obscures geography.
+	Any -ian/-ati/-ae suffix
+	Turkic/Arabic demonym
+based on geography/occupation
+	Colonial Naming Pattern
+	All Greek/Latin tribal names ending in -ian/-ati/-ae = colonial fabrications erasing Turkic/Uzbek identity.
+	SECTION 9: RHYTHM/MUSIC TERMINOLOGY THEFT
+	Rhythm
+(Greek: rhythmos)
+	الإِيقاع (al-Īqā')
+Executed Algorithm
+	Linguistic Hijack
+	Greek 'to flow' = subjective aesthetic feeling. al-Īqā' = precise temporal repetition, executed algorithm in time.
+	Music Theory
+	Sound Frequency Analysis
+تَحْليل تَرَدُّد الصَّوْت
+	Aesthetic Abstraction
+	Theory implies speculation. Frequency analysis = measurable, operational.
+	Harmony
+(Greek: harmonia)
+	Geometric Resonance
+تَناغُم هَنْدَسي
+	Subjective Aesthetics
+	Greek implies pleasing arrangement. Geometric Resonance = measurable frequency relationships.
+	Melody
+	Frequency Sequence
+تَسَلْسُل التَّرَدُّد
+	Aesthetic Term
+	Operational: specific frequency values in sequence. Not subjective 'melodious.'
+	SECTION 10: EXPERT GATEKEEPING PATTERNS
+	Peer Review
+	Open Verification
+تَحَقُّق مَفْتوح
+	Closed Expert Circle
+	Creates priesthood of approved reviewers. USLaP: any literate person can verify.
+	Scientific Consensus
+	Demonstrated Replication
+تَكْرار مُثْبَت
+	Authority Appeal
+	Consensus can be wrong. Only replication matters.
+	Certified Expert
+	Demonstrated Competence
+كَفاءة مُثْبَتة
+	Credential Gatekeeping
+	Certificates ≠ competence. Only demonstrated results matter.
+	Academic Authority
+	Verifiable Source Chain
+سِلْسِلة مَصادِر قابِلة لِلتَّحَقُّق
+	Institutional Trust
+	Authority claims require verification, not institutional backing.
+	Proprietary Method
+	Open Protocol
+بُروتوكول مَفْتوح
+	Hidden Process
+	If method cannot be disclosed, it cannot be verified.
