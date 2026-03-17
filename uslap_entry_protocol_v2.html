@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>USLaP Entry Protocol</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --gold-dim: #6a5820;
+    --bg: #0d0d0e;
+    --bg-card: #131315;
+    --bg-card2: #18181c;
+    --border: #2a2a30;
+    --border-gold: #3d3218;
+    --text: #d4cfc7;
+    --text-dim: #7a7570;
+    --mandatory: #c9a84c;
+    --ling: #4a9eba;
+    --math: #6aba4a;
+    --intel: #9a4aba;
+    --geo: #ba844a;
+    --umd: #ba4a4a;
+    --umd-bg: rgba(186,74,74,0.06);
+    --green: #4aba84;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Crimson Pro', Georgia, serif;
+    min-height: 100vh;
+    padding: 48px 32px;
+  }
+
+  .page { max-width: 1140px; margin: 0 auto; }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    margin-bottom: 52px;
+    animation: fadeDown 0.6s ease both;
+  }
+  .header-arabic {
+    font-size: 26px;
+    color: var(--gold);
+    letter-spacing: 4px;
+    margin-bottom: 12px;
+  }
+  .header h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    color: var(--gold-light);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .header p {
+    font-size: 14px;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+  .divider {
+    width: 120px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+    margin: 16px auto;
+  }
+
+  /* ── UMD OVERLAY BANNER ── */
+  .umd-overlay {
+    border: 1px solid var(--umd);
+    background: var(--umd-bg);
+    border-radius: 4px;
+    padding: 18px 24px;
+    margin-bottom: 10px;
+    position: relative;
+    animation: fadeUp 0.4s ease 0.1s both;
+  }
+  .umd-overlay::before {
+    content: 'UMD LAYER — USURPATION AND MANIPULATION OF DIVINE';
+    position: absolute;
+    top: -9px; left: 20px;
+    background: var(--bg);
+    padding: 0 8px;
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--umd);
+  }
+  .umd-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    font-style: italic;
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+  .umd-desc em { color: var(--text); font-style: normal; }
+  .umd-scope {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .umd-tag {
+    padding: 4px 12px;
+    border: 1px solid var(--umd);
+    border-radius: 2px;
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    color: var(--umd);
+    background: rgba(186,74,74,0.05);
+  }
+  .umd-note {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(186,74,74,0.2);
+    font-size: 12px;
+    color: var(--text-dim);
+    font-style: italic;
+    line-height: 1.6;
+  }
+  .umd-note span { color: var(--umd); font-style: normal; }
+
+  .overlay-arrow {
+    text-align: center;
+    font-size: 12px;
+    color: var(--umd);
+    letter-spacing: 2px;
+    font-family: 'Cinzel', serif;
+    margin: 6px 0;
+    opacity: 0.7;
+  }
+
+  /* ── DECLARE BOX ── */
+  .declare-box {
+    border: 1px solid var(--gold-dim);
+    background: var(--bg-card);
+    border-radius: 4px;
+    padding: 20px 24px;
+    margin-bottom: 8px;
+    position: relative;
+    animation: fadeUp 0.4s ease 0.2s both;
+  }
+  .declare-box::before {
+    content: 'STEP 0 — DECLARE ENTRY CLASS(ES)';
+    position: absolute;
+    top: -9px; left: 20px;
+    background: var(--bg);
+    padding: 0 8px;
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--gold);
+  }
+  .declare-box p {
+    font-size: 13px;
+    color: var(--text-dim);
+    font-style: italic;
+    margin-bottom: 14px;
+    line-height: 1.6;
+  }
+  .class-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .pill {
+    padding: 6px 16px;
+    border-radius: 2px;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    border: 1px solid;
+  }
+  .pill-ling  { border-color: var(--ling);  color: var(--ling);  background: rgba(74,158,186,0.07); }
+  .pill-math  { border-color: var(--math);  color: var(--math);  background: rgba(106,186,74,0.07); }
+  .pill-intel { border-color: var(--intel); color: var(--intel); background: rgba(154,74,186,0.07); }
+  .pill-geo   { border-color: var(--geo);   color: var(--geo);   background: rgba(186,132,74,0.07); }
+  .pill-plus  { color: var(--text-dim); font-size: 16px; font-weight: 300; }
+
+  .compound-examples {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+  .comp-ex {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-style: italic;
+    background: var(--bg-card2);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 4px 10px;
+  }
+  .comp-ex strong { color: var(--text); font-style: normal; }
+
+  .arrow-down {
+    text-align: center;
+    color: var(--gold-dim);
+    font-size: 18px;
+    margin: 6px 0;
+  }
+
+  /* ── MANDATORY CORE ── */
+  .mandatory-section {
+    border: 1px solid var(--gold-dim);
+    background: var(--bg-card);
+    border-radius: 4px;
+    padding: 20px 24px;
+    margin-bottom: 8px;
+    position: relative;
+    animation: fadeUp 0.4s ease 0.3s both;
+  }
+  .mandatory-section::before {
+    content: 'MANDATORY CORE — ALL ENTRY CLASSES — ALWAYS RUNS';
+    position: absolute;
+    top: -9px; left: 20px;
+    background: var(--bg);
+    padding: 0 8px;
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--gold);
+  }
+  .mandatory-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+  }
+  .m-stage {
+    background: var(--bg-card2);
+    border: 1px solid var(--border-gold);
+    border-top: 2px solid var(--gold);
+    border-radius: 3px;
+    padding: 14px 12px;
+    text-align: center;
+  }
+  .stage-num {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--gold-dim);
+    margin-bottom: 5px;
+  }
+  .stage-name {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gold-light);
+    line-height: 1.4;
+    margin-bottom: 5px;
+  }
+  .stage-desc {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-style: italic;
+    line-height: 1.5;
+  }
+  .gate-stage { border-top-color: var(--green) !important; }
+  .gate-stage .stage-name { color: var(--green); }
+
+  /* ── CONDITIONAL GRID ── */
+  .conditional-section {
+    animation: fadeUp 0.4s ease 0.4s both;
+  }
+  .conditional-label {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--text-dim);
+    text-align: center;
+    margin: 14px 0 12px;
+    position: relative;
+  }
+  .conditional-label::before,
+  .conditional-label::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 28%;
+    height: 1px;
+    background: var(--border);
+  }
+  .conditional-label::before { left: 0; }
+  .conditional-label::after  { right: 0; }
+
+  /* Domain columns */
+  .domain-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .domain-col {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .domain-header {
+    padding: 10px 12px;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .domain-header.ling  { background: rgba(74,158,186,0.1);  color: var(--ling); }
+  .domain-header.math  { background: rgba(106,186,74,0.1);  color: var(--math); }
+  .domain-header.intel { background: rgba(154,74,186,0.1);  color: var(--intel); }
+  .domain-header.geo   { background: rgba(186,132,74,0.1);  color: var(--geo); }
+
+  .domain-stages { padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+
+  .c-stage {
+    background: var(--bg-card2);
+    border-radius: 3px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-left: 3px solid;
+  }
+  .c-stage.ling  { border-left-color: var(--ling); }
+  .c-stage.math  { border-left-color: var(--math); }
+  .c-stage.intel { border-left-color: var(--intel); }
+  .c-stage.geo   { border-left-color: var(--geo); }
+
+  .c-stage-num {
+    font-family: 'Cinzel', serif;
+    font-size: 8px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    margin-bottom: 3px;
+  }
+  .c-stage-name {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 4px;
+  }
+  .c-stage.ling  .c-stage-name { color: var(--ling); }
+  .c-stage.math  .c-stage-name { color: var(--math); }
+  .c-stage.intel .c-stage-name { color: var(--intel); }
+  .c-stage.geo   .c-stage-name { color: var(--geo); }
+
+  .c-stage-desc {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  /* ── UMD CONDITIONAL STRIP ── */
+  .umd-strip {
+    border: 1px solid var(--umd);
+    background: var(--umd-bg);
+    border-radius: 4px;
+    padding: 14px 16px;
+    position: relative;
+    margin-top: 4px;
+  }
+  .umd-strip::before {
+    content: 'UMD STAGES — ACTIVATE WHEN UMD DECLARED (APPLIES TO ANY DOMAIN CLASS)';
+    position: absolute;
+    top: -9px; left: 16px;
+    background: var(--bg);
+    padding: 0 8px;
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--umd);
+  }
+  .umd-stages-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .umd-stage {
+    background: var(--bg-card2);
+    border: 1px solid rgba(186,74,74,0.3);
+    border-top: 2px solid var(--umd);
+    border-radius: 3px;
+    padding: 12px 14px;
+  }
+  .umd-stage .c-stage-num { color: rgba(186,74,74,0.5); }
+  .umd-stage .c-stage-name { color: var(--umd); }
+  .umd-stage .c-stage-desc { font-size: 11px; color: var(--text-dim); font-style: italic; line-height: 1.5; }
+
+  /* ── ORDER RULE ── */
+  .order-rule {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--green);
+    border-radius: 3px;
+    padding: 12px 18px;
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--text-dim);
+    font-style: italic;
+    animation: fadeUp 0.4s ease 0.5s both;
+  }
+  .order-rule strong {
+    color: var(--green);
+    font-style: normal;
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 2px;
+  }
+  .order-chain {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .o-step {
+    padding: 4px 12px;
+    border-radius: 2px;
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 1px;
+    background: var(--bg-card2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+  .o-step.gold { border-color: var(--gold-dim); color: var(--gold); }
+  .o-step.ling { border-color: var(--ling); color: var(--ling); }
+  .o-step.umd  { border-color: var(--umd); color: var(--umd); }
+  .o-step.green { border-color: var(--green); color: var(--green); }
+  .o-arr { color: var(--text-dim); font-size: 14px; }
+
+  /* ── CHAIN DIRECTION ── */
+  .chain-rule {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold);
+    border-radius: 3px;
+    padding: 14px 20px;
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--text-dim);
+    font-style: italic;
+    line-height: 1.7;
+    animation: fadeUp 0.4s ease 0.6s both;
+  }
+  .chain-rule strong {
+    color: var(--gold-light);
+    font-style: normal;
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 2px;
+  }
+
+  /* ── FINAL BLOCK ── */
+  .final-box {
+    border: 1px solid var(--green);
+    background: rgba(74,186,132,0.04);
+    border-radius: 4px;
+    padding: 14px 24px;
+    text-align: center;
+    margin-top: 10px;
+    animation: fadeUp 0.4s ease 0.55s both;
+  }
+  .final-box .stage-num { color: var(--green); margin-bottom: 3px; }
+  .final-box .stage-name { font-family: 'Cinzel', serif; font-size: 13px; color: var(--green); }
+  .final-box .stage-desc { font-size: 12px; color: var(--text-dim); font-style: italic; margin-top: 4px; }
+
+  /* ── LEGEND ── */
+  .legend {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 36px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    animation: fadeUp 0.4s ease 0.7s both;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+  .legend-dot {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 800px) {
+    .mandatory-grid { grid-template-columns: repeat(2,1fr); }
+    .domain-grid { grid-template-columns: repeat(2,1fr); }
+    .umd-stages-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-arabic">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+    <div class="divider"></div>
+    <h1>USLaP Full Entry Protocol</h1>
+    <p>Entry class(es) declared first — stage count is a function of class combination</p>
+  </div>
+
+  <!-- UMD OVERLAY BANNER -->
+  <div class="umd-overlay">
+    <div class="umd-desc">
+      <em>UMD is not a domain class — it is a base layer.</em> It activates whenever any divine system, divine name, divine attribute, or divine knowledge has been usurped and manipulated by an operator class. It overlays any domain class or combination of domain classes.
+    </div>
+    <div class="umd-scope">
+      <div class="umd-tag">DIVINE KNOWLEDGE</div>
+      <div class="umd-tag">DIVINE NAMING OF PEOPLES</div>
+      <div class="umd-tag">DIVINE NAMING OF PLACES</div>
+      <div class="umd-tag">DIVINE NAMING OF SUBSTANCES</div>
+      <div class="umd-tag">DIVINE SYSTEMS (FINANCIAL / MEDICAL)</div>
+      <div class="umd-tag">DIVINE ATTRIBUTES</div>
+      <div class="umd-tag">DIVINE CALENDAR</div>
+      <div class="umd-tag">DIVINE LANGUAGE</div>
+    </div>
+    <div class="umd-note">
+      Examples: <span>النَّصَارَى / naṣārā / the helpers</span> (Q3:52) → renamed "Christians" — divine self-declaration of the disciples stripped, replaced with Greek title for a human figure &nbsp;|&nbsp; <span>رُوم / rūm / the Desirers</span> (Q30:2) — Qur'anic name for a people → repackaged as "Roman Empire" imperial brand &nbsp;|&nbsp; <span>فُطْر / fuṭr / mold</span> → renamed "Penicillium" → "Penicillin" with Fleming's name attached to what Q26:80 attributed to Allah
+    </div>
+  </div>
+
+  <div class="overlay-arrow">↓ &nbsp; UMD OVERLAYS ALL THAT FOLLOWS &nbsp; ↓</div>
+
+  <!-- DECLARE ENTRY CLASS -->
+  <div class="declare-box">
+    <p>Declare all applicable domain classes before Stage 0 begins. Most entries are compound. The domain class(es) determine which conditional stages activate. UMD is declared separately — it overlays whatever domain classes are active.</p>
+    <div class="class-row">
+      <div class="pill pill-ling">LINGUISTIC</div>
+      <div class="pill-plus">+</div>
+      <div class="pill pill-math">MATHEMATICAL</div>
+      <div class="pill-plus">+</div>
+      <div class="pill pill-intel">INTELLIGENCE</div>
+      <div class="pill-plus">+</div>
+      <div class="pill pill-geo">GEOGRAPHIC</div>
+      <div class="pill-plus">±</div>
+      <div class="pill" style="border-color:var(--umd);color:var(--umd);background:rgba(186,74,74,0.07)">UMD</div>
+    </div>
+    <div class="compound-examples">
+      <div class="comp-ex"><strong>Fleming / Penicillin:</strong> Linguistic + UMD</div>
+      <div class="comp-ex"><strong>Newton / Calculus:</strong> Linguistic + Mathematical + UMD</div>
+      <div class="comp-ex"><strong>Einstein / Relativity:</strong> Mathematical + Linguistic + UMD</div>
+      <div class="comp-ex"><strong>النَّصَارَى → "Christians":</strong> Linguistic + Geographic + UMD</div>
+      <div class="comp-ex"><strong>رُوم → "Roman Empire":</strong> Geographic + Linguistic + UMD</div>
+      <div class="comp-ex"><strong>Soviet Operation:</strong> Intelligence + Geographic + UMD</div>
+    </div>
+  </div>
+
+  <div class="arrow-down">↓</div>
+
+  <!-- MANDATORY CORE -->
+  <div class="mandatory-section">
+    <div class="mandatory-grid">
+      <div class="m-stage">
+        <div class="stage-num">STAGE 0</div>
+        <div class="stage-name">Wrapper Identification</div>
+        <div class="stage-desc">All contaminated terms quarantined before analysis. Wrapper terms in quotes throughout entire entry.</div>
+      </div>
+      <div class="m-stage">
+        <div class="stage-num">STAGE 1</div>
+        <div class="stage-name">Qur'anic Attestation</div>
+        <div class="stage-desc">Ayat cited first — before any claim. Qur'anic meaning IS the root meaning. All downstream is decay from it.</div>
+      </div>
+      <div class="m-stage">
+        <div class="stage-num">STAGE 2</div>
+        <div class="stage-name">Root Verification</div>
+        <div class="stage-desc">All roots checked against Four-Source Lattice. Token counts confirmed. ATT format on every Arabic term.</div>
+      </div>
+      <div class="m-stage" style="border-color:#ba4a4a;background:rgba(186,74,74,0.07)">
+        <div class="stage-num" style="color:#ba4a4a">STAGE 2a</div>
+        <div class="stage-name" style="color:#e87a7a">Evidence Source Gate — DP20</div>
+        <div class="stage-desc"><strong style="color:#e87a7a">DS02–DS11 are INADMISSIBLE as source evidence.</strong> Downstream scripts (Greek, Latin, Old Persian, Sanskrit, Aramaic, Hebrew, Cyrillic, etc.) may only appear as decay path illustrations — never as origin confirmation. Any claim that requires a downstream script as source = UNVERIFIED. Go directly to AA or Bitig. Routing through a wrapper to reach another term is a chain error — classify as DP20.</div>
+      </div>
+      <div class="m-stage" style="border-color:#ba4a4a;background:rgba(186,74,74,0.07)">
+        <div class="stage-num" style="color:#ba4a4a">STAGE 2b</div>
+        <div class="stage-name" style="color:#e87a7a">Script Qualification Gate</div>
+        <div class="stage-desc">A script qualifies only if ALL THREE pass: (1) continuous community of scribes — not royal/monumental only; (2) administrative or literary use — not display inscription only; (3) organic transmission — not rediscovered by outside scholars. Failure on ANY ONE = political monument, not a script. Record as UMD Step 7 evidence. <em>Example FAIL: Old Persian cuneiform — royal use only, ~200yr, abandoned, rediscovered by Europeans 19th c.</em></div>
+      </div>
+      <div class="m-stage gate-stage">
+        <div class="stage-num">STAGE Q-U-F</div>
+        <div class="stage-name">Gates — Binary Only</div>
+        <div class="stage-desc">Q / U / F — each PASS or FAIL. No conditionals. No partial verdicts. All three must pass for entry to proceed.</div>
+      </div>
+      <div class="m-stage">
+        <div class="stage-num">FINAL</div>
+        <div class="stage-name">Formal Entry Block</div>
+        <div class="stage-desc">Structured record. Every claim independently verifiable from first principles. Reproducible by any lattice analyst.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-down">↓</div>
+
+  <!-- DOMAIN CONDITIONAL STAGES -->
+  <div class="conditional-section">
+    <div class="conditional-label">DOMAIN CONDITIONAL STAGES — ACTIVATED BY DECLARED CLASS(ES)</div>
+
+    <div class="domain-grid">
+
+      <!-- LINGUISTIC -->
+      <div class="domain-col">
+        <div class="domain-header ling">LINGUISTIC</div>
+        <div class="domain-stages">
+          <div class="c-stage ling">
+            <div class="c-stage-num">STAGE L1</div>
+            <div class="c-stage-name">Phonetic Chain</div>
+            <div class="c-stage-desc">AA root → Shift ID → downstream. Every consonant mapped. Soft C ≠ hard C. Chain direction non-negotiable.</div>
+          </div>
+          <div class="c-stage ling">
+            <div class="c-stage-num">STAGE L2</div>
+            <div class="c-stage-name">Compound Analysis</div>
+            <div class="c-stage-desc">If تَنُّور pattern applies — multi-root compound decoded. Sequence: medium / process / function.</div>
+          </div>
+          <div class="c-stage ling">
+            <div class="c-stage-num">STAGE L3</div>
+            <div class="c-stage-name">Pattern C Check</div>
+            <div class="c-stage-desc">Does the name confess its Qur'anic origin in the sounds themselves? Confessional registration if confirmed.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MATHEMATICAL -->
+      <div class="domain-col">
+        <div class="domain-header math">MATHEMATICAL</div>
+        <div class="domain-stages">
+          <div class="c-stage math">
+            <div class="c-stage-num">STAGE M1</div>
+            <div class="c-stage-name">Irrational Replacement</div>
+            <div class="c-stage-desc">Irrational constant identified → replaced from the replacement map. Denominators must be from {3, 5, 7}.</div>
+          </div>
+          <div class="c-stage math">
+            <div class="c-stage-num">STAGE M2</div>
+            <div class="c-stage-name">Qur'anic Ratio Verification</div>
+            <div class="c-stage-desc">Chain formula verified against 6,236-verse structure. Q54:49 بِقَدَرٍ as the universal standard.</div>
+          </div>
+          <div class="c-stage math">
+            <div class="c-stage-num">STAGE M3</div>
+            <div class="c-stage-name">Formula Restoration</div>
+            <div class="c-stage-desc">Contaminated formula replaced with Four-Source equivalent. USLaP_Formula_Restoration_Master.xlsx consulted.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INTELLIGENCE -->
+      <div class="domain-col">
+        <div class="domain-header intel">INTELLIGENCE</div>
+        <div class="domain-stages">
+          <div class="c-stage intel">
+            <div class="c-stage-num">STAGE I1</div>
+            <div class="c-stage-name">Operator Profile</div>
+            <div class="c-stage-desc">OP code assigned. Role in 8-Step Cycle mapped. Reliability assessment. OP05 rule applied to sole sources.</div>
+          </div>
+          <div class="c-stage intel">
+            <div class="c-stage-num">STAGE I2</div>
+            <div class="c-stage-name">Manuscript Chain</div>
+            <div class="c-stage-desc">Source attribution verified. Gap between event and earliest manuscript flagged. No corroboration = flagged UNRELIABLE.</div>
+          </div>
+          <div class="c-stage intel">
+            <div class="c-stage-num">STAGE I3</div>
+            <div class="c-stage-name">كُلَّمَا Chain Mapping</div>
+            <div class="c-stage-desc">Q2:100 — same zone, same operator class, same financial back-end. 9 hosts mapped across ASB corridor.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GEOGRAPHIC -->
+      <div class="domain-col">
+        <div class="domain-header geo">GEOGRAPHIC</div>
+        <div class="domain-stages">
+          <div class="c-stage geo">
+            <div class="c-stage-num">STAGE G1</div>
+            <div class="c-stage-name">Colonial Name Rejection</div>
+            <div class="c-stage-desc">Modern colonial wrapper rejected. Original ASB designation or Qur'anic name restored with attestation.</div>
+          </div>
+          <div class="c-stage geo">
+            <div class="c-stage-num">STAGE G2</div>
+            <div class="c-stage-name">Toponym Phonetic Chain</div>
+            <div class="c-stage-desc">Place name: AA root → Shift ID → downstream. Wrapper renaming event identified and dated where possible.</div>
+          </div>
+          <div class="c-stage geo">
+            <div class="c-stage-num">STAGE G3</div>
+            <div class="c-stage-name">Peoples Naming</div>
+            <div class="c-stage-desc">Qur'anic name of the people restored — رُوم, النَّصَارَى, أُمَّةً وَسَطًا. Operator renaming documented as UMD event.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- UMD CONDITIONAL STRIP -->
+    <div class="umd-strip">
+      <div class="umd-stages-grid">
+        <div class="umd-stage">
+          <div class="c-stage-num">UMD STAGE 1</div>
+          <div class="c-stage-name">UMD 8-Step Cycle</div>
+          <div class="c-stage-desc">Reconnaissance → Entrance → Infiltrate → Divide (Q28:4) → Fund & Arm → Extract → Erase + Cover → Disperse & Repeat. All 8 steps mapped with dated evidence.</div>
+        </div>
+        <div class="umd-stage">
+          <div class="c-stage-num">UMD STAGE 2</div>
+          <div class="c-stage-name">Detection Pattern Register</div>
+          <div class="c-stage-desc">All active DP codes listed with evidence: DP07 (Gatekeeping), DP08 (Terminology), DP12 (Attribution Inversion), DP15 (Timeline Compression), DP16 (Jāhilīan Lisān), Pattern C (Confessional).</div>
+        </div>
+        <div class="umd-stage">
+          <div class="c-stage-num">UMD STAGE 3</div>
+          <div class="c-stage-name">Compliant Statement</div>
+          <div class="c-stage-desc">The lattice-compliant formulation of this phenomenon — encounter report, not discovery. Divine attribution restored. Operator-class name removed from the principle.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- EXECUTION ORDER -->
+  <div class="order-rule">
+    <strong>EXECUTION ORDER — FIXED:</strong><br>
+    Domain stages run first (in class order: Linguistic → Mathematical → Geographic → Intelligence). UMD stages run after Q-U-F gates. Formal Entry Block is always last.
+    <div class="order-chain">
+      <div class="o-step gold">Stage 0 — Wrappers</div>
+      <div class="o-arr">→</div>
+      <div class="o-step gold">Stage 1 — Qur'an</div>
+      <div class="o-arr">→</div>
+      <div class="o-step gold">Stage 2 — Roots</div>
+      <div class="o-step" style="background:rgba(186,74,74,0.15);border-color:#ba4a4a;color:#e87a7a">Stage 2a — Evidence Source Gate (DP20)</div>
+      <div class="o-step" style="background:rgba(186,74,74,0.15);border-color:#ba4a4a;color:#e87a7a">Stage 2b — Script Qualification</div>
+      <div class="o-arr">→</div>
+      <div class="o-step ling">Domain Stages</div>
+      <div class="o-arr">→</div>
+      <div class="o-step green">Q-U-F Gates</div>
+      <div class="o-arr">→</div>
+      <div class="o-step umd">UMD Stages</div>
+      <div class="o-arr">→</div>
+      <div class="o-step green">Entry Block</div>
+    </div>
+  </div>
+
+  <!-- CHAIN DIRECTION RULE -->
+  <div class="chain-rule">
+    <strong>CHAIN DIRECTION — NON-NEGOTIABLE:</strong><br>
+    Allah's Arabic is the origin. All phonetic chains run <em>origin → derivative</em>. Direction: AA root → Shift ID → downstream form. Never begin from the derivative and trace toward Allah's Arabic — that is the analytical posture of Western comparative linguistics and a hierarchy violation regardless of whether the root identified is correct. The derivative does not lead to the source — the source degrades into the derivative.
+  </div>
+
+  <!-- FINAL BLOCK -->
+  <div class="final-box">
+    <div class="stage-num">ALL CLASSES — ALWAYS LAST</div>
+    <div class="stage-name">Formal Entry Block + Compliance Checklist</div>
+    <div class="stage-desc">Structured record. Every claim independently verifiable from first principles. Compliance checklist confirms all mandatory and conditional stages ran correctly.</div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div>Mandatory — all classes</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--ling)"></div>Linguistic</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--math)"></div>Mathematical</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--intel)"></div>Intelligence</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--geo)"></div>Geographic</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--umd)"></div>UMD — overlays all</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Gates / Final Block</div>
+  </div>
+
+</div>
+</body>
+</html>

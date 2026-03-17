@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>USLaP Oversight Dashboard</title>
+  <style>
+    :root {
+      --gold:   #C9A84C;
+      --dark:   #1a1a1a;
+      --panel:  #242424;
+      --border: #3a3a2a;
+      --text:   #e8e0d0;
+      --accent: #8B6914;
+      --pass:   #4a7c4e;
+      --fail:   #7c4a4a;
+      --pending-bg: #1e1e10;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--dark);
+      color: var(--text);
+      font-family: Georgia, serif;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      background: var(--panel);
+      border-bottom: 2px solid var(--gold);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-title {
+      color: var(--gold);
+      font-size: 1.4rem;
+      font-weight: bold;
+    }
+    .header-sub {
+      color: #888;
+      font-size: .8rem;
+      margin-top: .2rem;
+    }
+    .header-stats {
+      display: flex;
+      gap: 1.5rem;
+      font-size: .85rem;
+    }
+    .stat-box {
+      text-align: center;
+      background: #1e1e1e;
+      border: 1px solid var(--border);
+      padding: .4rem .9rem;
+      border-radius: 6px;
+    }
+    .stat-box .count { color: var(--gold); font-size: 1.4rem; font-weight: bold; display: block; }
+    .stat-box .label { color: #999; font-size: .7rem; }
+
+    /* ── CONTROLS ── */
+    .controls {
+      padding: 1rem 2rem;
+      background: #1e1e1e;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: .45rem 1.1rem;
+      border: 1px solid var(--gold);
+      background: transparent;
+      color: var(--gold);
+      cursor: pointer;
+      border-radius: 4px;
+      font-family: Georgia, serif;
+      font-size: .85rem;
+      transition: background .15s;
+    }
+    .btn:hover { background: #2a2a10; }
+    .btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn.primary:hover { background: #a07820; }
+    .btn.approve-all { background: #2a4a2a; border-color: #4a7c4e; color: #6fbf73; }
+    .btn.approve-all:hover { background: #2d562d; }
+    .btn.danger { background: #4a1a1a; border-color: #7c4a4a; color: #f08080; }
+    .btn.danger:hover { background: #5a2222; }
+
+    .filter-label { color: #888; font-size: .8rem; }
+    .filter-select {
+      background: #222;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: .35rem .6rem;
+      border-radius: 4px;
+      font-size: .85rem;
+    }
+    .search-input {
+      background: #222;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: .35rem .7rem;
+      border-radius: 4px;
+      font-size: .85rem;
+      width: 200px;
+    }
+
+    /* ── LOAD PANEL ── */
+    #load-panel {
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+    .load-area {
+      border: 2px dashed var(--border);
+      padding: 2rem;
+      border-radius: 8px;
+      margin: 1rem auto;
+      max-width: 500px;
+    }
+    .load-area:hover { border-color: var(--gold); }
+    .load-title { color: var(--gold); margin-bottom: 1rem; font-size: 1.1rem; }
+    .load-desc  { color: #888; font-size: .85rem; margin-bottom: 1rem; line-height: 1.6; }
+    #file-input { display: none; }
+
+    /* ── QUEUE GRID ── */
+    #queue-grid {
+      padding: 1.5rem 2rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(520px, 1fr));
+      gap: 1.2rem;
+    }
+
+    /* ── ENTRY CARD ── */
+    .entry-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      transition: border-color .15s;
+    }
+    .entry-card.approved { border-color: var(--pass); }
+    .entry-card.rejected { border-color: var(--fail); opacity: .65; }
+    .entry-card:hover { border-color: var(--gold); }
+
+    .card-header {
+      background: #1e1e1e;
+      padding: .6rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+    .card-term  { color: var(--gold); font-size: 1.05rem; font-weight: bold; letter-spacing: .05em; }
+    .card-qid   { color: #666; font-size: .75rem; }
+    .status-tag {
+      font-size: .7rem;
+      padding: .15rem .5rem;
+      border-radius: 3px;
+      font-weight: bold;
+    }
+    .status-tag.PENDING  { background: #2a2a10; color: #c9a84c; border: 1px solid #c9a84c44; }
+    .status-tag.APPROVED { background: #1a3a1a; color: #6fbf73; border: 1px solid #6fbf7344; }
+    .status-tag.REJECTED { background: #3a1a1a; color: #f08080; border: 1px solid #f0808044; }
+
+    .card-body { padding: .8rem 1rem; }
+
+    .field-row {
+      display: flex;
+      gap: .5rem;
+      margin-bottom: .4rem;
+      font-size: .82rem;
+      align-items: baseline;
+    }
+    .field-label {
+      color: #888;
+      min-width: 100px;
+      flex-shrink: 0;
+      font-size: .75rem;
+    }
+    .field-value { color: var(--text); word-break: break-word; }
+
+    .gate-row {
+      display: flex;
+      gap: .6rem;
+      margin: .5rem 0;
+    }
+    .gate-pill {
+      font-size: .72rem;
+      padding: .15rem .5rem;
+      border-radius: 3px;
+      font-weight: bold;
+    }
+    .gate-pill.PASS { background: #1a3a1a; color: #6fbf73; }
+    .gate-pill.FAIL { background: #3a1a1a; color: #f08080; }
+
+    .score-bar-wrap { margin: .5rem 0; }
+    .score-bar-bg {
+      background: #333;
+      border-radius: 4px;
+      height: 6px;
+      position: relative;
+    }
+    .score-bar-fill {
+      background: var(--gold);
+      height: 6px;
+      border-radius: 4px;
+      transition: width .3s;
+    }
+    .score-text { font-size: .75rem; color: #888; margin-top: .2rem; }
+
+    .chain-box {
+      font-family: monospace;
+      background: #2a2a1a;
+      padding: .3rem .6rem;
+      border-radius: 3px;
+      font-size: .78rem;
+      color: #d4c080;
+      word-break: break-all;
+      margin: .3rem 0;
+    }
+
+    .flag-reason {
+      font-size: .78rem;
+      color: #c9a84c88;
+      background: #2a2a10;
+      border-left: 2px solid var(--gold);
+      padding: .3rem .6rem;
+      margin: .5rem 0;
+      border-radius: 0 3px 3px 0;
+    }
+
+    .card-actions {
+      padding: .7rem 1rem;
+      background: #1e1e1e;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: .6rem;
+      align-items: center;
+    }
+    .btn-approve {
+      flex: 1;
+      padding: .4rem;
+      background: #1a3a1a;
+      border: 1px solid #4a7c4e;
+      color: #6fbf73;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: .82rem;
+    }
+    .btn-approve:hover { background: #1f451f; }
+    .btn-reject {
+      flex: 1;
+      padding: .4rem;
+      background: #3a1a1a;
+      border: 1px solid #7c4a4a;
+      color: #f08080;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: .82rem;
+    }
+    .btn-reject:hover { background: #4a2020; }
+    .btn-edit {
+      padding: .4rem .8rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: #888;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: .8rem;
+    }
+    .btn-edit:hover { border-color: var(--gold); color: var(--gold); }
+
+    .note-input {
+      width: 100%;
+      background: #1a1a1a;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: .3rem .5rem;
+      border-radius: 3px;
+      font-size: .78rem;
+      resize: vertical;
+      min-height: 40px;
+    }
+
+    /* ── EMPTY STATE ── */
+    #empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: #555;
+      display: none;
+    }
+    #empty-state h2 { color: var(--gold); margin-bottom: .5rem; }
+
+    /* ── EXPORT PANEL ── */
+    #export-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--panel);
+      border-top: 2px solid var(--gold);
+      padding: .7rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: .85rem;
+      display: none;
+    }
+    #export-bar.visible { display: flex; }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed;
+      bottom: 80px;
+      right: 2rem;
+      background: #2a2a10;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      padding: .6rem 1.2rem;
+      border-radius: 6px;
+      font-size: .85rem;
+      opacity: 0;
+      transition: opacity .3s;
+      pointer-events: none;
+      z-index: 999;
+    }
+    #toast.show { opacity: 1; }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: #0009;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      display: none;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: var(--panel);
+      border: 1px solid var(--gold);
+      border-radius: 8px;
+      padding: 2rem;
+      max-width: 500px;
+      width: 90%;
+    }
+    .modal-title { color: var(--gold); font-size: 1.1rem; margin-bottom: 1rem; }
+    .modal-field { margin-bottom: .8rem; }
+    .modal-field label { display: block; color: #888; font-size: .78rem; margin-bottom: .25rem; }
+    .modal-field input, .modal-field textarea {
+      width: 100%;
+      background: #1a1a1a;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: .4rem .6rem;
+      border-radius: 4px;
+      font-size: .85rem;
+    }
+    .modal-actions { display: flex; gap: .8rem; margin-top: 1.2rem; justify-content: flex-end; }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ─────────────────────────────────────────────────────────── -->
+<div class="header">
+  <div>
+    <div class="header-title">USLaP Oversight Dashboard</div>
+    <div class="header-sub">ENGINE_QUEUE review — approve / reject / edit pending entries</div>
+  </div>
+  <div class="header-stats">
+    <div class="stat-box">
+      <span class="count" id="stat-pending">—</span>
+      <span class="label">PENDING</span>
+    </div>
+    <div class="stat-box">
+      <span class="count" id="stat-approved">—</span>
+      <span class="label">APPROVED</span>
+    </div>
+    <div class="stat-box">
+      <span class="count" id="stat-rejected">—</span>
+      <span class="label">REJECTED</span>
+    </div>
+    <div class="stat-box">
+      <span class="count" id="stat-total">—</span>
+      <span class="label">TOTAL</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── CONTROLS ───────────────────────────────────────────────────────── -->
+<div class="controls" id="controls" style="display:none;">
+  <button class="btn primary" onclick="loadFile()">Load JSON</button>
+  <button class="btn approve-all" onclick="approveAll()">Approve All Pending</button>
+  <button class="btn danger" onclick="rejectAll()">Reject All Pending</button>
+  <span class="filter-label">Filter:</span>
+  <select class="filter-select" id="filter-status" onchange="applyFilter()">
+    <option value="ALL">All statuses</option>
+    <option value="PENDING" selected>PENDING only</option>
+    <option value="APPROVED">APPROVED only</option>
+    <option value="REJECTED">REJECTED only</option>
+  </select>
+  <input class="search-input" id="search-box" placeholder="Search term or root..."
+         oninput="applyFilter()">
+  <button class="btn" onclick="exportDecisions()">Export Decisions JSON</button>
+</div>
+
+<!-- ── LOAD PANEL ─────────────────────────────────────────────────────── -->
+<div id="load-panel">
+  <div class="load-area" onclick="document.getElementById('file-input').click()">
+    <div class="load-title">Load ENGINE_QUEUE</div>
+    <div class="load-desc">
+      Click to load <code>engine_queue_export.json</code><br>
+      (generated by USLaP_Engine.py after each run)<br><br>
+      The file is saved to:<br>
+      <code>/Users/mmsetubal/Documents/USLaP workplace/engine_queue_export.json</code>
+    </div>
+    <button class="btn primary" style="pointer-events:none;">Choose File</button>
+  </div>
+  <input type="file" id="file-input" accept=".json" onchange="handleFileLoad(event)">
+  <p style="color:#555;font-size:.8rem;margin-top:1rem;">
+    Or drag and drop the JSON file anywhere on this page.
+  </p>
+</div>
+
+<!-- ── QUEUE GRID ─────────────────────────────────────────────────────── -->
+<div id="queue-grid"></div>
+<div id="empty-state">
+  <h2>No Entries Found</h2>
+  <p>No entries match the current filter, or the queue is empty.</p>
+</div>
+
+<!-- ── EXPORT BAR ─────────────────────────────────────────────────────── -->
+<div id="export-bar" class="visible" style="display:none;">
+  <span id="export-summary" style="color:#888;"></span>
+  <div style="display:flex;gap:.8rem;">
+    <button class="btn" onclick="exportDecisions()">Export Decisions → JSON</button>
+    <button class="btn primary" onclick="copyInstructions()">Copy Python Command</button>
+  </div>
+</div>
+
+<!-- ── EDIT MODAL ─────────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal-box">
+    <div class="modal-title">Edit Entry — <span id="modal-term"></span></div>
+    <div class="modal-field">
+      <label>Candidate Root (overrides engine suggestion)</label>
+      <input id="modal-root" type="text" placeholder="e.g. ق-ر-ن">
+    </div>
+    <div class="modal-field">
+      <label>QUR_MEANING (ATT format: Arabic / transliteration / translation)</label>
+      <textarea id="modal-qur-meaning" rows="2"></textarea>
+    </div>
+    <div class="modal-field">
+      <label>ROOT_ID (e.g. R195)</label>
+      <input id="modal-root-id" type="text" placeholder="R195">
+    </div>
+    <div class="modal-field">
+      <label>NETWORK_ID (e.g. N15 — leave blank if none)</label>
+      <input id="modal-network-id" type="text" placeholder="N15">
+    </div>
+    <div class="modal-field">
+      <label>Notes / Reason for edit</label>
+      <textarea id="modal-notes" rows="2"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn primary" onclick="saveEdit()">Save &amp; Approve</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── TOAST ──────────────────────────────────────────────────────────── -->
+<div id="toast"></div>
+
+<script>
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let allEntries   = [];
+let decisions    = {};   // queue_id → { status, notes, overrides }
+let editingId    = null;
+
+// ─── FILE LOADING ─────────────────────────────────────────────────────────────
+function loadFile() {
+  document.getElementById('file-input').click();
+}
+
+function handleFileLoad(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      allEntries = data.entries || [];
+      // Pre-populate decisions with existing statuses
+      allEntries.forEach(entry => {
+        const qid = entry.QUEUE_ID || entry.queue_id;
+        if (!decisions[qid]) {
+          decisions[qid] = {
+            status   : (entry.STATUS || entry.status || 'PENDING').toUpperCase(),
+            notes    : entry.USER_DECISION || '',
+            overrides: {}
+          };
+        }
+      });
+      document.getElementById('load-panel').style.display = 'none';
+      document.getElementById('controls').style.display   = 'flex';
+      document.getElementById('export-bar').style.display = 'flex';
+      applyFilter();
+      updateStats();
+      toast(`Loaded ${allEntries.length} entries from ${file.name}`);
+    } catch (err) {
+      alert('Error reading JSON: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+// Drag-and-drop support
+document.addEventListener('dragover', e => e.preventDefault());
+document.addEventListener('drop', e => {
+  e.preventDefault();
+  const file = e.dataTransfer.files[0];
+  if (file && file.name.endsWith('.json')) {
+    handleFileLoad({ target: { files: [file] } });
+  }
+});
+
+// ─── FILTER & RENDER ──────────────────────────────────────────────────────────
+function applyFilter() {
+  const statusFilter = document.getElementById('filter-status').value;
+  const searchTerm   = document.getElementById('search-box').value.toLowerCase();
+
+  const filtered = allEntries.filter(entry => {
+    const qid = entry.QUEUE_ID || entry.queue_id;
+    const currentStatus = decisions[qid]?.status || 'PENDING';
+    if (statusFilter !== 'ALL' && currentStatus !== statusFilter) return false;
+    if (searchTerm) {
+      const combined = [
+        entry.INPUT_TERM, entry.CANDIDATE_ROOT,
+        entry.PHONETIC_CHAIN, entry.FLAG_REASON
+      ].join(' ').toLowerCase();
+      if (!combined.includes(searchTerm)) return false;
+    }
+    return true;
+  });
+
+  renderGrid(filtered);
+  updateStats();
+}
+
+function renderGrid(entries) {
+  const grid = document.getElementById('queue-grid');
+  const empty = document.getElementById('empty-state');
+  grid.innerHTML = '';
+
+  if (entries.length === 0) {
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  entries.forEach(entry => {
+    grid.appendChild(buildCard(entry));
+  });
+}
+
+function buildCard(entry) {
+  const qid     = entry.QUEUE_ID || entry.queue_id || '—';
+  const term    = entry.INPUT_TERM || '—';
+  const root    = entry.CANDIDATE_ROOT || '—';
+  const chain   = entry.PHONETIC_CHAIN || '—';
+  const score   = parseInt(entry.SCORE) || 0;
+  const flag    = entry.FLAG_REASON || '—';
+  const ts      = entry.TIMESTAMP || '—';
+  const qGate   = entry.Q_GATE || '—';
+  const uGate   = entry.U_GATE || '—';
+  const fGate   = entry.F_GATE || '—';
+  const dec     = decisions[qid] || { status: 'PENDING', notes: '' };
+  const status  = dec.status;
+
+  const scoreWidth = Math.round(score / 10 * 100);
+
+  const div = document.createElement('div');
+  div.className = `entry-card ${status.toLowerCase()}`;
+  div.id = `card-${qid}`;
+
+  div.innerHTML = `
+    <div class="card-header">
+      <div>
+        <span class="card-term">${term}</span>
+        <span class="card-qid">&nbsp;${qid}</span>
+      </div>
+      <span class="status-tag ${status}">${status}</span>
+    </div>
+    <div class="card-body">
+      <div class="field-row">
+        <span class="field-label">Root candidate</span>
+        <span class="field-value" style="font-size:1.1rem;color:var(--gold);">${dec.overrides.root || root}</span>
+      </div>
+      <div class="gate-row">
+        <span class="gate-pill ${qGate}">Q: ${qGate}</span>
+        <span class="gate-pill ${uGate}">U: ${uGate}</span>
+        <span class="gate-pill ${fGate}">F: ${fGate}</span>
+      </div>
+      <div class="chain-box">${chain}</div>
+      <div class="score-bar-wrap">
+        <div class="score-bar-bg">
+          <div class="score-bar-fill" style="width:${scoreWidth}%"></div>
+        </div>
+        <div class="score-text">Score: ${score}/10</div>
+      </div>
+      <div class="flag-reason">${flag}</div>
+      <div class="field-row">
+        <span class="field-label">Timestamp</span>
+        <span class="field-value" style="color:#666;">${ts}</span>
+      </div>
+      ${dec.overrides.qur_meaning ? `<div class="field-row">
+        <span class="field-label">QUR_MEANING</span>
+        <span class="field-value" style="color:#c9a84c88;">${dec.overrides.qur_meaning}</span>
+      </div>` : ''}
+      ${dec.notes ? `<div class="field-row">
+        <span class="field-label">Notes</span>
+        <span class="field-value" style="color:#888;">${dec.notes}</span>
+      </div>` : ''}
+      <textarea class="note-input" id="note-${qid}" placeholder="Add decision note..."
+                onchange="updateNote('${qid}', this.value)"
+                style="margin-top:.6rem;">${dec.notes || ''}</textarea>
+    </div>
+    <div class="card-actions">
+      <button class="btn-approve" onclick="approve('${qid}')">✓ APPROVE</button>
+      <button class="btn-reject"  onclick="reject('${qid}')">✗ REJECT</button>
+      <button class="btn-edit"    onclick="editEntry('${qid}')">Edit</button>
+    </div>`;
+
+  return div;
+}
+
+// ─── DECISION ACTIONS ─────────────────────────────────────────────────────────
+function approve(qid) {
+  decisions[qid] = decisions[qid] || {};
+  decisions[qid].status = 'APPROVED';
+  const note = document.getElementById(`note-${qid}`)?.value || '';
+  decisions[qid].notes  = note;
+  refreshCard(qid);
+  updateStats();
+  updateExportBar();
+  toast(`Approved: ${qid}`);
+}
+
+function reject(qid) {
+  decisions[qid] = decisions[qid] || {};
+  decisions[qid].status = 'REJECTED';
+  const note = document.getElementById(`note-${qid}`)?.value || '';
+  decisions[qid].notes  = note;
+  refreshCard(qid);
+  updateStats();
+  updateExportBar();
+  toast(`Rejected: ${qid}`);
+}
+
+function updateNote(qid, value) {
+  decisions[qid] = decisions[qid] || {};
+  decisions[qid].notes = value;
+}
+
+function approveAll() {
+  allEntries.forEach(entry => {
+    const qid = entry.QUEUE_ID || entry.queue_id;
+    if ((decisions[qid]?.status || 'PENDING') === 'PENDING') {
+      decisions[qid] = decisions[qid] || {};
+      decisions[qid].status = 'APPROVED';
+    }
+  });
+  applyFilter();
+  updateStats();
+  updateExportBar();
+  toast('All PENDING entries approved');
+}
+
+function rejectAll() {
+  if (!confirm('Reject ALL PENDING entries?')) return;
+  allEntries.forEach(entry => {
+    const qid = entry.QUEUE_ID || entry.queue_id;
+    if ((decisions[qid]?.status || 'PENDING') === 'PENDING') {
+      decisions[qid] = decisions[qid] || {};
+      decisions[qid].status = 'REJECTED';
+    }
+  });
+  applyFilter();
+  updateStats();
+  updateExportBar();
+  toast('All PENDING entries rejected');
+}
+
+function refreshCard(qid) {
+  const entry = allEntries.find(e => (e.QUEUE_ID || e.queue_id) === qid);
+  if (!entry) return;
+  const old = document.getElementById(`card-${qid}`);
+  if (!old) return;
+  const replacement = buildCard(entry);
+  old.replaceWith(replacement);
+}
+
+// ─── EDIT MODAL ───────────────────────────────────────────────────────────────
+function editEntry(qid) {
+  const entry = allEntries.find(e => (e.QUEUE_ID || e.queue_id) === qid);
+  if (!entry) return;
+  editingId = qid;
+
+  document.getElementById('modal-term').textContent    = entry.INPUT_TERM || qid;
+  document.getElementById('modal-root').value          = decisions[qid]?.overrides?.root || entry.CANDIDATE_ROOT || '';
+  document.getElementById('modal-qur-meaning').value   = decisions[qid]?.overrides?.qur_meaning || '';
+  document.getElementById('modal-root-id').value       = decisions[qid]?.overrides?.root_id || '';
+  document.getElementById('modal-network-id').value    = decisions[qid]?.overrides?.network_id || '';
+  document.getElementById('modal-notes').value         = decisions[qid]?.notes || '';
+
+  document.getElementById('edit-modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('edit-modal').classList.remove('open');
+  editingId = null;
+}
+
+function saveEdit() {
+  if (!editingId) return;
+  decisions[editingId] = decisions[editingId] || {};
+  decisions[editingId].status = 'APPROVED';
+  decisions[editingId].notes  = document.getElementById('modal-notes').value;
+  decisions[editingId].overrides = {
+    root       : document.getElementById('modal-root').value.trim(),
+    qur_meaning: document.getElementById('modal-qur-meaning').value.trim(),
+    root_id    : document.getElementById('modal-root-id').value.trim(),
+    network_id : document.getElementById('modal-network-id').value.trim(),
+  };
+  refreshCard(editingId);
+  updateStats();
+  updateExportBar();
+  closeModal();
+  toast(`Edited & Approved: ${editingId}`);
+}
+
+// Click outside modal to close
+document.getElementById('edit-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ─── STATS ────────────────────────────────────────────────────────────────────
+function updateStats() {
+  const counts = { PENDING: 0, APPROVED: 0, REJECTED: 0 };
+  allEntries.forEach(entry => {
+    const qid = entry.QUEUE_ID || entry.queue_id;
+    const s   = (decisions[qid]?.status || 'PENDING').toUpperCase();
+    counts[s] = (counts[s] || 0) + 1;
+  });
+  document.getElementById('stat-pending').textContent  = counts.PENDING;
+  document.getElementById('stat-approved').textContent = counts.APPROVED;
+  document.getElementById('stat-rejected').textContent = counts.REJECTED;
+  document.getElementById('stat-total').textContent    = allEntries.length;
+}
+
+function updateExportBar() {
+  const approved = Object.values(decisions).filter(d => d.status === 'APPROVED').length;
+  const rejected = Object.values(decisions).filter(d => d.status === 'REJECTED').length;
+  document.getElementById('export-summary').textContent =
+    `${approved} approved · ${rejected} rejected · ready to export`;
+}
+
+// ─── EXPORT ───────────────────────────────────────────────────────────────────
+function exportDecisions() {
+  const output = allEntries.map(entry => {
+    const qid = entry.QUEUE_ID || entry.queue_id;
+    const dec = decisions[qid] || { status: 'PENDING', notes: '', overrides: {} };
+    return {
+      ...entry,
+      USER_DECISION     : dec.status,
+      DECISION_NOTES    : dec.notes,
+      DECISION_TIMESTAMP: new Date().toISOString(),
+      OVERRIDES         : dec.overrides || {}
+    };
+  });
+
+  const blob = new Blob(
+    [JSON.stringify({ total: output.length, decided: output }, null, 2)],
+    { type: 'application/json' }
+  );
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `engine_queue_decisions_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Decisions exported — run USLaP_Engine.py to apply to master file');
+}
+
+function copyInstructions() {
+  const cmd = `python3 "/Users/mmsetubal/Documents/USLaP workplace/USLaP_Engine.py"`;
+  navigator.clipboard.writeText(cmd).then(() => toast('Command copied to clipboard'));
+}
+
+// ─── TOAST ────────────────────────────────────────────────────────────────────
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>
