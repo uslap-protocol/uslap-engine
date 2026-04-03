@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>USLaP | Lumbar–Sacral Transition — Qiyam → Ruku</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d1117;color:#e0dcd0;font-family:'Segoe UI',sans-serif;overflow:hidden;height:100vh}
+canvas{display:block}
+.bis{position:fixed;top:6px;width:100%;text-align:center;color:#d4af3799;font-family:'Traditional Arabic',serif;font-size:0.95em;pointer-events:none;z-index:5}
+.title{position:fixed;top:24px;width:100%;text-align:center;color:#d4af37;font-size:0.85em;font-weight:700;pointer-events:none;z-index:5}
+.sub{position:fixed;top:42px;width:100%;text-align:center;color:#8b949e;font-size:0.68em;pointer-events:none;z-index:5}
+.controls{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:10;display:flex;flex-direction:column;align-items:center;gap:6px;background:#161b22dd;padding:12px 24px;border-radius:8px;border:1px solid #30363d}
+.controls label{color:#d4af37;font-size:0.8em;font-weight:600}
+.controls input[type=range]{width:320px;accent-color:#d4af37}
+.phase{color:#8b949e;font-size:0.75em}
+.legend{position:fixed;top:60px;right:12px;font-size:0.7em;color:#8b949e;text-align:right;z-index:10;line-height:1.7;background:#161b22cc;padding:8px 12px;border-radius:6px;border:1px solid #30363d}
+</style>
+</head>
+<body>
+<div class="bis">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+<div class="title">Lumbar–Sacral Transition: Lordosis → Flat → Kyphosis</div>
+<div class="sub">Drag slider to see how the concentric arcs open as the lower back rounds during رُكُوع</div>
+
+<canvas id="c"></canvas>
+
+<div class="controls">
+  <label>قِيَام ← → رُكُوع</label>
+  <input type="range" id="slider" min="0" max="1000" value="0"/>
+  <div class="phase" id="phaseLabel">QIYAM — lordotic curve (concave posterior)</div>
+</div>
+
+<div class="legend">
+  <div style="color:#d4af37">● vertebrae (L1–L5, S1–S5, Co)</div>
+  <div style="color:#e040fb">◠ concentric arcs (خُطُوط)</div>
+  <div style="color:#ff6b6b">━ posterior skin surface</div>
+  <div style="color:#58a6ff">━ anterior surface</div>
+  <div style="color:#c9a84c">● عَجْب الذَّنَب (origin)</div>
+  <div style="color:#484f58">━ femur (stays vertical)</div>
+  <div style="color:#8b949e">─ pelvis (iliac wing)</div>
+</div>
+
+<script>
+const cv=document.getElementById('c'), cx=cv.getContext('2d');
+const slider=document.getElementById('slider'), phaseLabel=document.getElementById('phaseLabel');
+let W,H;
+function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight;}
+resize();onresize=resize;
+
+let rukuT=0; // 0=qiyam, 1=full ruku
+
+slider.oninput=function(){
+  rukuT=this.value/1000;
+  if(rukuT<0.15) phaseLabel.textContent='QIYAM — lordotic curve (concave posterior, arcs compressed)';
+  else if(rukuT<0.45) phaseLabel.textContent='TRANSITION — lordosis flattening, arcs beginning to spread';
+  else if(rukuT<0.7) phaseLabel.textContent='FLAT BACK — lordosis eliminated, arcs opened';
+  else phaseLabel.textContent='RUKU — lower back ROUNDED (kyphotic), arcs at maximum spread';
+};
+
+// ════════════════════════════════════════
+// SPINE MODEL
+// ════════════════════════════════════════
+// Each vertebra has a BASE position (qiyam) and the curve changes with rukuT.
+// Coordinate system: x = anterior(+)/posterior(-), y = superior(+)/inferior(-)
+// Viewed from the RIGHT SIDE of the body.
+
+// Lordosis parameter: how much the lumbar curves anteriorly
+// In qiyam: positive (lordotic). In ruku: goes to zero then negative (kyphotic).
+function lordosis(){ return 1.0 - rukuT * 2.2; } // 1.0 → 0 → -1.2
+
+// Hip flexion angle (0 = standing, PI/2 = full ruku)
+function hipAngle(){ return rukuT * Math.PI / 2; }
+
+// Sacral nutation: forward tilt of sacrum in its arch
+function nutation(){ return rukuT * 0.25; } // radians
+
+// Build vertebra positions
+// Coordinate system (SIDE VIEW from the right):
+//   x = anterior (+) / posterior (-)
+//   y = superior (+) / inferior (-)
+// In qiyam the spine is NEARLY VERTICAL (pointing +y with subtle S-curve)
+function getSpine(){
+  const lord = lordosis();
+  const hipA = hipAngle();
+  const nut = nutation();
+  const hipJoint = {x:0, y:0};
+
+  // ── DEFINE SPINE AS ANGLES FROM VERTICAL ──
+  // angle = 0 means pointing straight UP (+y)
+  // positive angle = tilting ANTERIOR (forward)
+  // negative angle = tilting POSTERIOR (backward)
+
+  // In qiyam: the spine has an S-curve:
+  //   sacrum: tilted ~30° anterior (fixed anatomical slope)
+  //   lumbar: lordosis = anterior curve (belly-ward bow)
+  //   thoracic: kyphosis = posterior curve (back-ward bow)
+  // Net effect: head is roughly over pelvis
+
+  // Sacral base tilt from vertical (in qiyam)
+  const sacralTilt = 0.52; // ~30° from vertical
+
+  // ── BUILD FROM COCCYX UPWARD ──
+  // Coccyx is the origin point, inferior to sacrum
+  // Walk upward: Co → S5 → S4 → S3 → S2 → S1 → L5 → ... → L1 → T12 → ... → T1
+
+  const segLens = {
+    co:8, s5:10, s4:11, s3:12, s2:12, s1:14,
+    l5:16, l4:16, l3:17, l2:17, l1:18,
+    t:14, // thoracic (each)
+  };
+
+  // Direction angle at each level (from vertical, in qiyam)
+  // Sacrum: tilted anterior, slight posterior curve from S5→S1
+  // Lumbar: lordosis (anterior curve) — controlled by lord parameter
+  // Thoracic: kyphosis (posterior curve)
+  const baseAngles = {
+    co:  sacralTilt + 0.35,   // coccyx most posterior-tilted
+    s5:  sacralTilt + 0.25,
+    s4:  sacralTilt + 0.18,
+    s3:  sacralTilt + 0.12,
+    s2:  sacralTilt + 0.06,
+    s1:  sacralTilt,           // S1 = sacral base angle
+    // Lumbar: lord>0 means MORE anterior tilt (lordosis deepens)
+    // lord=1 (qiyam): subtle anterior curve. lord=-1.2 (ruku): posterior curve
+    l5:  sacralTilt - 0.15 + lord * 0.04,
+    l4:  sacralTilt - 0.28 + lord * 0.07,
+    l3:  sacralTilt - 0.38 + lord * 0.09,  // peak of lordosis
+    l2:  sacralTilt - 0.42 + lord * 0.07,
+    l1:  sacralTilt - 0.44 + lord * 0.04,
+    // Thoracic: slight kyphosis (always, compensates lordosis)
+    t12: -0.02, t9: -0.06, t6: -0.10, t3: -0.12,
+  };
+
+  // Nutation shifts the sacral angles slightly more anterior
+  const nutShift = nut;
+
+  // Hip flexion: everything above the hip rotates forward by hipA
+  // Coccyx/sacrum rotate with the pelvis. Lumbar and above also rotate.
+  // Femur stays vertical.
+
+  // Walk the chain upward from coccyx
+  const chain = [
+    {key:'co',  label:'Co',  len:segLens.co},
+    {key:'s5',  label:'S5',  len:segLens.s5},
+    {key:'s4',  label:'S4',  len:segLens.s4},
+    {key:'s3',  label:'S3',  len:segLens.s3},
+    {key:'s2',  label:'S2',  len:segLens.s2},
+    {key:'s1',  label:'S1',  len:segLens.s1},
+    {key:'l5',  label:'L5',  len:segLens.l5},
+    {key:'l4',  label:'L4',  len:segLens.l4},
+    {key:'l3',  label:'L3',  len:segLens.l3},
+    {key:'l2',  label:'L2',  len:segLens.l2},
+    {key:'l1',  label:'L1',  len:segLens.l1},
+    {key:'t12', label:'T12', len:segLens.t},
+    {key:'t9',  label:'T9',  len:segLens.t*3},
+    {key:'t6',  label:'T6',  len:segLens.t*3},
+    {key:'t3',  label:'T3',  len:segLens.t*3},
+  ];
+
+  // Coccyx start position: below and behind hip joint
+  const coStart = {
+    x: hipJoint.x - 18 - Math.sin(hipA) * 12,
+    y: hipJoint.y - 22 + Math.cos(hipA) * 0,
+  };
+
+  const pts = [{x:coStart.x, y:coStart.y, label:'Co'}];
+  let px = coStart.x, py = coStart.y;
+
+  for(let i=1; i<chain.length; i++){
+    const seg = chain[i];
+    // Angle from vertical for this segment
+    let ang = baseAngles[seg.key] || 0;
+
+    // Add nutation to sacral segments
+    if(seg.key.startsWith('s') || seg.key === 'co'){
+      ang += nutShift;
+    }
+
+    // Add hip flexion: rotate the DIRECTION by hipA
+    // (tilts the whole segment forward)
+    ang += hipA;
+
+    // Convert: angle from vertical → actual direction
+    // 0 = straight up (+y), positive = tilted toward +x (anterior)
+    const dirX = Math.sin(ang);   // anterior component
+    const dirY = Math.cos(ang);   // upward component
+
+    px += dirX * seg.len;
+    py += dirY * seg.len;
+    pts.push({x:px, y:py, label:seg.label});
+  }
+
+  // Separate into groups for drawing
+  const sacrumPts = pts.slice(0, 6);   // Co, S5, S4, S3, S2, S1
+  const lumbarPts = pts.slice(6, 11);  // L5, L4, L3, L2, L1
+  const thoracicPts = pts.slice(11);   // T12, T9, T6, T3
+
+  // Reverse sacrum so index 0 = S1, last = Co (matches rest of code)
+  sacrumPts.reverse(); // now [S1, S2, S3, S4, S5, Co]
+
+  return {
+    hipJoint,
+    sacrumPts,
+    lumbarPts,
+    thoracicPts,
+    sacralAngle: sacralTilt + hipA + nut,
+    lAngle: Math.PI/2 - (baseAngles.l1||0) - hipA,
+  };
+}
+
+// ════════════════════════════════════════
+// CONCENTRIC ARCS on posterior surface
+// ════════════════════════════════════════
+function drawArcs(spine, toScreen){
+  const coccyx = spine.sacrumPts[5]; // Co
+  if(!coccyx) return;
+  const origin = toScreen(coccyx.x, coccyx.y);
+
+  // All vertebra positions for arc targets
+  const allPts = [
+    ...spine.sacrumPts,    // S1-Co
+    ...spine.lumbarPts,    // L5-L1
+  ];
+
+  const arcData = [
+    {idx:4, label:'S5', col:'#e8a84c', r:18},
+    {idx:3, label:'S4', col:'#e8a84c', r:28},
+    {idx:2, label:'S3', col:'#d4a0e0', r:40},
+    {idx:1, label:'S2', col:'#ce93d8', r:55},
+    {idx:0, label:'S1', col:'#c080d0', r:72},
+    {idx:6, label:'L5', col:'#d050eb', r:92},
+    {idx:7, label:'L4', col:'#d840f0', r:115},
+    {idx:8, label:'L3', col:'#e040fb', r:140},
+    {idx:9, label:'L2', col:'#e040fb', r:168},
+    {idx:10,label:'L1', col:'#e040fb', r:198},
+  ];
+
+  for(const arc of arcData){
+    // Draw arc as a curve from coccyx outward
+    // The arc follows the POSTERIOR surface, so it curves along the back
+    // In 2D side view: the arc goes from below the coccyx, around the back, past the vertebra
+    const vert = allPts[arc.idx];
+    if(!vert) continue;
+
+    // Direction from coccyx to this vertebra
+    const dx = vert.x - coccyx.x;
+    const dy = vert.y - coccyx.y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    const midAngle = Math.atan2(dy, dx);
+
+    // Draw arc centered on coccyx, sweeping ±60° around the direction to this vertebra
+    // Shifted posteriorly (toward -x in our coords)
+    const sweep = 1.2; // radians each side
+    const segs = 24;
+    cx.beginPath();
+    const posteriorOffset = -15; // shift arc toward the back
+    for(let s=0; s<=segs; s++){
+      const t = s/segs;
+      const a = midAngle - sweep + t * sweep * 2;
+      const px = coccyx.x + Math.cos(a) * arc.r + posteriorOffset * (1-Math.abs(t-0.5)*2);
+      const py = coccyx.y + Math.sin(a) * arc.r;
+      const sp = toScreen(px, py);
+      if(s===0) cx.moveTo(sp.x, sp.y);
+      else cx.lineTo(sp.x, sp.y);
+    }
+    cx.strokeStyle = arc.col;
+    cx.lineWidth = 2;
+    cx.globalAlpha = 0.6 + rukuT * 0.3; // brighter as arcs stretch
+    cx.stroke();
+    cx.globalAlpha = 1;
+
+    // Label at the end of the arc
+    const endA = midAngle + sweep;
+    const lp = toScreen(
+      coccyx.x + Math.cos(endA) * arc.r + 5,
+      coccyx.y + Math.sin(endA) * arc.r
+    );
+    cx.fillStyle = arc.col;
+    cx.font = '9px sans-serif';
+    cx.fillText(arc.label, lp.x+4, lp.y+3);
+  }
+}
+
+// ════════════════════════════════════════
+// DRAW
+// ════════════════════════════════════════
+function draw(){
+  cx.clearRect(0,0,W,H);
+
+  // Background
+  const g=cx.createRadialGradient(W/2,H/2,50,W/2,H/2,500);
+  g.addColorStop(0,'#111820');g.addColorStop(1,'#0a0e14');
+  cx.fillStyle=g;cx.fillRect(0,0,W,H);
+
+  const spine = getSpine();
+
+  // Transform: spine coords → screen coords
+  // x-axis: anterior(+) = right on screen, posterior(-) = left
+  // y-axis: superior(+) = up on screen
+  const scale = 2.8;
+  const ox = W * 0.45;
+  const oy = H * 0.55;
+  function toScreen(x, y){
+    return {x: ox + x * scale, y: oy - y * scale};
+  }
+
+  // ── FEMUR (vertical, from hip joint downward) ──
+  const hip = toScreen(spine.hipJoint.x, spine.hipJoint.y);
+  const foot = toScreen(spine.hipJoint.x + 5, spine.hipJoint.y - 200);
+  cx.save();cx.strokeStyle='#484f58';cx.lineWidth=8;cx.lineCap='round';
+  cx.beginPath();cx.moveTo(hip.x,hip.y);cx.lineTo(foot.x,foot.y);cx.stroke();
+  cx.restore();
+  // Femur label
+  cx.fillStyle='#484f58';cx.font='9px sans-serif';
+  cx.fillText('femur (vertical)', foot.x+10, foot.y-30);
+
+  // ── PELVIS (iliac wings) ──
+  const s1 = spine.sacrumPts[0];
+  const pelvAngle = spine.sacralAngle;
+  // Iliac wing extends laterally from S1 area — in side view, appears as a curved line
+  cx.save();cx.strokeStyle='#8b949e';cx.lineWidth=3;cx.globalAlpha=0.5;
+  const iliacTip = toScreen(
+    s1.x + Math.cos(pelvAngle - 0.8) * 50,
+    s1.y + Math.sin(pelvAngle - 0.8) * 50
+  );
+  const s1s = toScreen(s1.x, s1.y);
+  cx.beginPath();cx.moveTo(s1s.x,s1s.y);cx.lineTo(iliacTip.x,iliacTip.y);cx.stroke();
+  // Anterior iliac
+  const antIliac = toScreen(
+    spine.hipJoint.x + Math.cos(pelvAngle + 0.3) * 40,
+    spine.hipJoint.y + Math.sin(pelvAngle + 0.3) * 40
+  );
+  cx.beginPath();cx.moveTo(hip.x,hip.y);cx.lineTo(antIliac.x,antIliac.y);cx.stroke();
+  cx.restore();
+  cx.fillStyle='#8b949e';cx.font='8px sans-serif';
+  cx.fillText('pelvis', iliacTip.x+5, iliacTip.y);
+
+  // ── POSTERIOR SKIN SURFACE (the back — red line) ──
+  // Offset from each vertebra posteriorly
+  const allVerts = [...spine.sacrumPts, ...spine.lumbarPts, ...spine.thoracicPts];
+  const skinOffset = 18; // distance from vertebra center to skin surface
+
+  cx.save();
+  // Compute posterior direction at each vertebra and offset
+  const skinPts = [];
+  for(let i=0; i<allVerts.length; i++){
+    // Posterior direction = perpendicular to spine direction, toward -x
+    let dx, dy;
+    if(i<allVerts.length-1){
+      dx = allVerts[i+1].x - allVerts[i].x;
+      dy = allVerts[i+1].y - allVerts[i].y;
+    } else {
+      dx = allVerts[i].x - allVerts[i-1].x;
+      dy = allVerts[i].y - allVerts[i-1].y;
+    }
+    const len = Math.sqrt(dx*dx+dy*dy)||1;
+    // Perpendicular pointing posteriorly (left in our coords = -x)
+    const nx = dy/len;
+    const ny = -dx/len;
+    // Choose the direction that points more posteriorly (-x)
+    const px = allVerts[i].x + (nx < 0 ? nx : -nx) * skinOffset;
+    const py = allVerts[i].y + (nx < 0 ? ny : -ny) * skinOffset;
+    skinPts.push({x:px, y:py});
+  }
+  // Draw posterior skin surface
+  cx.beginPath();
+  const sp0 = toScreen(skinPts[0].x, skinPts[0].y);
+  cx.moveTo(sp0.x, sp0.y);
+  for(let i=1; i<skinPts.length; i++){
+    const sp = toScreen(skinPts[i].x, skinPts[i].y);
+    cx.lineTo(sp.x, sp.y);
+  }
+  cx.strokeStyle='#ff6b6b';cx.lineWidth=3;cx.globalAlpha=0.7;cx.stroke();
+  cx.restore();
+
+  // ── ANTERIOR SKIN SURFACE (front — blue line) ──
+  cx.save();
+  cx.beginPath();
+  for(let i=0; i<allVerts.length; i++){
+    let dx2, dy2;
+    if(i<allVerts.length-1){
+      dx2 = allVerts[i+1].x - allVerts[i].x;
+      dy2 = allVerts[i+1].y - allVerts[i].y;
+    } else {
+      dx2 = allVerts[i].x - allVerts[i-1].x;
+      dy2 = allVerts[i].y - allVerts[i-1].y;
+    }
+    const len2 = Math.sqrt(dx2*dx2+dy2*dy2)||1;
+    const nx2 = dy2/len2, ny2 = -dx2/len2;
+    const px2 = allVerts[i].x + (nx2 > 0 ? nx2 : -nx2) * skinOffset;
+    const py2 = allVerts[i].y + (nx2 > 0 ? ny2 : -ny2) * skinOffset;
+    const sp2 = toScreen(px2, py2);
+    if(i===0) cx.moveTo(sp2.x, sp2.y);
+    else cx.lineTo(sp2.x, sp2.y);
+  }
+  cx.strokeStyle='#58a6ff';cx.lineWidth=2;cx.globalAlpha=0.4;cx.stroke();
+  cx.restore();
+
+  // ── SPINE (vertebrae chain) ──
+  cx.save();
+  // Draw spine line
+  cx.beginPath();
+  for(let i=0; i<allVerts.length; i++){
+    const sp = toScreen(allVerts[i].x, allVerts[i].y);
+    if(i===0) cx.moveTo(sp.x, sp.y);
+    else cx.lineTo(sp.x, sp.y);
+  }
+  cx.strokeStyle='#d4af37';cx.lineWidth=2;cx.globalAlpha=0.6;cx.stroke();
+
+  // Draw vertebra dots
+  for(const v of allVerts){
+    const sp = toScreen(v.x, v.y);
+    cx.beginPath();cx.arc(sp.x,sp.y,4,0,Math.PI*2);
+    cx.fillStyle='#d4af37';cx.globalAlpha=0.8;cx.fill();
+    if(v.label){
+      cx.fillStyle='#d4af37';cx.globalAlpha=1;cx.font='10px sans-serif';
+      cx.fillText(v.label, sp.x+8, sp.y+4);
+    }
+  }
+  cx.restore();
+
+  // ── COCCYX HIGHLIGHT ──
+  const coccyx = spine.sacrumPts[5];
+  if(coccyx){
+    const cp = toScreen(coccyx.x, coccyx.y);
+    cx.save();
+    cx.beginPath();cx.arc(cp.x,cp.y,8,0,Math.PI*2);
+    cx.fillStyle='#c9a84c';cx.globalAlpha=0.9;cx.fill();
+    cx.beginPath();cx.arc(cp.x,cp.y,18,0,Math.PI*2);
+    cx.fillStyle='#c9a84c';cx.globalAlpha=0.15;cx.fill();
+    cx.fillStyle='#c9a84c';cx.globalAlpha=1;cx.font='bold 11px sans-serif';
+    cx.fillText('عَجْب الذَّنَب', cp.x-60, cp.y+25);
+    cx.font='9px sans-serif';cx.fillStyle='#8b949e';
+    cx.fillText('(origin)', cp.x-30, cp.y+38);
+    cx.restore();
+  }
+
+  // ── HIP JOINT DOT ──
+  cx.save();
+  cx.beginPath();cx.arc(hip.x,hip.y,6,0,Math.PI*2);
+  cx.fillStyle='#8b949e';cx.globalAlpha=0.7;cx.fill();
+  cx.fillStyle='#8b949e';cx.font='9px sans-serif';cx.globalAlpha=1;
+  cx.fillText('hip joint', hip.x+10, hip.y+4);
+  cx.restore();
+
+  // ── CONCENTRIC ARCS ──
+  drawArcs(spine, toScreen);
+
+  // ── LORDOSIS INDICATOR ──
+  // Show the curvature state
+  const lord = lordosis();
+  const stateX = 30, stateY = H - 120;
+  cx.save();
+  cx.fillStyle='#d4af37';cx.font='bold 12px sans-serif';
+  cx.fillText('Lumbar curvature:', stateX, stateY);
+  cx.font='11px sans-serif';
+  if(lord > 0.3){
+    cx.fillStyle='#58a6ff';
+    cx.fillText('LORDOTIC (concave posterior)', stateX, stateY+18);
+    cx.fillText('→ arcs compressed together', stateX, stateY+34);
+  } else if(lord > -0.3){
+    cx.fillStyle='#e8e0d0';
+    cx.fillText('FLAT (lordosis eliminated)', stateX, stateY+18);
+    cx.fillText('→ arcs opening', stateX, stateY+34);
+  } else {
+    cx.fillStyle='#ff6b6b';
+    cx.fillText('KYPHOTIC (convex posterior — ROUNDED)', stateX, stateY+18);
+    cx.fillText('→ arcs at MAXIMUM spread', stateX, stateY+34);
+    cx.fillText('→ posterior skin surface EXPANDED', stateX, stateY+50);
+  }
+
+  // Angle indicator
+  cx.fillStyle='#8b949e';cx.font='10px sans-serif';
+  cx.fillText('Hip flexion: ' + Math.round(rukuT*90) + '°', stateX, stateY+68);
+  cx.fillText('Sacral nutation: ' + (nutation()*180/Math.PI).toFixed(1) + '°', stateX, stateY+82);
+  cx.restore();
+
+  // ── POSTERIOR SURFACE AREA INDICATOR ──
+  // Rough measure: total length of posterior skin line
+  let postLen = 0;
+  for(let i=1; i<skinPts.length; i++){
+    const dx3=skinPts[i].x-skinPts[i-1].x, dy3=skinPts[i].y-skinPts[i-1].y;
+    postLen += Math.sqrt(dx3*dx3+dy3*dy3);
+  }
+  const baseLen = 280; // approximate qiyam length
+  const stretch = ((postLen / baseLen - 1) * 100).toFixed(1);
+  cx.save();cx.fillStyle='#ff6b6b';cx.font='bold 11px sans-serif';
+  cx.fillText('Posterior surface: ' + (stretch>0?'+':'') + stretch + '% vs qiyam', stateX, stateY + 100);
+  cx.restore();
+
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>

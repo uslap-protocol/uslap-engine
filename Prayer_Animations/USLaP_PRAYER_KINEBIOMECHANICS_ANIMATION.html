@@ -1,0 +1,3851 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>USLaP | Prayer Kinebiomechanics Animation</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #0d1117;
+  color: #e8e0d0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+.header {
+  text-align: center;
+  padding: 18px 20px 12px;
+  background: linear-gradient(180deg, #161b22 0%, #0d1117 100%);
+  border-bottom: 1px solid #d4af3744;
+}
+.header h1 {
+  font-size: 1.4em;
+  color: #d4af37;
+  letter-spacing: 1px;
+}
+.header .bismillah {
+  font-size: 1.1em;
+  color: #d4af3799;
+  font-family: 'Traditional Arabic', 'Scheherazade', serif;
+  margin-bottom: 4px;
+}
+.header .subtitle {
+  font-size: 0.82em;
+  color: #8b949e;
+  margin-top: 4px;
+}
+.main-container {
+  display: flex;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 16px;
+  gap: 16px;
+}
+.canvas-section {
+  flex: 1;
+  min-width: 0;
+}
+.canvas-wrapper {
+  position: relative;
+  background: #0a0e14;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  overflow: hidden;
+}
+canvas#skeleton {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.topdown-wrapper {
+  position: relative;
+  background: #0a0e14;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 12px;
+}
+.topdown-wrapper h4 {
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  font-size: 0.82em;
+  color: #d4af37cc;
+  z-index: 2;
+  pointer-events: none;
+}
+canvas#topDown {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.lower-views {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+.lower-views .topdown-wrapper {
+  flex: 1;
+  margin-top: 0;
+}
+.backview-wrapper {
+  position: relative;
+  background: #0a0e14;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  overflow: hidden;
+  width: 300px;
+  flex-shrink: 0;
+}
+.backview-wrapper h4 {
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  font-size: 0.82em;
+  color: #d4af37cc;
+  z-index: 2;
+  pointer-events: none;
+}
+canvas#backView {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.stage-banner {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  pointer-events: none;
+}
+.stage-name {
+  background: #161b22dd;
+  border: 1px solid #d4af3766;
+  border-radius: 6px;
+  padding: 8px 14px;
+}
+.stage-name .arabic {
+  font-size: 1.5em;
+  color: #d4af37;
+  font-family: 'Traditional Arabic', 'Scheherazade', serif;
+}
+.stage-name .translit {
+  font-size: 0.9em;
+  color: #e8e0d0;
+}
+.stage-name .english {
+  font-size: 0.78em;
+  color: #8b949e;
+}
+.rakah-counter {
+  background: #161b22dd;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.85em;
+  color: #8b949e;
+}
+.info-section {
+  width: 340px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+}
+.info-panel {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 14px;
+}
+.info-panel h3 {
+  font-size: 0.88em;
+  color: #d4af37;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #21262d;
+  padding-bottom: 6px;
+  letter-spacing: 0.5px;
+}
+.ligament-list {
+  list-style: none;
+  font-size: 0.8em;
+  line-height: 1.7;
+}
+.ligament-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.lig-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.lig-dot.stretch { background: #ff6b6b; box-shadow: 0 0 6px #ff6b6b88; }
+.lig-dot.return { background: #4ecdc4; box-shadow: 0 0 6px #4ecdc488; }
+.lig-dot.rest { background: #484f58; }
+.lig-dot.engage { background: #f9a825; box-shadow: 0 0 6px #f9a82588; }
+.lig-label { color: #c9d1d9; }
+.lig-state { color: #8b949e; font-size: 0.9em; margin-left: auto; }
+.eye-canvas-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: stretch;
+}
+canvas#eyeDiagram {
+  border-radius: 6px;
+  background: #0a0e14;
+  border: 1px solid #21262d;
+  width: 100%;
+  height: auto;
+}
+.eye-info-text {
+  font-size: 0.78em;
+  line-height: 1.6;
+  color: #c9d1d9;
+}
+.eye-info-text .eye-label {
+  color: #d4af37;
+  font-size: 0.9em;
+}
+.eye-info-text .eye-detail {
+  color: #8b949e;
+}
+.eye-muscle-bar {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+.eye-muscle-tag {
+  font-size: 0.7em;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: #21262d;
+  color: #8b949e;
+  border: 1px solid #30363d;
+}
+.eye-muscle-tag.active {
+  background: #d4af3722;
+  color: #d4af37;
+  border-color: #d4af3766;
+}
+.joint-angles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 16px;
+  font-size: 0.78em;
+}
+.joint-angle-item {
+  display: flex;
+  justify-content: space-between;
+}
+.joint-angle-item .jl { color: #8b949e; }
+.joint-angle-item .jv { color: #e8e0d0; font-weight: 600; }
+.stats-panel {
+  font-size: 0.78em;
+  line-height: 1.7;
+  color: #8b949e;
+}
+.stats-panel .stat-val { color: #d4af37; font-weight: 600; }
+.controls {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 8px 16px 16px;
+}
+.controls-inner {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.btn-group {
+  display: flex;
+  gap: 4px;
+}
+.btn {
+  background: #21262d;
+  border: 1px solid #30363d;
+  color: #e8e0d0;
+  padding: 6px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85em;
+  transition: background 0.15s;
+}
+.btn:hover { background: #30363d; }
+.btn.active { background: #d4af3733; border-color: #d4af37; color: #d4af37; }
+.timeline-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.timeline-bar {
+  flex: 1;
+  height: 6px;
+  background: #21262d;
+  border-radius: 3px;
+  position: relative;
+  cursor: pointer;
+}
+.timeline-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #d4af37, #f0c040);
+  border-radius: 3px;
+  position: relative;
+  transition: width 0.05s linear;
+}
+.timeline-thumb {
+  position: absolute;
+  right: -6px;
+  top: -4px;
+  width: 14px;
+  height: 14px;
+  background: #d4af37;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #d4af3766;
+}
+.timeline-markers {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
+  height: 16px;
+}
+.timeline-marker {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 8px;
+  background: #484f58;
+}
+.timeline-marker-label {
+  position: absolute;
+  top: 10px;
+  transform: translateX(-50%);
+  font-size: 0.6em;
+  color: #484f58;
+  white-space: nowrap;
+}
+.time-display {
+  font-size: 0.8em;
+  color: #8b949e;
+  min-width: 90px;
+  text-align: right;
+}
+.speed-control {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.78em;
+  color: #8b949e;
+}
+.speed-control select {
+  background: #21262d;
+  border: 1px solid #30363d;
+  color: #e8e0d0;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-size: 1em;
+}
+.keyboard-hint {
+  font-size: 0.7em;
+  color: #484f58;
+  text-align: center;
+  padding: 4px 16px 12px;
+}
+.muscle-activation {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 0.78em;
+}
+.muscle-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.muscle-name {
+  color: #8b949e;
+  min-width: 110px;
+  font-size: 0.92em;
+}
+.muscle-bar-bg {
+  flex: 1;
+  height: 8px;
+  background: #21262d;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.muscle-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+.muscle-val {
+  color: #e8e0d0;
+  min-width: 28px;
+  text-align: right;
+  font-size: 0.88em;
+  font-weight: 600;
+}
+.force-lines-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  font-size: 0.78em;
+}
+.fl-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.fl-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.fl-label { color: #c9d1d9; }
+.fl-val { color: #d4af37; font-weight: 600; margin-left: 2px; }
+.quran-ayah { font-family: 'Traditional Arabic', 'Scheherazade', serif; font-size: 1.15em; color: #d4af37; line-height: 1.6; direction: rtl; text-align: right; margin-bottom: 4px; }
+.quran-ref { font-size: 0.82em; color: #8b949e; direction: ltr; text-align: left; }
+.quran-trans { font-size: 0.88em; color: #c9d1d9; margin-bottom: 8px; }
+.nafs-level { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+.nafs-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.nafs-label { font-size: 0.9em; color: #c9d1d9; }
+.nafs-arabic { font-family: 'Traditional Arabic', 'Scheherazade', serif; color: #d4af37; font-size: 1em; }
+.nafs-active { border: 2px solid #d4af37; box-shadow: 0 0 8px #d4af3744; }
+.qalb-state { font-size: 0.88em; padding: 4px 8px; border-radius: 4px; margin-top: 4px; }
+.sense-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.sense-icon { font-size: 1.1em; width: 22px; text-align: center; }
+.sense-name { min-width: 80px; font-size: 0.88em; color: #8b949e; }
+.sense-bar-bg { flex: 1; height: 6px; background: #21262d; border-radius: 3px; overflow: hidden; }
+.sense-bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s ease; }
+.sense-val { min-width: 28px; text-align: right; font-size: 0.82em; font-weight: 600; }
+.heptad-row { display: flex; gap: 6px; align-items: flex-start; margin-bottom: 5px; padding: 4px 6px; border-radius: 4px; background: #161b2266; }
+.heptad-badge { min-width: 26px; height: 18px; font-size: 0.72em; font-weight: 700; text-align: center; line-height: 18px; border-radius: 3px; flex-shrink: 0; }
+.heptad-text { font-size: 0.82em; color: #c9d1d9; }
+.heptad-arabic { font-family: 'Traditional Arabic', 'Scheherazade', serif; color: #d4af37; font-size: 0.95em; }
+@media (max-width: 900px) {
+  .main-container { flex-direction: column; }
+  .info-section { width: 100%; }
+  .canvas-section canvas { width: 100%; height: auto; }
+  .controls-inner { flex-wrap: wrap; justify-content: center; gap: 6px; }
+}
+@media (max-width: 600px) {
+  body { padding: 8px; }
+  .header h1 { font-size: 1em; }
+  .btn { padding: 4px 8px; font-size: 0.8em; }
+  .controls-inner { gap: 4px; }
+  canvas { touch-action: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+  <h1>Prayer Kinebiomechanics Animation</h1>
+  <div class="subtitle">Seven-Layer Visualization: Skeletal | Ligament | Eye | Qur'anic | Nafs/Qalb | Sensory | Cross-Heptad</div>
+</div>
+
+<div class="main-container">
+  <div class="canvas-section">
+    <div class="canvas-wrapper">
+      <canvas id="skeleton" width="700" height="560"></canvas>
+      <div class="stage-banner">
+        <div class="stage-name" id="stageName">
+          <div class="arabic" id="stageArabic">قِيَام</div>
+          <div class="translit" id="stageTranslit">Qiyam</div>
+          <div class="english" id="stageEnglish">Standing</div>
+        </div>
+        <div class="rakah-counter" id="rakahCounter">Stage 1 / 12</div>
+      </div>
+    </div>
+    <div class="lower-views">
+      <div class="topdown-wrapper">
+        <h4>نَظَرٌ مِنَ السَّمَاء — Bird's Eye View</h4>
+        <canvas id="topDown" width="700" height="300"></canvas>
+      </div>
+      <div class="backview-wrapper">
+        <h4>الحَوْض والعَجُز — Pelvis / Sacrum</h4>
+        <canvas id="backView" width="300" height="450"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-section">
+    <div class="info-panel">
+      <h3>LIGAMENTS ACTIVE</h3>
+      <ul class="ligament-list" id="ligamentList"></ul>
+    </div>
+    <div class="info-panel">
+      <h3>SUJUD SPOT — مَوْضِعِ السُّجُود</h3>
+      <div class="eye-canvas-wrapper">
+        <canvas id="eyeDiagram" width="340" height="180"></canvas>
+        <div class="eye-info-text" id="eyeInfo"></div>
+      </div>
+    </div>
+    <div class="info-panel">
+      <h3>MUSCLE ACTIVATION <span style="font-size:0.7em;color:#8b949e">(Ibn Sina — al-Qanun)</span></h3>
+      <div class="muscle-activation" id="musclePanel"></div>
+    </div>
+    <div class="info-panel">
+      <h3>FORCE LINES</h3>
+      <div class="force-lines-legend" id="forceLinesLegend"></div>
+    </div>
+    <div class="info-panel">
+      <h3>JOINT ANGLES <span style="font-size:0.7em;color:#8b949e">(distributed spinal flexion)</span></h3>
+      <div class="joint-angles" id="jointAngles"></div>
+    </div>
+    <div class="info-panel">
+      <h3>DIAGNOSTICS</h3>
+      <div class="stats-panel" id="statsPanel"></div>
+    </div>
+    <div class="info-panel">
+      <h3>QUR'ANIC ATTESTATION <span style="font-size:0.7em;color:#8b949e">(per stage)</span></h3>
+      <div id="quranPanel"></div>
+    </div>
+    <div class="info-panel">
+      <h3>NAFS / QALB STATE <span style="font-size:0.7em;color:#8b949e">(H4 — Emotional-Mental)</span></h3>
+      <div id="nafsPanel"></div>
+    </div>
+    <div class="info-panel">
+      <h3>SENSORY ACTIVATION <span style="font-size:0.7em;color:#8b949e">(H5 — الحَواسّ)</span></h3>
+      <div id="sensoryPanel"></div>
+    </div>
+    <div class="info-panel">
+      <h3>CROSS-HEPTAD VIEW <span style="font-size:0.7em;color:#8b949e">(7×7 Body Lattice)</span></h3>
+      <div id="heptadPanel"></div>
+    </div>
+    <div class="info-panel">
+      <h3>COLOUR / THERAPY <span style="font-size:0.7em;color:#8b949e">(H2 — عِلَاج)</span></h3>
+      <div id="therapyPanel"></div>
+    </div>
+    <div class="info-panel">
+      <h3>FORMULA RATIO <span style="font-size:0.7em;color:#8b949e">(H3 — بِقَدَرٍ)</span></h3>
+      <div id="formulaPanel"></div>
+    </div>
+    <div class="info-panel">
+      <h3>METABOLIC STATE <span style="font-size:0.7em;color:#8b949e">(H6 — طَعَام)</span></h3>
+      <div id="metabolicPanel"></div>
+    </div>
+    <div class="info-panel">
+      <h3>LIFECYCLE / SPIRIT <span style="font-size:0.7em;color:#8b949e">(H7 — حَيَاة وَمَوْت)</span></h3>
+      <div id="lifecyclePanel"></div>
+    </div>
+  </div>
+</div>
+
+<div class="controls">
+  <div class="controls-inner">
+    <div class="btn-group">
+      <button class="btn" id="btnPrev" title="Previous stage">&#9664;&#9664;</button>
+      <button class="btn active" id="btnPlay" title="Play / Pause">&#9654;</button>
+      <button class="btn" id="btnNext" title="Next stage">&#9654;&#9654;</button>
+      <button class="btn" id="btnReset" title="Reset">&#8634;</button>
+    </div>
+    <div class="timeline-wrapper">
+      <div class="timeline-bar" id="timelineBar">
+        <div class="timeline-fill" id="timelineFill">
+          <div class="timeline-thumb"></div>
+        </div>
+      </div>
+    </div>
+    <div class="time-display" id="timeDisplay">0.0s / 41.0s</div>
+    <div class="speed-control">
+      <span>Speed:</span>
+      <select id="speedSelect">
+        <option value="0.5">0.5x</option>
+        <option value="1" selected>1x</option>
+        <option value="1.5">1.5x</option>
+        <option value="2">2x</option>
+      </select>
+    </div>
+    <button class="btn active" id="btnTint_k" onclick="tintEnabled=!tintEnabled;this.classList.toggle('active')" title="Toggle colour tint" style="font-size:0.8em">🎨 Tint</button>
+    <button class="btn" id="btnAudio_k" onclick="toggleAudio_k()" title="Toggle therapy sound" style="font-size:0.8em">🔈 Sound</button>
+  </div>
+</div>
+<div class="keyboard-hint">Space: Play/Pause | Left/Right: Step | R: Reset</div>
+
+<script src="prayer_panels_data.js"></script>
+<script>
+// ============================================================
+// KINE PANEL ALIASES (from prayer_panels_data.js — PELVIS stage keys match)
+// ============================================================
+const KN_THER_C = PANEL_THER_COLOURS;
+const KN_THER = PELVIS_THER;
+const KN_FORM = PELVIS_FORM;
+const KN_NUTR = PELVIS_NUTR;
+const KN_LIFE_S = PANEL_LIFE_STAGES;
+const KN_LIFE = PELVIS_LIFE;
+// ── O1+O2+O5+O6 State ──
+let therapyTintHex='#43a047',therapyTintAlpha=0,tintEnabled=true;
+let audioCtx_k=null,audioOsc_k=null,audioGain_k=null,audioEnabled_k=false;
+let heptadHighlight_k=-1,heptadHighlightTimer_k=0,formulaBW_k=1.0;
+
+// ============================================================
+// DATA LAYER 1: SKELETAL POSES (normalized coordinates 0-1)
+// ============================================================
+const JOINTS = ['toe','heel','ankle','knee','hip','spine','shoulder','head','elbow','wrist'];
+
+// Bone segments (chain order: ground → up, then arms)
+const BONE_CHAIN = [
+  ['toe','heel'], ['heel','ankle'], ['ankle','knee'], ['knee','hip'],
+  ['hip','spine'], ['spine','shoulder'], ['shoulder','head'],
+];
+const ARM_CHAIN = [['shoulder','elbow'], ['elbow','wrist']];
+const BONE_SEGS = [...BONE_CHAIN, ...ARM_CHAIN];
+
+// Per-pose target bone lengths — accounts for 2D foreshortening.
+// Standing bones at full 3D length; ground-level / folded bones shortened.
+const FULL = { foot:0.08, ank:0.06, shin:0.18, thigh:0.20, lback:0.13, uback:0.12, neck:0.12, uarm:0.14, farm:0.12 };
+const POSE_BONES = {
+  qiyam:     FULL,
+  ruku:      FULL,
+  goingDown: { foot:0.08, ank:0.06, shin:0.18, thigh:0.20, lback:0.12, uback:0.12, neck:0.11, uarm:0.13, farm:0.12 },
+  sujud:     { foot:0.08, ank:0.05, shin:0.16, thigh:0.20, lback:0.12, uback:0.12, neck:0.12, uarm:0.12, farm:0.10 },
+  juloos:    { foot:0.08, ank:0.06, shin:0.16, thigh:0.20, lback:0.12, uback:0.12, neck:0.12, uarm:0.13, farm:0.12 },
+  tasleem_r: { foot:0.08, ank:0.06, shin:0.16, thigh:0.20, lback:0.12, uback:0.12, neck:0.12, uarm:0.13, farm:0.12 },
+  tasleem_l: { foot:0.08, ank:0.06, shin:0.16, thigh:0.20, lback:0.12, uback:0.12, neck:0.12, uarm:0.13, farm:0.12 },
+};
+const SEG_KEYS = ['foot','ank','shin','thigh','lback','uback','neck','uarm','farm'];
+
+// Enforce per-pose bone lengths: preserves direction, fixes distance
+function enforcePose(pose, boneLens) {
+  const lens = [boneLens.foot, boneLens.ank, boneLens.shin, boneLens.thigh, boneLens.lback, boneLens.uback, boneLens.neck];
+  for (let i = 0; i < BONE_CHAIN.length; i++) {
+    const [parent, child] = BONE_CHAIN[i];
+    const target = lens[i];
+    const dx = pose[child][0] - pose[parent][0];
+    const dy = pose[child][1] - pose[parent][1];
+    const len = Math.sqrt(dx*dx + dy*dy);
+    if (len < 0.001) continue;
+    const s = target / len;
+    pose[child] = [pose[parent][0] + dx*s, pose[parent][1] + dy*s];
+  }
+  const armLens = [boneLens.uarm, boneLens.farm];
+  for (let i = 0; i < ARM_CHAIN.length; i++) {
+    const [parent, child] = ARM_CHAIN[i];
+    const target = armLens[i];
+    const dx = pose[child][0] - pose[parent][0];
+    const dy = pose[child][1] - pose[parent][1];
+    const len = Math.sqrt(dx*dx + dy*dy);
+    if (len < 0.001) continue;
+    const s = target / len;
+    pose[child] = [pose[parent][0] + dx*s, pose[parent][1] + dy*s];
+  }
+}
+
+// ── RAW POSES ── define joint DIRECTIONS; enforcement fixes lengths ──
+const POSES_RAW = {
+  qiyam: {
+    toe:      [0.39, 0.93],
+    heel:     [0.31, 0.93],
+    ankle:    [0.32, 0.87],
+    knee:     [0.33, 0.69],
+    hip:      [0.33, 0.49],
+    spine:    [0.33, 0.37],
+    shoulder: [0.33, 0.25],
+    head:     [0.33, 0.13],
+    elbow:    [0.36, 0.38],
+    wrist:    [0.35, 0.49],
+  },
+  ruku: {
+    toe:      [0.39, 0.93],
+    heel:     [0.31, 0.93],
+    ankle:    [0.32, 0.87],
+    knee:     [0.33, 0.69],
+    hip:      [0.33, 0.49],
+    spine:    [0.46, 0.49],
+    shoulder: [0.58, 0.49],
+    head:     [0.70, 0.49],
+    elbow:    [0.50, 0.60],
+    wrist:    [0.38, 0.67],
+  },
+  goingDown: {
+    toe:      [0.22, 0.93],
+    heel:     [0.15, 0.93],
+    ankle:    [0.18, 0.87],
+    knee:     [0.28, 0.75],   // angled ~50° (not horizontal)
+    hip:      [0.22, 0.57],
+    spine:    [0.32, 0.50],
+    shoulder: [0.42, 0.43],
+    head:     [0.50, 0.36],
+    elbow:    [0.48, 0.54],
+    wrist:    [0.52, 0.66],
+  },
+  sujud: {
+    // 7 contacts: forehead, nose, 2 palms, 2 knees, 2 sets toes
+    // Elbows RAISED off ground, thighs not touching abdomen
+    toe:      [0.12, 0.93],
+    heel:     [0.12, 0.85],   // dorsiflexed — heel UP
+    ankle:    [0.16, 0.87],
+    knee:     [0.33, 0.93],   // on ground, forward from ankle
+    hip:      [0.30, 0.73],   // elevated, thigh ~vertical
+    spine:    [0.40, 0.78],   // curves down toward ground
+    shoulder: [0.50, 0.85],
+    head:     [0.59, 0.93],   // forehead ON ground
+    elbow:    [0.58, 0.85],   // elbows RAISED off ground (not resting)
+    wrist:    [0.67, 0.93],   // palms flat ON ground
+  },
+  juloos: {
+    toe:      [0.18, 0.93],
+    heel:     [0.23, 0.87],   // foot tucked, heel up
+    ankle:    [0.26, 0.84],
+    knee:     [0.40, 0.93],   // on ground forward
+    hip:      [0.31, 0.74],
+    spine:    [0.31, 0.62],
+    shoulder: [0.31, 0.50],
+    head:     [0.31, 0.38],
+    elbow:    [0.37, 0.62],
+    wrist:    [0.41, 0.74],
+  },
+  tasleem_r: {
+    toe:      [0.18, 0.93],
+    heel:     [0.23, 0.87],
+    ankle:    [0.26, 0.84],
+    knee:     [0.40, 0.93],
+    hip:      [0.31, 0.74],
+    spine:    [0.31, 0.62],
+    shoulder: [0.31, 0.50],
+    head:     [0.39, 0.39],   // turned right
+    elbow:    [0.37, 0.62],
+    wrist:    [0.41, 0.74],
+  },
+  tasleem_l: {
+    toe:      [0.18, 0.93],
+    heel:     [0.23, 0.87],
+    ankle:    [0.26, 0.84],
+    knee:     [0.40, 0.93],
+    hip:      [0.31, 0.74],
+    spine:    [0.31, 0.62],
+    shoulder: [0.31, 0.50],
+    head:     [0.23, 0.39],   // turned left
+    elbow:    [0.37, 0.62],
+    wrist:    [0.41, 0.74],
+  },
+};
+
+// Build final POSES: deep copy raw → enforce per-pose bone lengths
+const POSES = {};
+for (const [name, raw] of Object.entries(POSES_RAW)) {
+  const pose = {};
+  for (const j of JOINTS) pose[j] = [...raw[j]];
+  enforcePose(pose, POSE_BONES[name]);
+  POSES[name] = pose;
+}
+
+// BONE CONNECTIONS: [from_joint, to_joint]
+const BONES = [
+  ['toe','heel'], ['heel','ankle'], ['ankle','knee'], ['knee','hip'],
+  ['hip','spine'], ['spine','shoulder'], ['shoulder','head'],
+  ['shoulder','elbow'], ['elbow','wrist'],
+];
+
+// ============================================================
+// ANIMATION KEYFRAMES
+// ============================================================
+const KEYFRAMES = [
+  { t: 0,    pose: 'qiyam',     stage: 'qiyam' },
+  { t: 3,    pose: 'qiyam',     stage: 'qiyam' },
+  { t: 5,    pose: 'ruku',      stage: 'ruku' },
+  { t: 8,    pose: 'ruku',      stage: 'ruku' },
+  { t: 10,   pose: 'qiyam',     stage: 'qiyam_return' },
+  { t: 12,   pose: 'qiyam',     stage: 'qiyam_return' },
+  { t: 13.5, pose: 'goingDown', stage: 'trans_sujud' },
+  { t: 15,   pose: 'sujud',     stage: 'sujud_1' },
+  { t: 18,   pose: 'sujud',     stage: 'sujud_1' },
+  { t: 20,   pose: 'juloos',    stage: 'juloos_1' },
+  { t: 23,   pose: 'juloos',    stage: 'juloos_1' },
+  { t: 24.5, pose: 'goingDown', stage: 'trans_sujud' },
+  { t: 26,   pose: 'sujud',     stage: 'sujud_2' },
+  { t: 29,   pose: 'sujud',     stage: 'sujud_2' },
+  { t: 31,   pose: 'juloos',    stage: 'tashahhud' },
+  { t: 34,   pose: 'juloos',    stage: 'tashahhud' },
+  { t: 35.5, pose: 'tasleem_r', stage: 'tasleem_r' },
+  { t: 37,   pose: 'tasleem_r', stage: 'tasleem_r' },
+  { t: 38,   pose: 'juloos',    stage: 'tasleem_mid' },
+  { t: 39,   pose: 'tasleem_l', stage: 'tasleem_l' },
+  { t: 41,   pose: 'tasleem_l', stage: 'tasleem_l' },
+];
+const TOTAL_TIME = 41;
+
+// ============================================================
+// DATA LAYER 2: LIGAMENT STRETCH / RETURN MAP
+// ============================================================
+const LIGAMENT_REGIONS = {
+  hamstrings:    { label: 'Hamstrings', bones: ['knee','hip'], side: 'back' },
+  supraspinous:  { label: 'Supraspinous Lig.', bones: ['hip','spine','shoulder'], side: 'back' },
+  interspinous:  { label: 'Interspinous Lig.', bones: ['hip','spine'], side: 'back' },
+  postLong:      { label: 'Post. Longitudinal Lig.', bones: ['hip','spine','shoulder'], side: 'back' },
+  ligFlavum:     { label: 'Ligamentum Flavum', bones: ['spine','shoulder'], side: 'back' },
+  acl:           { label: 'ACL', bones: ['knee'], side: 'joint' },
+  pcl:           { label: 'PCL', bones: ['knee'], side: 'joint' },
+  mcl:           { label: 'MCL (Knee)', bones: ['knee'], side: 'joint' },
+  ankleATFL:     { label: 'Ankle (ATFL)', bones: ['ankle'], side: 'joint' },
+  iliofemoral:   { label: 'Iliofemoral (Hip)', bones: ['hip'], side: 'joint' },
+  glenohumeral:  { label: 'Glenohumeral (Shoulder)', bones: ['shoulder'], side: 'joint' },
+  wristDorsal:   { label: 'Wrist Dorsal', bones: ['wrist'], side: 'joint' },
+  cervical:      { label: 'Cervical / Alar Lig.', bones: ['shoulder','head'], side: 'back' },
+  quadriceps:    { label: 'Quadriceps', bones: ['knee','hip'], side: 'front' },
+  erectorSpinae: { label: 'Erector Spinae', bones: ['hip','spine','shoulder'], side: 'front' },
+  gluteus:       { label: 'Gluteus Maximus', bones: ['hip'], side: 'joint' },
+  hipRotators:   { label: 'Hip External Rotators', bones: ['hip'], side: 'joint' },
+};
+
+// State: 'rest', 'stretch', 'return', 'engage'
+const STAGE_LIGAMENTS = {
+  qiyam: {
+    hamstrings: 'rest', supraspinous: 'rest', interspinous: 'rest',
+    postLong: 'rest', ligFlavum: 'rest',
+    acl: 'rest', pcl: 'rest', mcl: 'rest', ankleATFL: 'rest',
+    iliofemoral: 'rest', glenohumeral: 'rest', wristDorsal: 'rest',
+    cervical: 'rest', quadriceps: 'rest', erectorSpinae: 'rest',
+    gluteus: 'rest', hipRotators: 'rest',
+  },
+  ruku: {
+    hamstrings: 'stretch', supraspinous: 'stretch', interspinous: 'stretch',
+    postLong: 'stretch', ligFlavum: 'stretch',
+    acl: 'rest', pcl: 'rest', mcl: 'rest', ankleATFL: 'rest',
+    iliofemoral: 'rest', glenohumeral: 'rest', wristDorsal: 'rest',
+    cervical: 'rest', quadriceps: 'engage', erectorSpinae: 'engage',
+    gluteus: 'rest', hipRotators: 'rest',
+  },
+  qiyam_return: {
+    hamstrings: 'return', supraspinous: 'return', interspinous: 'return',
+    postLong: 'return', ligFlavum: 'return',
+    acl: 'rest', pcl: 'rest', mcl: 'rest', ankleATFL: 'rest',
+    iliofemoral: 'rest', glenohumeral: 'rest', wristDorsal: 'rest',
+    cervical: 'rest', quadriceps: 'rest', erectorSpinae: 'engage',
+    gluteus: 'engage', hipRotators: 'rest',
+  },
+  trans_sujud: {
+    hamstrings: 'stretch', supraspinous: 'stretch', interspinous: 'stretch',
+    postLong: 'stretch', ligFlavum: 'stretch',
+    acl: 'stretch', pcl: 'stretch', mcl: 'stretch', ankleATFL: 'stretch',
+    iliofemoral: 'stretch', glenohumeral: 'stretch', wristDorsal: 'stretch',
+    cervical: 'stretch', quadriceps: 'engage', erectorSpinae: 'engage',
+    gluteus: 'engage', hipRotators: 'rest',
+  },
+  sujud_1: {
+    hamstrings: 'stretch', supraspinous: 'stretch', interspinous: 'stretch',
+    postLong: 'stretch', ligFlavum: 'stretch',
+    acl: 'stretch', pcl: 'stretch', mcl: 'stretch', ankleATFL: 'stretch',
+    iliofemoral: 'stretch', glenohumeral: 'stretch', wristDorsal: 'stretch',
+    cervical: 'stretch', quadriceps: 'rest', erectorSpinae: 'rest',
+    gluteus: 'rest', hipRotators: 'rest',
+  },
+  sujud_2: {
+    hamstrings: 'stretch', supraspinous: 'stretch', interspinous: 'stretch',
+    postLong: 'stretch', ligFlavum: 'stretch',
+    acl: 'stretch', pcl: 'stretch', mcl: 'stretch', ankleATFL: 'stretch',
+    iliofemoral: 'stretch', glenohumeral: 'stretch', wristDorsal: 'stretch',
+    cervical: 'stretch', quadriceps: 'rest', erectorSpinae: 'rest',
+    gluteus: 'rest', hipRotators: 'rest',
+  },
+  juloos_1: {
+    hamstrings: 'return', supraspinous: 'return', interspinous: 'return',
+    postLong: 'return', ligFlavum: 'return',
+    acl: 'rest', pcl: 'rest', mcl: 'stretch', ankleATFL: 'rest',
+    iliofemoral: 'rest', glenohumeral: 'return', wristDorsal: 'return',
+    cervical: 'return', quadriceps: 'rest', erectorSpinae: 'engage',
+    gluteus: 'rest', hipRotators: 'stretch',
+  },
+  tashahhud: {
+    hamstrings: 'return', supraspinous: 'return', interspinous: 'return',
+    postLong: 'return', ligFlavum: 'return',
+    acl: 'rest', pcl: 'rest', mcl: 'stretch', ankleATFL: 'rest',
+    iliofemoral: 'rest', glenohumeral: 'return', wristDorsal: 'return',
+    cervical: 'rest', quadriceps: 'rest', erectorSpinae: 'rest',
+    gluteus: 'rest', hipRotators: 'stretch',
+  },
+  tasleem_r: {
+    hamstrings: 'rest', supraspinous: 'rest', interspinous: 'rest',
+    postLong: 'rest', ligFlavum: 'rest',
+    acl: 'rest', pcl: 'rest', mcl: 'stretch', ankleATFL: 'rest',
+    iliofemoral: 'rest', glenohumeral: 'rest', wristDorsal: 'rest',
+    cervical: 'stretch', quadriceps: 'rest', erectorSpinae: 'rest',
+    gluteus: 'rest', hipRotators: 'stretch',
+  },
+  tasleem_mid: {
+    hamstrings: 'rest', supraspinous: 'rest', interspinous: 'rest',
+    postLong: 'rest', ligFlavum: 'rest',
+    acl: 'rest', pcl: 'rest', mcl: 'stretch', ankleATFL: 'rest',
+    iliofemoral: 'rest', glenohumeral: 'rest', wristDorsal: 'rest',
+    cervical: 'return', quadriceps: 'rest', erectorSpinae: 'rest',
+    gluteus: 'rest', hipRotators: 'stretch',
+  },
+  tasleem_l: {
+    hamstrings: 'rest', supraspinous: 'rest', interspinous: 'rest',
+    postLong: 'rest', ligFlavum: 'rest',
+    acl: 'rest', pcl: 'rest', mcl: 'stretch', ankleATFL: 'rest',
+    iliofemoral: 'rest', glenohumeral: 'rest', wristDorsal: 'rest',
+    cervical: 'stretch', quadriceps: 'rest', erectorSpinae: 'rest',
+    gluteus: 'rest', hipRotators: 'stretch',
+  },
+};
+
+// ============================================================
+// DATA LAYER 3: EYE EXERCISE MAP
+// ============================================================
+const EYE_DATA = {
+  qiyam: {
+    gazeAngle: -45, // degrees from horizontal (negative = downward)
+    convergence: 0.3, // 0 = far, 1 = max near
+    lateralAngle: 0, // degrees horizontal (0 = center)
+    label: 'Place of Prostration',
+    arabic: 'نَظَرٌ إِلَى مَوْضِعِ السُّجُود',
+    detail: '~45 deg downward convergence\nInferior rectus engaged\nCiliary muscle: moderate',
+    muscle: 'Inferior rectus',
+  },
+  ruku: {
+    // In رُكُوع, eyes look at the spot where the forehead will land (مَوْضِعِ السُّجُود)
+    // Since the back is horizontal (flat), looking at the ground ~60-70cm ahead
+    // means the gaze is nearly straight down from the horizontal head position
+    gazeAngle: -80,
+    convergence: 0.6,
+    lateralAngle: 0,
+    label: 'Place of Prostration',
+    arabic: 'نَظَرٌ إِلَى مَوْضِعِ السُّجُود',
+    detail: '~80 deg downward from horizontal head\nGaze at spot where forehead will land\nInferior rectus fully engaged\nCiliary muscle: strong convergence',
+    muscle: 'Inferior rectus (strong)',
+  },
+  qiyam_return: {
+    gazeAngle: -45,
+    convergence: 0.3,
+    lateralAngle: 0,
+    label: 'Place of Prostration',
+    arabic: 'نَظَرٌ إِلَى مَوْضِعِ السُّجُود',
+    detail: 'Return to 45 deg\nMuscles releasing',
+    muscle: 'Inferior rectus',
+  },
+  trans_sujud: {
+    gazeAngle: -70,
+    convergence: 0.6,
+    lateralAngle: 0,
+    label: 'Transitioning Down',
+    arabic: 'الِانْتِقَال',
+    detail: 'Progressive downward convergence',
+    muscle: 'Inferior rectus + medial rectus',
+  },
+  sujud_1: {
+    gazeAngle: -90,
+    convergence: 1.0,
+    lateralAngle: 0,
+    label: 'Nose Tip',
+    arabic: 'نَظَرٌ إِلَى طَرَفِ الْأَنْفِ',
+    detail: 'MAXIMUM convergence\nCiliary muscle: PEAK exercise\nMedial rectus fully engaged\nNear-point accommodation',
+    muscle: 'Medial rectus (maximum)',
+  },
+  sujud_2: {
+    gazeAngle: -90,
+    convergence: 1.0,
+    lateralAngle: 0,
+    label: 'Nose Tip',
+    arabic: 'نَظَرٌ إِلَى طَرَفِ الْأَنْفِ',
+    detail: 'MAXIMUM convergence (repeat)\nSecond peak exercise for ciliary',
+    muscle: 'Medial rectus (maximum)',
+  },
+  juloos_1: {
+    gazeAngle: -20,
+    convergence: 0.4,
+    lateralAngle: 0,
+    label: 'Forward / Lap',
+    arabic: 'نَظَرٌ إِلَى الْحِجْرِ',
+    detail: 'Near-to-mid range refocus\nCiliary muscle: moderate release',
+    muscle: 'Inferior rectus (moderate)',
+  },
+  tashahhud: {
+    gazeAngle: -15,
+    convergence: 0.8,
+    lateralAngle: 0,
+    label: 'Index Finger',
+    arabic: 'نَظَرٌ إِلَى السَّبَّابَةِ',
+    detail: 'Focused near-point tracking\nIndex finger raised during testimony\nTargeted accommodation exercise',
+    muscle: 'Medial rectus + ciliary',
+  },
+  tasleem_r: {
+    gazeAngle: 0,
+    convergence: 0.2,
+    lateralAngle: 80,
+    label: 'Right Shoulder',
+    arabic: 'السَّلَامُ عَلَيْكُمْ (يَمِين)',
+    detail: '~80 deg lateral RIGHT\nLateral rectus R fully engaged\nMedial rectus L fully engaged\nFull horizontal sweep',
+    muscle: 'Lateral rectus R + Medial rectus L',
+  },
+  tasleem_mid: {
+    gazeAngle: 0,
+    convergence: 0.2,
+    lateralAngle: 0,
+    label: 'Returning Center',
+    arabic: 'الْعَوْدَة',
+    detail: 'Lateral muscles transitioning',
+    muscle: 'All extraocular (balanced)',
+  },
+  tasleem_l: {
+    gazeAngle: 0,
+    convergence: 0.2,
+    lateralAngle: -80,
+    label: 'Left Shoulder',
+    arabic: 'السَّلَامُ عَلَيْكُمْ (يَسَار)',
+    detail: '~80 deg lateral LEFT\nLateral rectus L fully engaged\nMedial rectus R fully engaged',
+    muscle: 'Lateral rectus L + Medial rectus R',
+  },
+};
+
+// STAGE DISPLAY DATA
+const STAGE_INFO = {
+  qiyam:        { ar: 'قِيَام', tr: 'Qiyam', en: 'Standing', num: 1 },
+  ruku:         { ar: 'رُكُوع', tr: "Ruku\u02BF", en: 'Bowing', num: 2 },
+  qiyam_return: { ar: 'قِيَام', tr: 'Qiyam', en: 'Return to Standing', num: 3 },
+  trans_sujud:  { ar: 'اِنْتِقَال', tr: 'Intiqal', en: 'Going Down', num: 4 },
+  sujud_1:      { ar: 'سُجُود', tr: 'Sujud', en: 'First Prostration', num: 5 },
+  juloos_1:     { ar: 'جُلُوس', tr: 'Julus', en: 'Sitting', num: 6 },
+  sujud_2:      { ar: 'سُجُود', tr: 'Sujud', en: 'Second Prostration', num: 7 },
+  tashahhud:    { ar: 'تَشَهُّد', tr: 'Tashahhud', en: 'Testimony (Sitting)', num: 8 },
+  tasleem_r:    { ar: 'تَسْلِيم', tr: 'Taslim', en: 'Salutation Right', num: 9 },
+  tasleem_mid:  { ar: 'تَسْلِيم', tr: 'Taslim', en: 'Return Center', num: 10 },
+  tasleem_l:    { ar: 'تَسْلِيم', tr: 'Taslim', en: 'Salutation Left', num: 11 },
+};
+
+// ============================================================
+// IBN SINA MUSCLE ACTIVATION DATA (al-Qanun fi al-Tibb)
+// Values 0.0 - 1.0 representing activation level
+// ============================================================
+const MUSCLE_ACTIVATION = {
+  qiyam: {
+    'Erector Spinae': 0.3, 'Quadriceps': 0.2, 'Hamstrings': 0.1,
+    'Gluteus': 0.1, 'Deltoid': 0.1, 'Rectus Abdominis': 0.1,
+    'Neck Flexors (bilateral)': 0.1, 'Intercostal (expander)': 0.4,
+    'Intercostal (compressor)': 0.3, 'Gastrocnemius': 0.2,
+  },
+  ruku: {
+    'Erector Spinae': 0.8, 'Quadriceps': 0.4, 'Hamstrings': 0.6,
+    'Gluteus': 0.7, 'Deltoid': 0.3, 'Rectus Abdominis': 0.2,
+    'Neck Flexors (bilateral)': 0.6, 'Intercostal (expander)': 0.3,
+    'Intercostal (compressor)': 0.5, 'Gastrocnemius': 0.3,
+  },
+  qiyam_return: {
+    'Erector Spinae': 0.6, 'Quadriceps': 0.8, 'Hamstrings': 0.3,
+    'Gluteus': 0.9, 'Deltoid': 0.2, 'Rectus Abdominis': 0.3,
+    'Neck Flexors (bilateral)': 0.2, 'Intercostal (expander)': 0.4,
+    'Intercostal (compressor)': 0.3, 'Gastrocnemius': 0.3,
+  },
+  trans_sujud: {
+    'Erector Spinae': 0.5, 'Quadriceps': 0.7, 'Hamstrings': 0.5,
+    'Gluteus': 0.6, 'Deltoid': 0.4, 'Rectus Abdominis': 0.5,
+    'Neck Flexors (bilateral)': 0.4, 'Intercostal (expander)': 0.3,
+    'Intercostal (compressor)': 0.5, 'Gastrocnemius': 0.5,
+  },
+  sujud_1: {
+    'Erector Spinae': 0.2, 'Quadriceps': 0.1, 'Hamstrings': 0.3,
+    'Gluteus': 0.2, 'Deltoid': 0.7, 'Rectus Abdominis': 0.6,
+    'Neck Flexors (bilateral)': 0.8, 'Intercostal (expander)': 0.2,
+    'Intercostal (compressor)': 0.7, 'Gastrocnemius': 0.3,
+  },
+  juloos_1: {
+    'Erector Spinae': 0.4, 'Quadriceps': 0.3, 'Hamstrings': 0.2,
+    'Gluteus': 0.8, 'Deltoid': 0.1, 'Rectus Abdominis': 0.2,
+    'Neck Flexors (bilateral)': 0.1, 'Intercostal (expander)': 0.4,
+    'Intercostal (compressor)': 0.3, 'Gastrocnemius': 0.6,
+  },
+  sujud_2: {
+    'Erector Spinae': 0.2, 'Quadriceps': 0.1, 'Hamstrings': 0.3,
+    'Gluteus': 0.2, 'Deltoid': 0.7, 'Rectus Abdominis': 0.6,
+    'Neck Flexors (bilateral)': 0.8, 'Intercostal (expander)': 0.2,
+    'Intercostal (compressor)': 0.7, 'Gastrocnemius': 0.3,
+  },
+  tashahhud: {
+    'Erector Spinae': 0.4, 'Quadriceps': 0.3, 'Hamstrings': 0.2,
+    'Gluteus': 0.8, 'Deltoid': 0.1, 'Rectus Abdominis': 0.2,
+    'Neck Flexors (bilateral)': 0.1, 'Intercostal (expander)': 0.4,
+    'Intercostal (compressor)': 0.3, 'Gastrocnemius': 0.6,
+  },
+  tasleem_r: {
+    'Erector Spinae': 0.3, 'Quadriceps': 0.3, 'Hamstrings': 0.2,
+    'Gluteus': 0.7, 'Deltoid': 0.1, 'Rectus Abdominis': 0.1,
+    'Neck Flexors (bilateral)': 0.7, 'Intercostal (expander)': 0.4,
+    'Intercostal (compressor)': 0.3, 'Gastrocnemius': 0.5,
+  },
+  tasleem_mid: {
+    'Erector Spinae': 0.3, 'Quadriceps': 0.3, 'Hamstrings': 0.2,
+    'Gluteus': 0.7, 'Deltoid': 0.1, 'Rectus Abdominis': 0.1,
+    'Neck Flexors (bilateral)': 0.3, 'Intercostal (expander)': 0.4,
+    'Intercostal (compressor)': 0.3, 'Gastrocnemius': 0.5,
+  },
+  tasleem_l: {
+    'Erector Spinae': 0.3, 'Quadriceps': 0.3, 'Hamstrings': 0.2,
+    'Gluteus': 0.7, 'Deltoid': 0.1, 'Rectus Abdominis': 0.1,
+    'Neck Flexors (bilateral)': 0.7, 'Intercostal (expander)': 0.4,
+    'Intercostal (compressor)': 0.3, 'Gastrocnemius': 0.5,
+  },
+};
+
+// ============================================================
+// FORCE LINES DATA (USLaP Force Line Model)
+// Dorsal Axial (blue): spine → heel (conductor)
+// Ventral Upper (red): pectorals → palm (curl line)
+// Ventral Lower (green): hip flexors → foot (step line)
+// Spiral (gold): cross-body rotation
+// ============================================================
+const FORCE_LINES = {
+  qiyam:        { dorsal: 0.3, ventral_upper: 0.1, ventral_lower: 0.1, spiral: 0.0 },
+  ruku:         { dorsal: 0.9, ventral_upper: 0.2, ventral_lower: 0.7, spiral: 0.1 },
+  qiyam_return: { dorsal: 0.5, ventral_upper: 0.2, ventral_lower: 0.3, spiral: 0.0 },
+  trans_sujud:  { dorsal: 0.5, ventral_upper: 0.5, ventral_lower: 0.5, spiral: 0.3 },
+  sujud_1:      { dorsal: 0.2, ventral_upper: 0.8, ventral_lower: 0.8, spiral: 0.6 },
+  juloos_1:     { dorsal: 0.4, ventral_upper: 0.2, ventral_lower: 0.9, spiral: 0.1 },
+  sujud_2:      { dorsal: 0.2, ventral_upper: 0.8, ventral_lower: 0.8, spiral: 0.6 },
+  tashahhud:    { dorsal: 0.4, ventral_upper: 0.2, ventral_lower: 0.9, spiral: 0.1 },
+  tasleem_r:    { dorsal: 0.3, ventral_upper: 0.3, ventral_lower: 0.5, spiral: 0.8 },
+  tasleem_mid:  { dorsal: 0.3, ventral_upper: 0.2, ventral_lower: 0.5, spiral: 0.3 },
+  tasleem_l:    { dorsal: 0.3, ventral_upper: 0.3, ventral_lower: 0.5, spiral: 0.8 },
+};
+
+const FORCE_LINE_COLORS = {
+  dorsal: '#4488ff',        // blue
+  ventral_upper: '#ff5555', // red
+  ventral_lower: '#44cc88', // green
+  spiral: '#d4af37',        // gold
+};
+
+const FORCE_LINE_LABELS = {
+  dorsal: 'Dorsal Axial',
+  ventral_upper: 'Ventral Upper',
+  ventral_lower: 'Ventral Lower',
+  spiral: 'Spiral',
+};
+
+// ============================================================
+// IBN SINA DISTRIBUTED SPINAL FLEXION (degrees per segment)
+// ============================================================
+const IBN_SINA_SPINE = {
+  qiyam:        { lumbar: 0, thoracic: 0, cervical: 0, atlantoaxial: 0, note: 'Erect — all segments neutral' },
+  ruku:         { lumbar: 20, thoracic: 15, cervical: 10, atlantoaxial: 15, note: 'Sequential engagement — flat back' },
+  qiyam_return: { lumbar: 0, thoracic: 0, cervical: 0, atlantoaxial: 0, note: 'Return to erect' },
+  trans_sujud:  { lumbar: 15, thoracic: 20, cervical: 15, atlantoaxial: 20, note: 'Transitioning — all engaged' },
+  sujud_1:      { lumbar: 30, thoracic: 35, cervical: 25, atlantoaxial: 30, note: 'Max flexion — algorithmic reset' },
+  juloos_1:     { lumbar: 10, thoracic: 5, cervical: 0, atlantoaxial: 5, note: 'Near-erect sitting' },
+  sujud_2:      { lumbar: 30, thoracic: 35, cervical: 25, atlantoaxial: 30, note: 'Second prostration' },
+  tashahhud:    { lumbar: 10, thoracic: 5, cervical: 0, atlantoaxial: 5, note: 'Sitting — testimony' },
+  tasleem_r:    { lumbar: 0, thoracic: 0, cervical: 0, atlantoaxial: 0, note: 'Atlas-occipital rotation 60deg R' },
+  tasleem_mid:  { lumbar: 0, thoracic: 0, cervical: 0, atlantoaxial: 0, note: 'Return center' },
+  tasleem_l:    { lumbar: 0, thoracic: 0, cervical: 0, atlantoaxial: 0, note: 'Atlas-occipital rotation 60deg L' },
+};
+
+// JOINT ANGLE DATA per stage (anatomically detailed)
+const JOINT_ANGLES = {
+  qiyam:        { Hip: '180° (neutral)', Knee: '180° (ext)', Spine: '0° (erect)', Neck: '5° flex', Ankle: '90°', Shoulder: '0° (adducted)' },
+  ruku:         { Hip: '90° flex', Knee: '180° (ext)', Spine: '0° (FLAT)', Neck: 'Neutral (in-line)', Ankle: '90°', Shoulder: '90° flex' },
+  qiyam_return: { Hip: '180° (neutral)', Knee: '180° (ext)', Spine: '0° (erect)', Neck: '5° flex', Ankle: '90°', Shoulder: '0° (adducted)' },
+  trans_sujud:  { Hip: '120° flex', Knee: '90° flex', Spine: '20° flex', Neck: '15° flex', Ankle: '75° dorsiflex', Shoulder: '45° flex' },
+  sujud_1:      { Hip: '>120° flex', Knee: '~160° flex', Spine: '30° flex', Neck: '45° flex', Ankle: 'Dorsiflexed', Shoulder: '120° flex' },
+  juloos_1:     { Hip: '90° flex + rot', Knee: '~155° flex', Spine: '0° (erect)', Neck: '5° flex', Ankle: 'Plantarflexed', Shoulder: '0° (rest)' },
+  sujud_2:      { Hip: '>120° flex', Knee: '~160° flex', Spine: '30° flex', Neck: '45° flex', Ankle: 'Dorsiflexed', Shoulder: '120° flex' },
+  tashahhud:    { Hip: '90° flex + rot', Knee: '~155° flex', Spine: '0° (erect)', Neck: '5° flex', Ankle: 'Plantarflexed', Shoulder: '0° (rest)' },
+  tasleem_r:    { Hip: '90° flex + rot', Knee: '~155° flex', Spine: '0° (erect)', Neck: '~80° R rotation', Ankle: 'Plantarflexed', Shoulder: '0° (rest)' },
+  tasleem_mid:  { Hip: '90° flex + rot', Knee: '~155° flex', Spine: '0° (erect)', Neck: '0° (center)', Ankle: 'Plantarflexed', Shoulder: '0° (rest)' },
+  tasleem_l:    { Hip: '90° flex + rot', Knee: '~155° flex', Spine: '0° (erect)', Neck: '~80° L rotation', Ankle: 'Plantarflexed', Shoulder: '0° (rest)' },
+};
+
+// ============================================================
+// DATA LAYER 7: QUR'ANIC ATTESTATION PER STAGE
+// ============================================================
+const QURAN_PER_STAGE = {
+  qiyam: {
+    ayah: 'يَا أَيُّهَا الَّذِينَ آمَنُوا ارْكَعُوا وَاسْجُدُوا وَاعْبُدُوا رَبَّكُمْ',
+    ref: 'Q22:77',
+    trans: 'O you who believe, bow and prostrate and worship your Lord',
+  },
+  ruku: {
+    ayah: 'وَإِذَا قِيلَ لَهُمُ ارْكَعُوا لَا يَرْكَعُونَ',
+    ref: 'Q77:48',
+    trans: 'When it is said to them "bow down," they do not bow',
+  },
+  qiyam_return: {
+    ayah: 'سَمِعَ اللَّهُ لِمَنْ حَمِدَهُ',
+    ref: 'Hadith (Bukhari)',
+    trans: 'Allah hears the one who praises Him',
+  },
+  trans_sujud: {
+    ayah: 'خَرُّوا سُجَّدًا وَسَبَّحُوا بِحَمْدِ رَبِّهِمْ',
+    ref: 'Q32:15',
+    trans: 'They fall in prostration and glorify their Lord with praise',
+  },
+  sujud_1: {
+    ayah: 'وَاسْجُدْ وَاقْتَرِبْ',
+    ref: 'Q96:19',
+    trans: 'Prostrate and draw near [to Allah]',
+  },
+  juloos_1: {
+    ayah: 'رَبِّ اغْفِرْ لِي وَارْحَمْنِي وَاجْبُرْنِي وَارْفَعْنِي وَارْزُقْنِي',
+    ref: 'Abu Dawud 850',
+    trans: 'Lord forgive me, have mercy, strengthen me, raise me, provide for me',
+  },
+  sujud_2: {
+    ayah: 'أَقْرَبُ مَا يَكُونُ الْعَبْدُ مِنْ رَبِّهِ وَهُوَ سَاجِدٌ',
+    ref: 'Muslim 482',
+    trans: 'The closest a servant is to his Lord is while in prostration',
+  },
+  tashahhud: {
+    ayah: 'أَشْهَدُ أَنْ لَا إِلَٰهَ إِلَّا اللَّهُ',
+    ref: 'Shahādah',
+    trans: 'I bear witness there is no god but Allah',
+  },
+  tasleem_r: {
+    ayah: 'السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ',
+    ref: 'Muslim 431',
+    trans: 'Peace be upon you and the mercy of Allah (right)',
+  },
+  tasleem_mid: {
+    ayah: 'وَإِذَا حُيِّيتُم بِتَحِيَّةٍ فَحَيُّوا بِأَحْسَنَ مِنْهَا',
+    ref: 'Q4:86',
+    trans: 'When greeted, return it with better or equal',
+  },
+  tasleem_l: {
+    ayah: 'السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ',
+    ref: 'Muslim 431',
+    trans: 'Peace be upon you and the mercy of Allah (left)',
+  },
+};
+
+// ============================================================
+// DATA LAYER 8: NAFS/QALB STATE PER STAGE (H4)
+// ============================================================
+const NAFS_LEVELS = [
+  { id: 'NA01', ar: 'النَّفْسُ الْأَمَّارَةُ بِالسُّوءِ', en: 'Commanding', color: '#ff6b6b', ref: 'Q12:53' },
+  { id: 'NA02', ar: 'النَّفْسُ اللَّوَّامَةُ', en: 'Self-reproaching', color: '#f9a825', ref: 'Q75:2' },
+  { id: 'NA03', ar: 'النَّفْسُ الْمُلْهَمَةُ', en: 'Inspired', color: '#4ecdc4', ref: 'Q91:8' },
+  { id: 'NA04', ar: 'النَّفْسُ الْمُطْمَئِنَّةُ', en: 'Tranquil', color: '#42a5f5', ref: 'Q89:27' },
+  { id: 'NA05', ar: 'النَّفْسُ الرَّاضِيَةُ', en: 'Pleased', color: '#66bb6a', ref: 'Q89:28' },
+  { id: 'NA06', ar: 'النَّفْسُ الْمَرْضِيَّةُ', en: 'Pleasing', color: '#ce93d8', ref: 'Q89:28' },
+  { id: 'NA07', ar: 'النَّفْسُ الْكَامِلَةُ', en: 'Perfected', color: '#e8e0d0', ref: 'Q5:3' },
+];
+
+// Nafs + Qalb per stage (from nafs_prayer_map → qalb_states)
+const NAFS_PER_STAGE = {
+  qiyam:        { level: 2, qalb: 'QS12', qalbAr: 'قَلْبٌ مُنِيبٌ', qalbEn: 'Penitent heart (Q50:33)', sadr: 'expanding' },
+  ruku:         { level: 3, qalb: 'QS09', qalbAr: 'اطْمِئْنَانُ الْقَلْبِ', qalbEn: 'Heart tranquility (Q13:28)', sadr: 'contracting' },
+  qiyam_return: { level: 2, qalb: 'QS12', qalbAr: 'قَلْبٌ مُنِيبٌ', qalbEn: 'Penitent heart (Q50:33)', sadr: 'expanding' },
+  trans_sujud:  { level: 1, qalb: 'QS15', qalbAr: 'رَبْطُ الْقَلْبِ', qalbEn: 'Heart binding (Q28:10)', sadr: 'contracting' },
+  sujud_1:      { level: 4, qalb: 'QS11', qalbAr: 'السَّكِينَةُ', qalbEn: 'Divine tranquility (Q48:4)', sadr: 'still' },
+  juloos_1:     { level: 2, qalb: 'QS13', qalbAr: 'قَلْبٌ وَجِلٌ', qalbEn: 'Trembling heart (Q23:60)', sadr: 'neutral' },
+  sujud_2:      { level: 4, qalb: 'QS11', qalbAr: 'السَّكِينَةُ', qalbEn: 'Divine tranquility (Q48:4)', sadr: 'still' },
+  tashahhud:    { level: 3, qalb: 'QS08', qalbAr: 'قَلْبٌ سَلِيمٌ', qalbEn: 'Sound heart (Q26:89)', sadr: 'expanding' },
+  tasleem_r:    { level: 5, qalb: 'QS10', qalbAr: 'شَرْحُ الصَّدْرِ', qalbEn: 'Breast expansion (Q94:1)', sadr: 'radiating' },
+  tasleem_mid:  { level: 5, qalb: 'QS10', qalbAr: 'شَرْحُ الصَّدْرِ', qalbEn: 'Breast expansion (Q94:1)', sadr: 'radiating' },
+  tasleem_l:    { level: 5, qalb: 'QS10', qalbAr: 'شَرْحُ الصَّدْرِ', qalbEn: 'Breast expansion (Q94:1)', sadr: 'radiating' },
+};
+
+// ============================================================
+// DATA LAYER 9: SENSORY ACTIVATION PER STAGE (H5)
+// 5 external + 3 internal senses from sensory_architecture
+// ============================================================
+// Senses (sensory_architecture SN01–SN08, Q17:36 order: Samʿ first)
+const SENSES = [
+  { id: 'SN01', icon: '👂', name: 'Samʿ', color: '#66bb6a' },
+  { id: 'SN02', icon: '👁', name: 'Baṣar', color: '#42a5f5' },
+  { id: 'SN03', icon: '👅', name: 'Dhawq', color: '#ff6b6b' },
+  { id: 'SN04', icon: '👃', name: 'Shamm', color: '#f9a825' },
+  { id: 'SN05', icon: '🤲', name: 'Lams', color: '#ce93d8' },
+  { id: 'SN06', icon: '💜', name: 'Fuʾād', color: '#9c27b0' },
+  { id: 'SN07', icon: '🧠', name: 'ʿAql', color: '#4ecdc4' },
+  { id: 'SN08', icon: '✨', name: 'Baṣīrah', color: '#d4af37' },
+];
+
+// Sensory activation per stage (sensory_prayer_map) [Samʿ,Baṣar,Dhawq,Shamm,Lams,Fuʾād,ʿAql,Baṣīrah]
+const SENSORY_PER_STAGE = {
+  qiyam:        [0.70, 0.40, 0.30, 0.10, 0.15, 0.60, 0.80, 0.50],
+  ruku:         [0.50, 0.20, 0.10, 0.10, 0.40, 0.70, 0.80, 0.60],
+  qiyam_return: [0.70, 0.40, 0.30, 0.10, 0.15, 0.60, 0.80, 0.50],
+  trans_sujud:  [0.15, 0.30, 0.05, 0.10, 0.70, 0.50, 0.50, 0.40],
+  sujud_1:      [0.20, 0.05, 0.05, 0.20, 1.00, 0.95, 0.60, 1.00],
+  juloos_1:     [0.30, 0.30, 0.15, 0.10, 0.50, 0.60, 0.60, 0.50],
+  sujud_2:      [0.20, 0.05, 0.05, 0.20, 1.00, 0.95, 0.60, 1.00],
+  tashahhud:    [0.60, 0.40, 0.40, 0.10, 0.35, 0.80, 0.85, 0.80],
+  tasleem_r:    [0.50, 0.50, 0.15, 0.10, 0.30, 0.65, 0.60, 0.70],
+  tasleem_mid:  [0.50, 0.50, 0.15, 0.10, 0.30, 0.65, 0.60, 0.70],
+  tasleem_l:    [0.50, 0.50, 0.15, 0.10, 0.30, 0.65, 0.60, 0.70],
+};
+
+// Heptad cross-view (heptad_prayer_map, 56 rows)
+const HEPTAD_COLORS = ['#e8e0d0','#4ecdc4','#f9a825','#ff6b6b','#42a5f5','#66bb6a','#ce93d8'];
+const HEPTAD_LABELS = ['H1 Body','H2 Therapy','H3 Formula','H4 Nafs','H5 Sensory','H6 Nutrition','H7 Lifecycle'];
+
+const HEPTAD_PER_STAGE = {
+  qiyam: [
+    'Spine erect, pelvis 5° ant. tilt — Q82:7',
+    'Postural reset — erector spinae neutral Q95:4',
+    '7:5 kernel — 1.0 BW axial Q54:49',
+    'Mulhamah — قَلْبٌ مُنِيبٌ Q50:33',
+    'Samʿ 70% + ʿAql 80% Q17:36',
+    'طَيِّبَات — gastric emptying optimised Q5:88',
+    'LA11 قُوَّة — peak strength Q30:54',
+  ],
+  ruku: [
+    '90° hip flex, flat back — 16 chains Q86:5-7',
+    'Hamstring + lumbar stretch Q57:25',
+    '11:5 expansion — 1.2 BW anterior Q54:49',
+    'Muṭmaʾinnah — اطْمِئْنَان Q13:28',
+    'ʿAql 80% + Fuʾād 70% Q17:36',
+    'Abdominal compression — peristalsis Q80:24-32',
+    'LA06 لَحْمًا — flesh stretch Q23:14',
+  ],
+  qiyam_return: [
+    'Spine extends from ruku — Q22:77',
+    'Stretch release — disc rehydration Q57:25',
+    '7:5 kernel — 1.0 BW axial Q54:49',
+    'Mulhamah — قَلْبٌ مُنِيبٌ Q50:33',
+    'Samʿ 70% + ʿAql 80% Q17:36',
+    'Blood redistributes — gastric neutral Q80:24-32',
+    'LA11 قُوَّة — rising = بَعْث Q23:16',
+  ],
+  trans_sujud: [
+    'Multi-joint cascade — eccentric descent Q75:3-4',
+    'Eccentric loading — cartilage cycle Q57:25',
+    'Transition — 0.8 BW deceleration Q55:5',
+    'Lawwāmah — رَبْط الْقَلْب Q28:10',
+    'Lams 70% (proprioceptive) Q6:7',
+    'Intra-abdominal pressure shift Q80:26',
+    'LA07 خَلْقًا آخَرَ — transformation Q23:14',
+  ],
+  sujud_1: [
+    '7-point contact, 160° cervical Q96:19',
+    'Cranial lymphatic drainage Q16:69',
+    'Inversion — 0.4 BW ÷ 7 points Q54:49',
+    'Rāḍiyah — السَّكِينَة Q48:4',
+    'Lams 100% + Baṣīrah 100% Q53:11',
+    'Hepatic portal drainage Q56:68-70',
+    'LA01 طِين — return to clay Q23:12',
+  ],
+  juloos_1: [
+    'Iftirash — hip ext. rotation Q75:3-4',
+    'Hip flexor release, sciatic decompress Q78:8',
+    'Seated — 0.6 BW pelvic base Q54:49',
+    'Mulhamah — قَلْبٌ وَجِلٌ Q23:60',
+    'ʿAql 60% + Fuʾād 60% Q2:164',
+    'Pelvic floor relaxation Q5:6',
+    'LA03 عَلَقَة — clinging phase Q23:14',
+  ],
+  sujud_2: [
+    '7-point repeat — neural reinforcement Q96:19',
+    'Lymphatic boost — 2nd perfusion Q16:69',
+    'Inversion — 0.4 BW ÷ 7 points Q54:49',
+    'Rāḍiyah — السَّكِينَة Q48:4',
+    'Lams 100% + Baṣīrah 100% Q12:108',
+    'Bile duct clearance Q56:68-70',
+    'LA01 طِين — return to clay Q23:12',
+  ],
+  tashahhud: [
+    'Tawarruk — asym pelvic load Q75:3-4',
+    'Pelvic floor + spinal neutral Q76:5-6',
+    'Asymmetric — 0.7 BW differential Q54:49',
+    'Muṭmaʾinnah — قَلْبٌ سَلِيمٌ Q26:89',
+    'ʿAql 85% + Baṣīrah 80% Q23:78',
+    'Extended sit — insulin sensitivity Q106:4',
+    'LA08 أَحْسَنُ الْخَالِقِينَ Q23:14',
+  ],
+  tasleem_r: [
+    'Cervical rotation 80° R Q86:5-7',
+    'Cervical mobilisation C1-C7 Q35:27-28',
+    'Rotational — 0.7 BW cervical torque Q55:7',
+    'Marḍiyyah — شَرْح الصَّدْر Q94:1',
+    'Baṣīrah 70% + Baṣar 50% Q67:3-4',
+    'Digestive system baseline reset Q107:1-3',
+    'LA10 تُبْعَثُونَ — resurrection Q23:16',
+  ],
+  tasleem_mid: [
+    'Cervical center return Q82:7',
+    'Spinal neutral reset Q95:4',
+    'Balanced — 0.7 BW neutral Q55:9',
+    'Marḍiyyah — شَرْح الصَّدْر Q94:1',
+    'Baṣīrah 70% + Baṣar 50% Q41:53',
+    'Nutrient absorption window Q5:88',
+    'LA10 تُبْعَثُونَ — cycle complete Q23:16',
+  ],
+  tasleem_l: [
+    'Cervical rotation 80° L Q86:5-7',
+    'Cervical mobilise mirror Q35:27-28',
+    'Rotational — 0.7 BW cervical torque Q55:7',
+    'Marḍiyyah — شَرْح الصَّدْر Q94:1',
+    'Baṣīrah 70% + Baṣar 50% Q67:3-4',
+    'Nutrient absorption window Q107:1-3',
+    'LA10 تُبْعَثُونَ — prayer sealed Q23:115',
+  ],
+};
+
+// ============================================================
+// RENDERING ENGINE
+// ============================================================
+const canvas = document.getElementById('skeleton');
+const ctx = canvas.getContext('2d');
+const eyeCanvas = document.getElementById('eyeDiagram');
+const eyeCtx = eyeCanvas.getContext('2d');
+
+const W = canvas.width;
+const H = canvas.height;
+
+// Colors
+const COL = {
+  bone: '#e8e0d0',
+  joint: '#d4af37',
+  jointGlow: '#d4af3744',
+  head: '#e8e0d0',
+  headFill: '#161b22',
+  ground: '#21262d',
+  mat: '#1a2a1a',
+  matBorder: '#d4af3733',
+  matPattern: '#1f3320',
+  stretch: '#ff6b6b',
+  stretchGlow: 'rgba(255,107,107,0.25)',
+  returnC: '#4ecdc4',
+  returnGlow: 'rgba(78,205,196,0.25)',
+  engage: '#f9a825',
+  engageGlow: 'rgba(249,168,37,0.25)',
+  rest: '#484f5833',
+  bg: '#0a0e14',
+};
+
+function toCanvas(nx, ny) {
+  const margin = 40;
+  return [
+    margin + nx * (W - 2 * margin),
+    margin + ny * (H - 2 * margin)
+  ];
+}
+
+function lerpPose(poseA, poseB, t) {
+  t = easeInOut(t);
+  const result = {};
+  for (const j of JOINTS) {
+    result[j] = [
+      poseA[j][0] + (poseB[j][0] - poseA[j][0]) * t,
+      poseA[j][1] + (poseB[j][1] - poseA[j][1]) * t,
+    ];
+  }
+  // Enforce interpolated bone lengths — smoothly transition each segment
+  // between its length in poseA and poseB to prevent mid-transition stretching
+  const allSegs = [...BONE_CHAIN, ...ARM_CHAIN];
+  for (const [parent, child] of allSegs) {
+    const dxA = poseA[child][0] - poseA[parent][0];
+    const dyA = poseA[child][1] - poseA[parent][1];
+    const lenA = Math.sqrt(dxA * dxA + dyA * dyA);
+    const dxB = poseB[child][0] - poseB[parent][0];
+    const dyB = poseB[child][1] - poseB[parent][1];
+    const lenB = Math.sqrt(dxB * dxB + dyB * dyB);
+    const targetLen = lenA + (lenB - lenA) * t;
+    const dx = result[child][0] - result[parent][0];
+    const dy = result[child][1] - result[parent][1];
+    const len = Math.sqrt(dx * dx + dy * dy);
+    if (len < 0.001 || targetLen < 0.001) continue;
+    const scale = targetLen / len;
+    result[child] = [result[parent][0] + dx * scale, result[parent][1] + dy * scale];
+  }
+  return result;
+}
+
+function easeInOut(t) {
+  return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+}
+
+function getCurrentPose(time) {
+  // find surrounding keyframes
+  let kA = KEYFRAMES[0], kB = KEYFRAMES[0];
+  for (let i = 0; i < KEYFRAMES.length - 1; i++) {
+    if (time >= KEYFRAMES[i].t && time <= KEYFRAMES[i + 1].t) {
+      kA = KEYFRAMES[i];
+      kB = KEYFRAMES[i + 1];
+      break;
+    }
+    if (i === KEYFRAMES.length - 2) {
+      kA = KEYFRAMES[i + 1];
+      kB = KEYFRAMES[i + 1];
+    }
+  }
+  const duration = kB.t - kA.t;
+  const t = duration > 0 ? Math.min(1, (time - kA.t) / duration) : 0;
+  return {
+    pose: lerpPose(POSES[kA.pose], POSES[kB.pose], t),
+    stage: kB.stage,
+  };
+}
+
+function getCurrentStage(time) {
+  let stage = 'qiyam';
+  for (const kf of KEYFRAMES) {
+    if (time >= kf.t) stage = kf.stage;
+  }
+  return stage;
+}
+
+// ============================================================
+// DRAW FUNCTIONS
+// ============================================================
+
+function drawGround() {
+  // Ground line
+  const [, gy] = toCanvas(0, 0.97);
+  ctx.strokeStyle = COL.ground;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(0, gy);
+  ctx.lineTo(W, gy);
+  ctx.stroke();
+
+  // Prayer mat
+  const [mx1] = toCanvas(0.05, 0);
+  const [mx2] = toCanvas(0.85, 0);
+  const matY = gy - 2;
+  const matH = 12;
+  ctx.fillStyle = COL.mat;
+  ctx.strokeStyle = COL.matBorder;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.roundRect(mx1, matY, mx2 - mx1, matH, 3);
+  ctx.fill();
+  ctx.stroke();
+
+  // Mat pattern lines
+  ctx.strokeStyle = COL.matPattern;
+  ctx.lineWidth = 0.5;
+  for (let x = mx1 + 20; x < mx2; x += 20) {
+    ctx.beginPath();
+    ctx.moveTo(x, matY + 2);
+    ctx.lineTo(x, matY + matH - 2);
+    ctx.stroke();
+  }
+
+  // Sujud spot marker — مَوْضِعِ السُّجُود
+  const SUJUD_SPOT_X = 0.593; // where forehead lands in sujud
+  const [spotX] = toCanvas(SUJUD_SPOT_X, 0);
+  const spotY = matY + matH / 2;
+  const pulse = 0.5 + 0.5 * Math.sin(Date.now() / 600);
+  // Outer glow
+  ctx.beginPath();
+  ctx.arc(spotX, spotY, 8 + pulse * 3, 0, Math.PI * 2);
+  ctx.fillStyle = `rgba(212,175,55,${0.08 + pulse * 0.06})`;
+  ctx.fill();
+  // Inner dot
+  ctx.beginPath();
+  ctx.arc(spotX, spotY, 3, 0, Math.PI * 2);
+  ctx.fillStyle = `rgba(212,175,55,${0.4 + pulse * 0.3})`;
+  ctx.fill();
+}
+
+function drawLigamentOverlay(pose, stage) {
+  const ligs = STAGE_LIGAMENTS[stage];
+  if (!ligs) return;
+
+  for (const [ligId, state] of Object.entries(ligs)) {
+    if (state === 'rest') continue;
+    const lig = LIGAMENT_REGIONS[ligId];
+    if (!lig) continue;
+
+    let col, glow;
+    if (state === 'stretch') { col = COL.stretch; glow = COL.stretchGlow; }
+    else if (state === 'return') { col = COL.returnC; glow = COL.returnGlow; }
+    else if (state === 'engage') { col = COL.engage; glow = COL.engageGlow; }
+    else continue;
+
+    // Draw glow along relevant bones
+    ctx.save();
+    ctx.lineCap = 'round';
+
+    if (lig.bones.length === 1) {
+      // Joint-level ligament: draw a glowing circle at the joint
+      const [jx, jy] = toCanvas(...pose[lig.bones[0]]);
+      ctx.beginPath();
+      ctx.arc(jx, jy, 14, 0, Math.PI * 2);
+      ctx.fillStyle = glow;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(jx, jy, 10, 0, Math.PI * 2);
+      ctx.strokeStyle = col;
+      ctx.lineWidth = 2;
+      ctx.globalAlpha = 0.6;
+      ctx.stroke();
+    } else {
+      // Multi-bone ligament: draw along the path with offset
+      const offset = lig.side === 'back' ? 6 : -6;
+      ctx.beginPath();
+      for (let i = 0; i < lig.bones.length; i++) {
+        const [px, py] = toCanvas(...pose[lig.bones[i]]);
+        // Calculate normal offset (perpendicular to bone direction)
+        let nx = 0, ny = 0;
+        if (i < lig.bones.length - 1) {
+          const [qx, qy] = toCanvas(...pose[lig.bones[i + 1]]);
+          const dx = qx - px, dy = qy - py;
+          const len = Math.sqrt(dx * dx + dy * dy) || 1;
+          nx = -dy / len * offset;
+          ny = dx / len * offset;
+        } else if (i > 0) {
+          const [qx, qy] = toCanvas(...pose[lig.bones[i - 1]]);
+          const dx = px - qx, dy = py - qy;
+          const len = Math.sqrt(dx * dx + dy * dy) || 1;
+          nx = -dy / len * offset;
+          ny = dx / len * offset;
+        }
+        if (i === 0) ctx.moveTo(px + nx, py + ny);
+        else ctx.lineTo(px + nx, py + ny);
+      }
+      ctx.strokeStyle = glow;
+      ctx.lineWidth = 10;
+      ctx.stroke();
+      ctx.strokeStyle = col;
+      ctx.lineWidth = 3;
+      ctx.globalAlpha = 0.7;
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+}
+
+function drawSkeleton(pose, time) {
+  // Bones
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  for (const [from, to] of BONES) {
+    const [x1, y1] = toCanvas(...pose[from]);
+    const [x2, y2] = toCanvas(...pose[to]);
+
+    // Thicker for main body bones
+    const isBody = ['hip','spine','shoulder'].includes(from) || ['hip','spine','shoulder'].includes(to);
+    const isLeg = (['knee','ankle','toe'].includes(from) && ['knee','ankle','hip'].includes(to)) ||
+                  (['knee','ankle','toe'].includes(to) && ['knee','ankle','hip'].includes(from));
+
+    ctx.strokeStyle = COL.bone;
+    ctx.lineWidth = (isBody || isLeg) ? 5 : 3.5;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+  }
+
+  // Small hand extension from wrist
+  const [wx, wy] = toCanvas(...pose['wrist']);
+  const [ex, ey] = toCanvas(...pose['elbow']);
+  const handDx = (wx - ex), handDy = (wy - ey);
+  const handLen = Math.sqrt(handDx * handDx + handDy * handDy) || 1;
+  const hx = wx + (handDx / handLen) * 12;
+  const hy = wy + (handDy / handLen) * 12;
+  ctx.strokeStyle = COL.bone;
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.moveTo(wx, wy);
+  ctx.lineTo(hx, hy);
+  ctx.stroke();
+  // Spread fingers
+  for (let a = -0.4; a <= 0.4; a += 0.4) {
+    const cos = Math.cos(a), sin = Math.sin(a);
+    const fdx = (handDx / handLen) * 8;
+    const fdy = (handDy / handLen) * 8;
+    ctx.beginPath();
+    ctx.moveTo(hx, hy);
+    ctx.lineTo(hx + fdx * cos - fdy * sin, hy + fdx * sin + fdy * cos);
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  }
+
+  // Foot extension from ankle to toe (already handled by bone)
+
+  // Joint markers
+  for (const j of JOINTS) {
+    if (j === 'head') continue;
+    const [jx, jy] = toCanvas(...pose[j]);
+    ctx.beginPath();
+    ctx.arc(jx, jy, 5, 0, Math.PI * 2);
+    ctx.fillStyle = COL.joint;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(jx, jy, 8, 0, Math.PI * 2);
+    ctx.fillStyle = COL.jointGlow;
+    ctx.fill();
+  }
+
+  // Head (circle)
+  const [hcx, hcy] = toCanvas(...pose['head']);
+  const [ncx, ncy] = toCanvas(...pose['shoulder']);
+  // Head size proportional
+  const headRadius = 18;
+  ctx.beginPath();
+  ctx.arc(hcx, hcy, headRadius, 0, Math.PI * 2);
+  ctx.fillStyle = COL.headFill;
+  ctx.fill();
+  ctx.strokeStyle = COL.head;
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  // Small eye indicator on head
+  const stage = getCurrentStage(time);
+  const eyeData = EYE_DATA[stage];
+  if (eyeData) {
+    // Direction the head faces (from neck to head)
+    const fdx = hcx - ncx, fdy = hcy - ncy;
+    const flen = Math.sqrt(fdx * fdx + fdy * fdy) || 1;
+    // Perpendicular for lateral gaze
+    const latRad = (eyeData.lateralAngle || 0) * Math.PI / 180;
+    // Gaze dot on the head circle
+    const gazeRad = (eyeData.gazeAngle || 0) * Math.PI / 180;
+    // Simple: place a dot at the front of the head
+    const dotDist = headRadius * 0.55;
+    const baseDx = fdx / flen;
+    const baseDy = fdy / flen;
+    // Rotate base direction by lateral angle (simplified for side view)
+    const eyeX = hcx + baseDx * dotDist + Math.abs(latRad) * baseDy * dotDist * 0.5;
+    const eyeY = hcy + baseDy * dotDist;
+    ctx.beginPath();
+    ctx.arc(eyeX, eyeY, 3, 0, Math.PI * 2);
+    ctx.fillStyle = '#d4af37';
+    ctx.fill();
+
+    // Gaze line from eye
+    const gazeLen = 22 + eyeData.convergence * 12;
+    const gazeEndX = eyeX + Math.cos(gazeRad) * gazeLen * (baseDx > 0 ? 1 : -1);
+    const gazeEndY = eyeY + Math.sin(Math.abs(gazeRad)) * gazeLen;
+    ctx.beginPath();
+    ctx.moveTo(eyeX, eyeY);
+    ctx.lineTo(gazeEndX, gazeEndY);
+    ctx.strokeStyle = '#d4af3788';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([3, 3]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Small label for convergence
+    if (eyeData.convergence >= 0.8) {
+      ctx.fillStyle = '#ff6b6baa';
+      ctx.font = '10px monospace';
+      ctx.fillText('MAX', gazeEndX + 4, gazeEndY - 2);
+    }
+  }
+}
+
+// ============================================================
+// FORCE LINE DRAWING ON SKELETON
+// ============================================================
+function drawForceLines(pose, stage) {
+  const fl = FORCE_LINES[stage];
+  if (!fl) return;
+
+  ctx.save();
+  ctx.globalAlpha = 0.35;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  // Dorsal Axial: spine → hip → knee → ankle (posterior chain)
+  if (fl.dorsal > 0.05) {
+    const pts = ['head','shoulder','spine','hip','knee','ankle'];
+    ctx.strokeStyle = FORCE_LINE_COLORS.dorsal;
+    ctx.lineWidth = 1 + fl.dorsal * 2;
+    ctx.globalAlpha = 0.12 + fl.dorsal * 0.25;
+    ctx.beginPath();
+    for (let i = 0; i < pts.length; i++) {
+      const [px, py] = toCanvas(...pose[pts[i]]);
+      // Offset slightly to the right of the skeleton (posterior line)
+      const off = 8;
+      if (i === 0) ctx.moveTo(px + off, py);
+      else ctx.lineTo(px + off, py);
+    }
+    ctx.stroke();
+  }
+
+  // Ventral Upper: shoulder → elbow → wrist (anterior curl line)
+  if (fl.ventral_upper > 0.05) {
+    const pts = ['shoulder','elbow','wrist'];
+    ctx.strokeStyle = FORCE_LINE_COLORS.ventral_upper;
+    ctx.lineWidth = 1 + fl.ventral_upper * 2;
+    ctx.globalAlpha = 0.12 + fl.ventral_upper * 0.25;
+    ctx.beginPath();
+    for (let i = 0; i < pts.length; i++) {
+      const [px, py] = toCanvas(...pose[pts[i]]);
+      const off = -6;
+      if (i === 0) ctx.moveTo(px + off, py);
+      else ctx.lineTo(px + off, py);
+    }
+    ctx.stroke();
+  }
+
+  // Ventral Lower: hip → knee → ankle → toe (step line)
+  if (fl.ventral_lower > 0.05) {
+    const pts = ['hip','knee','ankle','toe'];
+    ctx.strokeStyle = FORCE_LINE_COLORS.ventral_lower;
+    ctx.lineWidth = 1 + fl.ventral_lower * 2;
+    ctx.globalAlpha = 0.12 + fl.ventral_lower * 0.25;
+    ctx.beginPath();
+    for (let i = 0; i < pts.length; i++) {
+      const [px, py] = toCanvas(...pose[pts[i]]);
+      const off = -8;
+      if (i === 0) ctx.moveTo(px + off, py);
+      else ctx.lineTo(px + off, py);
+    }
+    ctx.stroke();
+  }
+
+  // Spiral: head → opposite side hip (cross-body diagonal)
+  if (fl.spiral > 0.05) {
+    ctx.strokeStyle = FORCE_LINE_COLORS.spiral;
+    ctx.lineWidth = 1 + fl.spiral * 2;
+    ctx.globalAlpha = 0.12 + fl.spiral * 0.25;
+    ctx.setLineDash([6, 4]);
+    const [hx, hy] = toCanvas(...pose['head']);
+    const [shx, shy] = toCanvas(...pose['shoulder']);
+    const [spx, spy] = toCanvas(...pose['spine']);
+    const [hipx, hipy] = toCanvas(...pose['hip']);
+    // Diagonal line crossing through body
+    ctx.beginPath();
+    ctx.moveTo(hx - 12, hy);
+    ctx.lineTo(shx + 6, shy + 4);
+    ctx.lineTo(spx - 4, spy);
+    ctx.lineTo(hipx + 10, hipy);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  ctx.restore();
+}
+
+function drawFrame(time) {
+  ctx.clearRect(0, 0, W, H);
+
+  // Background gradient
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, '#0d1117');
+  grad.addColorStop(1, '#0a0e14');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  drawGround();
+
+  const { pose, stage } = getCurrentPose(time);
+  const currentStage = getCurrentStage(time);
+
+  // Draw force lines behind everything
+  drawForceLines(pose, currentStage);
+
+  // Draw ligament overlay behind skeleton
+  drawLigamentOverlay(pose, currentStage);
+
+  // Draw skeleton on top
+  drawSkeleton(pose, time);
+
+  // Draw flat-back annotation during رُكُوع
+  if (currentStage === 'ruku') {
+    const [hipX, hipY] = toCanvas(...pose['hip']);
+    const [headX, headY] = toCanvas(...pose['head']);
+    // Dashed reference line showing perfect alignment
+    ctx.save();
+    ctx.setLineDash([6, 4]);
+    ctx.strokeStyle = '#4ecdc488';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(hipX - 10, hipY);
+    ctx.lineTo(headX + 25, hipY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    // Label
+    ctx.font = '11px sans-serif';
+    ctx.fillStyle = '#4ecdc4';
+    ctx.fillText('← FLAT BACK (spine in one line) →', hipX + 15, hipY - 10);
+    // Eye gaze annotation
+    ctx.fillStyle = '#d4af37aa';
+    ctx.font = '10px sans-serif';
+    ctx.fillText('Eyes → مَوْضِعِ السُّجُود', headX - 10, headY + 30);
+    ctx.restore();
+  }
+
+  // ── O1: Therapy tint overlay ──
+  const therD_k = KN_THER[currentStage] || KN_THER.qiyam;
+  const therC_k = KN_THER_C[therD_k.cl];
+  therapyTintHex = therC_k.hex;
+  const tgt_k = tintEnabled ? 0.10 : 0;
+  therapyTintAlpha += (tgt_k - therapyTintAlpha) * 0.08;
+  if (therapyTintAlpha > 0.001) {
+    ctx.save(); ctx.globalCompositeOperation = 'multiply'; ctx.globalAlpha = therapyTintAlpha;
+    ctx.fillStyle = therapyTintHex; ctx.fillRect(0, 0, W, H); ctx.restore();
+    ctx.save(); ctx.globalCompositeOperation = 'screen'; ctx.globalAlpha = therapyTintAlpha * 0.35;
+    const vig = ctx.createRadialGradient(W/2, H/2, 50, W/2, H/2, W*0.5);
+    vig.addColorStop(0, therapyTintHex); vig.addColorStop(1, 'transparent');
+    ctx.fillStyle = vig; ctx.fillRect(0, 0, W, H); ctx.restore();
+  }
+  // ── O5: Gravity arrow on main canvas ──
+  formulaBW_k += (((KN_FORM[currentStage] || KN_FORM.qiyam).bw) - formulaBW_k) * 0.08;
+  if (pose.hip) {
+    const [hx, hy] = toCanvas(...pose.hip);
+    const al = formulaBW_k * 60;
+    ctx.save(); ctx.globalAlpha = 0.5; ctx.strokeStyle = '#90ee90'; ctx.lineWidth = Math.max(2, formulaBW_k * 3);
+    ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(hx, hy + al); ctx.stroke();
+    ctx.fillStyle = '#90ee90'; ctx.beginPath(); ctx.moveTo(hx, hy + al + 6); ctx.lineTo(hx - 5, hy + al - 2); ctx.lineTo(hx + 5, hy + al - 2); ctx.closePath(); ctx.fill();
+    ctx.globalAlpha = 0.7; ctx.font = 'bold 9px sans-serif'; ctx.fillText(`${formulaBW_k.toFixed(1)}× BW`, hx + 8, hy + al / 2); ctx.restore();
+  }
+  // ── O6: Heptad highlight ──
+  if (heptadHighlight_k >= 0 && heptadHighlightTimer_k > 0) {
+    const pulse = 0.5 + 0.5 * Math.sin(Date.now() * 0.005);
+    const a = 0.06 + pulse * 0.06;
+    const col = HEPTAD_COLORS[heptadHighlight_k] || '#e8e0d0';
+    ctx.save(); ctx.globalCompositeOperation = 'screen'; ctx.globalAlpha = a * (heptadHighlightTimer_k / 3);
+    const grd = ctx.createRadialGradient(W/2, H/2, 20, W/2, H/2, W * 0.4);
+    grd.addColorStop(0, col); grd.addColorStop(1, 'transparent');
+    ctx.fillStyle = grd; ctx.fillRect(0, 0, W, H);
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 0.9 * (heptadHighlightTimer_k / 3);
+    ctx.fillStyle = col; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(`${HEPTAD_LABELS[heptadHighlight_k]}`, W / 2, 30); ctx.restore();
+    heptadHighlightTimer_k = Math.max(0, heptadHighlightTimer_k - 0.033);
+    if (heptadHighlightTimer_k <= 0) heptadHighlight_k = -1;
+  }
+  // ── O2: Audio update ──
+  if (audioEnabled_k && audioOsc_k) updateAudioCPM_k(therD_k.sound || 40);
+}
+
+// ============================================================
+// TOP-DOWN (BIRD'S EYE) ANIMATED VIEW
+// ============================================================
+const tdCanvas = document.getElementById('topDown');
+const tdCtx = tdCanvas.getContext('2d');
+const TDW = tdCanvas.width;
+const TDH = tdCanvas.height;
+
+// Top-down poses: [x, y] where x = left-right, y = toward qibla (up) / away (down)
+// Coordinate system: center of mat, normalized 0-1, mapped to canvas
+// Top-down poses define positions AND visibility (0-1 opacity) per body part
+// In qiyam: head occludes everything below — only head, shoulders, toes visible
+// bodyVis: overall body visibility (0 = hidden below head, 1 = fully visible on ground)
+const TD_POSES = {
+  qiyam: {
+    head:      [0.50, 0.50],  // centered — everything is below the head
+    shoulder:  [0.50, 0.50],
+    shoulderL: [0.43, 0.50],  // shoulders peek out wider than head
+    shoulderR: [0.57, 0.50],
+    elbowL:    [0.44, 0.52],  // arms barely visible, tucked
+    elbowR:    [0.56, 0.52],
+    wristL:    [0.48, 0.53],  // hands folded — barely peek
+    wristR:    [0.52, 0.53],
+    spine:     [0.50, 0.50],  // hidden below head
+    hip:       [0.50, 0.50],
+    hipL:      [0.48, 0.50],
+    hipR:      [0.52, 0.50],
+    kneeL:     [0.48, 0.50],  // hidden
+    kneeR:     [0.52, 0.50],
+    ankleL:    [0.48, 0.50],  // hidden
+    ankleR:    [0.52, 0.50],
+    footL:     [0.47, 0.60],  // toes peek out below
+    footR:     [0.53, 0.60],
+    headAngle: 0,
+    bodyVis:   0.0,           // body hidden below head
+    headSize:  1.0,           // large head (looking at top of skull)
+  },
+  ruku: {
+    head:      [0.50, 0.28],  // head far forward (bent at hip, back horizontal)
+    shoulder:  [0.50, 0.34],
+    shoulderL: [0.42, 0.34],
+    shoulderR: [0.58, 0.34],
+    elbowL:    [0.42, 0.30],
+    elbowR:    [0.58, 0.30],
+    wristL:    [0.46, 0.42],  // hands on knees
+    wristR:    [0.54, 0.42],
+    spine:     [0.50, 0.42],  // back visible (horizontal)
+    hip:       [0.50, 0.52],
+    hipL:      [0.47, 0.52],
+    hipR:      [0.53, 0.52],
+    kneeL:     [0.47, 0.46],
+    kneeR:     [0.53, 0.46],
+    ankleL:    [0.47, 0.56],
+    ankleR:    [0.53, 0.56],
+    footL:     [0.47, 0.60],
+    footR:     [0.53, 0.60],
+    headAngle: 0,
+    bodyVis:   0.85,
+    headSize:  0.7,           // seeing back of head (smaller from angle)
+  },
+  goingDown: {
+    head:      [0.50, 0.32],
+    shoulder:  [0.50, 0.38],
+    shoulderL: [0.42, 0.38],
+    shoulderR: [0.58, 0.38],
+    elbowL:    [0.38, 0.34],
+    elbowR:    [0.62, 0.34],
+    wristL:    [0.40, 0.30],
+    wristR:    [0.60, 0.30],
+    spine:     [0.50, 0.44],
+    hip:       [0.50, 0.52],
+    hipL:      [0.47, 0.52],
+    hipR:      [0.53, 0.52],
+    kneeL:     [0.45, 0.58],
+    kneeR:     [0.55, 0.58],
+    ankleL:    [0.45, 0.64],
+    ankleR:    [0.55, 0.64],
+    footL:     [0.45, 0.68],
+    footR:     [0.55, 0.68],
+    headAngle: 0,
+    bodyVis:   0.6,
+    headSize:  0.8,
+  },
+  sujud: {
+    // Forehead on ground, palms LOWER (between head and knees), closer to knees
+    head:      [0.50, 0.18],  // forehead on ground toward qibla
+    shoulder:  [0.50, 0.28],
+    shoulderL: [0.40, 0.28],
+    shoulderR: [0.60, 0.28],
+    elbowL:    [0.34, 0.34],  // elbows out slightly
+    elbowR:    [0.66, 0.34],
+    wristL:    [0.38, 0.40],  // palms LOWER — between head and knees
+    wristR:    [0.62, 0.40],
+    spine:     [0.50, 0.40],
+    hip:       [0.50, 0.54],
+    hipL:      [0.47, 0.54],
+    hipR:      [0.53, 0.54],
+    kneeL:     [0.43, 0.64],  // knees on ground, apart
+    kneeR:     [0.57, 0.64],
+    ankleL:    [0.46, 0.74],
+    ankleR:    [0.54, 0.74],
+    footL:     [0.46, 0.78],  // toes curled on ground
+    footR:     [0.54, 0.78],
+    headAngle: 0,
+    bodyVis:   1.0,           // everything visible (flat on ground)
+    headSize:  0.6,           // forehead down, seeing top of head small
+  },
+  juloos: {
+    head:      [0.50, 0.40],
+    shoulder:  [0.50, 0.44],
+    shoulderL: [0.42, 0.44],
+    shoulderR: [0.58, 0.44],
+    elbowL:    [0.40, 0.50],
+    elbowR:    [0.60, 0.50],
+    wristL:    [0.42, 0.56],  // hands on thighs
+    wristR:    [0.58, 0.56],
+    spine:     [0.50, 0.48],
+    hip:       [0.50, 0.54],
+    hipL:      [0.46, 0.54],
+    hipR:      [0.54, 0.54],
+    kneeL:     [0.42, 0.62],
+    kneeR:     [0.58, 0.62],
+    ankleL:    [0.46, 0.70],
+    ankleR:    [0.54, 0.70],
+    footL:     [0.47, 0.74],
+    footR:     [0.53, 0.74],
+    headAngle: 0,
+    bodyVis:   0.35,          // partially visible — sitting upright but lower
+    headSize:  0.9,
+  },
+  iftirash: {
+    // Sitting between sujuds — from above:
+    // left foot tucked under (toes point back), right foot upright (toes curled)
+    head:      [0.50, 0.40],
+    shoulder:  [0.50, 0.44],
+    shoulderL: [0.42, 0.44],
+    shoulderR: [0.58, 0.44],
+    elbowL:    [0.40, 0.50],
+    elbowR:    [0.60, 0.50],
+    wristL:    [0.42, 0.56],
+    wristR:    [0.58, 0.56],
+    spine:     [0.50, 0.48],
+    hip:       [0.50, 0.54],
+    hipL:      [0.46, 0.54],
+    hipR:      [0.54, 0.54],
+    kneeL:     [0.40, 0.62],
+    kneeR:     [0.60, 0.62],
+    ankleL:    [0.44, 0.72],  // left ankle tucked under body
+    ankleR:    [0.56, 0.70],
+    footL:     [0.46, 0.76],  // left foot under body, toes point back
+    footR:     [0.56, 0.74],  // right foot, toes curled forward
+    headAngle: 0,
+    bodyVis:   0.35,
+    headSize:  0.9,
+  },
+  tawarruk: {
+    // Final tashahhud — from above:
+    // left foot passes under right leg, emerges right. Sitting on left hip.
+    head:      [0.48, 0.40],
+    shoulder:  [0.48, 0.44],
+    shoulderL: [0.40, 0.44],
+    shoulderR: [0.56, 0.44],
+    elbowL:    [0.38, 0.50],
+    elbowR:    [0.58, 0.50],
+    wristL:    [0.40, 0.56],
+    wristR:    [0.56, 0.56],
+    spine:     [0.48, 0.48],
+    hip:       [0.47, 0.54],
+    hipL:      [0.42, 0.55],  // shifted left — sitting on left hip
+    hipR:      [0.52, 0.53],
+    kneeL:     [0.36, 0.63],  // left knee angled inward
+    kneeR:     [0.62, 0.62],
+    ankleL:    [0.56, 0.72],  // left ankle crosses under to right side
+    ankleR:    [0.58, 0.70],
+    footL:     [0.60, 0.76],  // left foot emerges on right side
+    footR:     [0.58, 0.74],
+    headAngle: 0,
+    bodyVis:   0.35,
+    headSize:  0.9,
+  },
+  tasleem_r: {
+    head:      [0.56, 0.40],  // head shifted right
+    shoulder:  [0.48, 0.44],
+    shoulderL: [0.40, 0.44],
+    shoulderR: [0.56, 0.44],
+    elbowL:    [0.38, 0.50],
+    elbowR:    [0.58, 0.50],
+    wristL:    [0.40, 0.56],
+    wristR:    [0.56, 0.56],
+    spine:     [0.48, 0.48],
+    hip:       [0.47, 0.54],
+    hipL:      [0.42, 0.55],
+    hipR:      [0.52, 0.53],
+    kneeL:     [0.36, 0.63],
+    kneeR:     [0.62, 0.62],
+    ankleL:    [0.56, 0.72],
+    ankleR:    [0.58, 0.70],
+    footL:     [0.60, 0.76],
+    footR:     [0.58, 0.74],
+    headAngle: 90,
+    bodyVis:   0.35,
+    headSize:  0.9,
+  },
+  tasleem_l: {
+    head:      [0.40, 0.40],  // head shifted left
+    shoulder:  [0.48, 0.44],
+    shoulderL: [0.40, 0.44],
+    shoulderR: [0.56, 0.44],
+    elbowL:    [0.38, 0.50],
+    elbowR:    [0.58, 0.50],
+    wristL:    [0.40, 0.56],
+    wristR:    [0.56, 0.56],
+    spine:     [0.48, 0.48],
+    hip:       [0.47, 0.54],
+    hipL:      [0.42, 0.55],
+    hipR:      [0.52, 0.53],
+    kneeL:     [0.36, 0.63],
+    kneeR:     [0.62, 0.62],
+    ankleL:    [0.56, 0.72],
+    ankleR:    [0.58, 0.70],
+    footL:     [0.60, 0.76],
+    footR:     [0.58, 0.74],
+    headAngle: -90,
+    bodyVis:   0.35,
+    headSize:  0.9,
+  },
+};
+
+// Map animation stages to top-down pose keys
+function getTDPose(stage) {
+  const map = {
+    'qiyam': 'qiyam', 'qiyam_return': 'qiyam',
+    'ruku': 'ruku',
+    'trans_sujud': 'goingDown',
+    'sujud_1': 'sujud', 'sujud_2': 'sujud',
+    'juloos_1': 'iftirash',       // sitting between sujuds
+    'tashahhud': 'tawarruk',      // final sitting
+    'tasleem_r': 'tasleem_r',
+    'tasleem_mid': 'tawarruk',
+    'tasleem_l': 'tasleem_l',
+  };
+  return map[stage] || 'qiyam';
+}
+
+// Interpolate top-down poses
+let tdCurrentPose = null;
+const TD_LERP = 0.06;
+
+function lerpTD(current, target) {
+  if (!current) return JSON.parse(JSON.stringify(target));
+  const result = {};
+  for (const key in target) {
+    if (Array.isArray(target[key])) {
+      result[key] = [
+        current[key][0] + (target[key][0] - current[key][0]) * TD_LERP,
+        current[key][1] + (target[key][1] - current[key][1]) * TD_LERP,
+      ];
+    } else {
+      result[key] = current[key] + (target[key] - current[key]) * TD_LERP;
+    }
+  }
+  return result;
+}
+
+function tdToCanvas(nx, ny) {
+  const padX = 60, padY = 30;
+  return [padX + nx * (TDW - 2 * padX), padY + ny * (TDH - 2 * padY)];
+}
+
+function drawTopDown(stage) {
+  const targetPoseKey = getTDPose(stage);
+  const targetPose = TD_POSES[targetPoseKey];
+  tdCurrentPose = lerpTD(tdCurrentPose, targetPose);
+  const p = tdCurrentPose;
+  const vis = p.bodyVis;  // 0 = body hidden below head, 1 = fully visible
+
+  tdCtx.clearRect(0, 0, TDW, TDH);
+
+  // Background
+  tdCtx.fillStyle = '#0a0e14';
+  tdCtx.fillRect(0, 0, TDW, TDH);
+
+  // Prayer mat
+  const matLeft = TDW * 0.25, matTop = TDH * 0.08;
+  const matW = TDW * 0.50, matH = TDH * 0.84;
+  tdCtx.strokeStyle = '#30363d88';
+  tdCtx.lineWidth = 1;
+  tdCtx.strokeRect(matLeft, matTop, matW, matH);
+
+  // Qibla direction indicator
+  tdCtx.fillStyle = '#d4af3744';
+  tdCtx.font = '10px sans-serif';
+  tdCtx.textAlign = 'center';
+  tdCtx.fillText('↑ قِبْلَة', TDW / 2, matTop - 4);
+
+  // ---- BODY (drawn with visibility-based opacity) ----
+  const bodyAlpha = 0.15 + vis * 0.65;  // range: 0.15 (ghostly) to 0.80
+
+  // Torso fill
+  const [shLx, shLy] = tdToCanvas(...p.shoulderL);
+  const [shRx, shRy] = tdToCanvas(...p.shoulderR);
+  const [hiLx, hiLy] = tdToCanvas(...p.hipL);
+  const [hiRx, hiRy] = tdToCanvas(...p.hipR);
+  const torsoCx = (shLx + shRx) / 2;
+  const torsoCy = (shLy + hiLy) / 2;
+  const torsoW = Math.abs(shRx - shLx) / 2 + 8;
+  const torsoH = Math.abs(hiLy - shLy) / 2 + 6;
+
+  if (vis > 0.1) {
+    tdCtx.save();
+    tdCtx.globalAlpha = bodyAlpha * 0.6;
+    tdCtx.fillStyle = '#1a2233';
+    tdCtx.beginPath();
+    tdCtx.ellipse(torsoCx, torsoCy, torsoW, Math.max(torsoH, 4), 0, 0, Math.PI * 2);
+    tdCtx.fill();
+    tdCtx.restore();
+  }
+
+  // Bones
+  const bones = [
+    ['shoulder', 'spine'], ['spine', 'hip'],
+    ['shoulderL', 'elbowL'], ['elbowL', 'wristL'],
+    ['shoulderR', 'elbowR'], ['elbowR', 'wristR'],
+    ['hipL', 'kneeL'], ['kneeL', 'ankleL'], ['ankleL', 'footL'],
+    ['hipR', 'kneeR'], ['kneeR', 'ankleR'], ['ankleR', 'footR'],
+    ['shoulderL', 'shoulderR'],
+    ['hipL', 'hipR'],
+  ];
+
+  // Arms are always somewhat visible (they extend outward from body)
+  const armParts = new Set(['shoulderL','elbowL','wristL','shoulderR','elbowR','wristR']);
+  const footParts = new Set(['footL','footR']);
+
+  tdCtx.lineWidth = 2;
+  for (const [from, to] of bones) {
+    const isArm = armParts.has(from) || armParts.has(to);
+    const isFoot = footParts.has(from) || footParts.has(to);
+    const boneAlpha = isArm ? Math.max(bodyAlpha, 0.3) : isFoot ? Math.max(bodyAlpha, 0.5) : bodyAlpha;
+
+    tdCtx.save();
+    tdCtx.globalAlpha = boneAlpha;
+    tdCtx.strokeStyle = '#e8e0d0';
+    const [x1, y1] = tdToCanvas(...p[from]);
+    const [x2, y2] = tdToCanvas(...p[to]);
+    tdCtx.beginPath();
+    tdCtx.moveTo(x1, y1);
+    tdCtx.lineTo(x2, y2);
+    tdCtx.stroke();
+    tdCtx.restore();
+  }
+
+  // Joints
+  const jointNames = [
+    'shoulderL', 'shoulderR', 'elbowL', 'elbowR', 'wristL', 'wristR',
+    'spine', 'hipL', 'hipR', 'kneeL', 'kneeR', 'ankleL', 'ankleR',
+    'footL', 'footR',
+  ];
+  for (const jn of jointNames) {
+    const isArm = armParts.has(jn);
+    const isFoot = footParts.has(jn);
+    const jAlpha = isArm ? Math.max(bodyAlpha, 0.3) : isFoot ? Math.max(bodyAlpha, 0.5) : bodyAlpha;
+
+    tdCtx.save();
+    tdCtx.globalAlpha = jAlpha;
+    const [jx, jy] = tdToCanvas(...p[jn]);
+    tdCtx.fillStyle = '#d4af37';
+    tdCtx.beginPath();
+    tdCtx.arc(jx, jy, 3, 0, Math.PI * 2);
+    tdCtx.fill();
+    tdCtx.restore();
+  }
+
+  // ---- HEAD (always fully visible — it's the top of the view) ----
+  const [hx, hy] = tdToCanvas(...p.head);
+  const headR = 10 + (p.headSize || 0.8) * 10;  // 10-20px radius depending on pose
+  // Head shadow/glow
+  tdCtx.save();
+  const headGlow = tdCtx.createRadialGradient(hx, hy, headR * 0.5, hx, hy, headR * 1.8);
+  headGlow.addColorStop(0, 'rgba(26,34,51,0.5)');
+  headGlow.addColorStop(1, 'rgba(26,34,51,0)');
+  tdCtx.fillStyle = headGlow;
+  tdCtx.fillRect(hx - headR * 2, hy - headR * 2, headR * 4, headR * 4);
+  tdCtx.restore();
+
+  // Head circle
+  tdCtx.fillStyle = '#1a2233';
+  tdCtx.strokeStyle = '#e8e0d0cc';
+  tdCtx.lineWidth = 2;
+  tdCtx.beginPath();
+  tdCtx.arc(hx, hy, headR, 0, Math.PI * 2);
+  tdCtx.fill();
+  tdCtx.stroke();
+
+  // Nose direction indicator
+  const headAng = (p.headAngle || 0) * Math.PI / 180;
+  const noseDir = -Math.PI / 2 + headAng;
+  tdCtx.fillStyle = '#d4af37cc';
+  tdCtx.beginPath();
+  tdCtx.arc(hx + Math.cos(noseDir) * (headR - 4), hy + Math.sin(noseDir) * (headR - 4), 3.5, 0, Math.PI * 2);
+  tdCtx.fill();
+
+  // ---- SUJUD: 7 ground contact points with pulsing gold ----
+  if (targetPoseKey === 'sujud') {
+    const pulse = 0.5 + 0.5 * Math.sin(Date.now() / 400);
+    const contacts = [
+      { pos: p.head, label: 'جَبْهَة', r: 7 },
+      { pos: p.wristL, label: 'كَفّ', r: 5 },
+      { pos: p.wristR, label: 'كَفّ', r: 5 },
+      { pos: p.kneeL, label: 'رُكْبَة', r: 5 },
+      { pos: p.kneeR, label: 'رُكْبَة', r: 5 },
+      { pos: p.footL, label: 'قَدَم', r: 4 },
+      { pos: p.footR, label: 'قَدَم', r: 4 },
+    ];
+    for (const c of contacts) {
+      const [cx, cy] = tdToCanvas(...c.pos);
+      tdCtx.strokeStyle = `rgba(212, 175, 55, ${pulse * 0.6})`;
+      tdCtx.lineWidth = 2;
+      tdCtx.beginPath();
+      tdCtx.arc(cx, cy, c.r + 4, 0, Math.PI * 2);
+      tdCtx.stroke();
+      tdCtx.fillStyle = `rgba(212, 175, 55, ${0.4 + pulse * 0.4})`;
+      tdCtx.beginPath();
+      tdCtx.arc(cx, cy, c.r, 0, Math.PI * 2);
+      tdCtx.fill();
+    }
+    tdCtx.fillStyle = '#d4af37cc';
+    tdCtx.font = 'bold 11px sans-serif';
+    tdCtx.textAlign = 'center';
+    tdCtx.fillText('٧ نُقَاط الْأَرْضِ — 7 Ground Contacts', TDW / 2, TDH - 8);
+  }
+
+  // Stage label
+  tdCtx.fillStyle = '#8b949e88';
+  tdCtx.font = '9px sans-serif';
+  tdCtx.textAlign = 'right';
+  tdCtx.fillText(stage.replace(/_/g, ' '), TDW - 15, TDH - 8);
+}
+
+// ============================================================
+// PELVIS / SACRUM ZOOM VIEW — الحَوْض والعَجُز
+// ============================================================
+const bvCanvas = document.getElementById('backView');
+const bvCtx = bvCanvas.getContext('2d');
+const BVW = bvCanvas.width;
+const BVH = bvCanvas.height;
+
+// Pelvis zoom poses: detailed pelvic anatomy from behind
+// Zoomed to show waist → feet only. Top ~35% = pelvis/sacrum, middle ~30% = femurs/knees, bottom ~35% = lower legs/feet
+// x: 0=left, 1=right, 0.5=center
+// y: 0=top, 1=bottom
+const PELVIS_POSES = {
+  qiyam: {
+    // Pelvis/sacrum landmarks
+    L5:          [0.50, 0.06],   // last lumbar vertebra
+    sacrumTop:   [0.50, 0.09],   // S1
+    sacrumMidL:  [0.44, 0.14],   // left edge mid-sacrum
+    sacrumMidR:  [0.56, 0.14],   // right edge mid-sacrum
+    sacrumTip:   [0.50, 0.20],   // S5 inferior tip
+    coccyx:      [0.50, 0.24],   // tailbone
+    siJointL:    [0.40, 0.10],   // left sacroiliac joint
+    siJointR:    [0.60, 0.10],   // right sacroiliac joint
+    iliacCrestL: [0.24, 0.05],   // left iliac crest peak
+    iliacCrestR: [0.76, 0.05],   // right iliac crest peak
+    asisL:       [0.20, 0.14],   // left ASIS (anterior superior iliac spine)
+    asisR:       [0.80, 0.14],
+    ischiumL:    [0.36, 0.28],   // left ischial tuberosity (sit bone)
+    ischiumR:    [0.64, 0.28],
+    acetabulumL: [0.34, 0.24],   // left hip socket
+    acetabulumR: [0.66, 0.24],
+    // Femurs
+    trochanterL: [0.26, 0.27],   // greater trochanter
+    trochanterR: [0.74, 0.27],
+    midFemurL:   [0.38, 0.40],
+    midFemurR:   [0.62, 0.40],
+    kneeL:       [0.40, 0.52],
+    kneeR:       [0.60, 0.52],
+    // Lower legs
+    midTibiaL:   [0.40, 0.66],
+    midTibiaR:   [0.60, 0.66],
+    ankleL:      [0.40, 0.80],
+    ankleR:      [0.60, 0.80],
+    heelL:       [0.39, 0.85],
+    heelR:       [0.61, 0.85],
+    toeL:        [0.42, 0.90],
+    toeR:        [0.58, 0.90],
+    // Scalars
+    pelvisTilt:      5,    // anterior pelvic tilt degrees
+    pelvicObliquity: 0,    // lateral tilt (+ = left higher)
+    hipHeightDiff:   0,    // vertical offset between hips
+    footMode:        'normal',
+  },
+  ruku: {
+    L5:          [0.50, 0.08],
+    sacrumTop:   [0.50, 0.11],
+    sacrumMidL:  [0.44, 0.16],
+    sacrumMidR:  [0.56, 0.16],
+    sacrumTip:   [0.50, 0.22],
+    coccyx:      [0.50, 0.26],
+    siJointL:    [0.40, 0.12],
+    siJointR:    [0.60, 0.12],
+    iliacCrestL: [0.24, 0.07],
+    iliacCrestR: [0.76, 0.07],
+    asisL:       [0.20, 0.16],
+    asisR:       [0.80, 0.16],
+    ischiumL:    [0.36, 0.30],
+    ischiumR:    [0.64, 0.30],
+    acetabulumL: [0.34, 0.26],
+    acetabulumR: [0.66, 0.26],
+    trochanterL: [0.26, 0.29],
+    trochanterR: [0.74, 0.29],
+    midFemurL:   [0.38, 0.41],
+    midFemurR:   [0.62, 0.41],
+    kneeL:       [0.40, 0.52],
+    kneeR:       [0.60, 0.52],
+    midTibiaL:   [0.40, 0.66],
+    midTibiaR:   [0.60, 0.66],
+    ankleL:      [0.40, 0.80],
+    ankleR:      [0.60, 0.80],
+    heelL:       [0.39, 0.85],
+    heelR:       [0.61, 0.85],
+    toeL:        [0.42, 0.90],
+    toeR:        [0.58, 0.90],
+    pelvisTilt:      45,
+    pelvicObliquity: 0,
+    hipHeightDiff:   0,
+    footMode:        'normal',
+  },
+  goingDown: {
+    L5:          [0.50, 0.09],
+    sacrumTop:   [0.50, 0.12],
+    sacrumMidL:  [0.44, 0.17],
+    sacrumMidR:  [0.56, 0.17],
+    sacrumTip:   [0.50, 0.23],
+    coccyx:      [0.50, 0.27],
+    siJointL:    [0.40, 0.13],
+    siJointR:    [0.60, 0.13],
+    iliacCrestL: [0.24, 0.08],
+    iliacCrestR: [0.76, 0.08],
+    asisL:       [0.20, 0.17],
+    asisR:       [0.80, 0.17],
+    ischiumL:    [0.36, 0.31],
+    ischiumR:    [0.64, 0.31],
+    acetabulumL: [0.34, 0.27],
+    acetabulumR: [0.66, 0.27],
+    trochanterL: [0.26, 0.30],
+    trochanterR: [0.74, 0.30],
+    midFemurL:   [0.36, 0.43],
+    midFemurR:   [0.64, 0.43],
+    kneeL:       [0.38, 0.56],
+    kneeR:       [0.62, 0.56],
+    midTibiaL:   [0.38, 0.68],
+    midTibiaR:   [0.62, 0.68],
+    ankleL:      [0.38, 0.80],
+    ankleR:      [0.62, 0.80],
+    heelL:       [0.37, 0.85],
+    heelR:       [0.63, 0.85],
+    toeL:        [0.40, 0.90],
+    toeR:        [0.60, 0.90],
+    pelvisTilt:      30,
+    pelvicObliquity: 0,
+    hipHeightDiff:   0,
+    footMode:        'normal',
+  },
+  sujud: {
+    L5:          [0.50, 0.04],
+    sacrumTop:   [0.50, 0.07],
+    sacrumMidL:  [0.44, 0.12],
+    sacrumMidR:  [0.56, 0.12],
+    sacrumTip:   [0.50, 0.18],
+    coccyx:      [0.50, 0.22],
+    siJointL:    [0.40, 0.08],
+    siJointR:    [0.60, 0.08],
+    iliacCrestL: [0.24, 0.03],
+    iliacCrestR: [0.76, 0.03],
+    asisL:       [0.20, 0.12],
+    asisR:       [0.80, 0.12],
+    ischiumL:    [0.36, 0.26],
+    ischiumR:    [0.64, 0.26],
+    acetabulumL: [0.34, 0.22],
+    acetabulumR: [0.66, 0.22],
+    trochanterL: [0.26, 0.25],
+    trochanterR: [0.74, 0.25],
+    midFemurL:   [0.34, 0.40],
+    midFemurR:   [0.66, 0.40],
+    kneeL:       [0.36, 0.56],
+    kneeR:       [0.64, 0.56],
+    midTibiaL:   [0.38, 0.68],
+    midTibiaR:   [0.62, 0.68],
+    ankleL:      [0.40, 0.80],
+    ankleR:      [0.60, 0.80],
+    heelL:       [0.39, 0.83],
+    heelR:       [0.61, 0.83],
+    toeL:        [0.42, 0.90],
+    toeR:        [0.58, 0.90],
+    pelvisTilt:      60,
+    pelvicObliquity: 0,
+    hipHeightDiff:   0,
+    footMode:        'normal',
+  },
+  iftirash: {
+    // Sitting between sujuds — SYMMETRIC pelvis
+    L5:          [0.50, 0.06],
+    sacrumTop:   [0.50, 0.09],
+    sacrumMidL:  [0.44, 0.14],
+    sacrumMidR:  [0.56, 0.14],
+    sacrumTip:   [0.50, 0.20],
+    coccyx:      [0.50, 0.24],
+    siJointL:    [0.40, 0.10],
+    siJointR:    [0.60, 0.10],
+    iliacCrestL: [0.24, 0.05],   // LEVEL — same height both sides
+    iliacCrestR: [0.76, 0.05],
+    asisL:       [0.20, 0.14],
+    asisR:       [0.80, 0.14],
+    ischiumL:    [0.36, 0.28],   // both sit bones same height
+    ischiumR:    [0.64, 0.28],
+    acetabulumL: [0.34, 0.24],
+    acetabulumR: [0.66, 0.24],
+    trochanterL: [0.26, 0.27],
+    trochanterR: [0.74, 0.27],
+    midFemurL:   [0.34, 0.42],
+    midFemurR:   [0.66, 0.42],
+    kneeL:       [0.36, 0.54],   // knees splayed out
+    kneeR:       [0.64, 0.54],
+    midTibiaL:   [0.40, 0.66],
+    midTibiaR:   [0.60, 0.66],
+    ankleL:      [0.44, 0.76],   // left ankle tucked under
+    ankleR:      [0.58, 0.76],
+    heelL:       [0.44, 0.78],
+    heelR:       [0.58, 0.78],
+    toeL:        [0.46, 0.84],   // left foot: sole visible (tucked)
+    toeR:        [0.58, 0.86],   // right foot: toes on ground
+    pelvisTilt:      10,
+    pelvicObliquity: 0,          // LEVEL — key difference from tawarruk
+    hipHeightDiff:   0,
+    footMode:        'iftirash',
+  },
+  tawarruk: {
+    // Final tashahhud — ASYMMETRIC pelvis (left hip lower)
+    L5:          [0.48, 0.06],
+    sacrumTop:   [0.48, 0.09],
+    sacrumMidL:  [0.42, 0.15],   // left side drops
+    sacrumMidR:  [0.55, 0.13],   // right side stays
+    sacrumTip:   [0.48, 0.21],
+    coccyx:      [0.47, 0.25],
+    siJointL:    [0.38, 0.11],
+    siJointR:    [0.59, 0.09],
+    iliacCrestL: [0.22, 0.08],   // LEFT LOWER — drops 3 units
+    iliacCrestR: [0.76, 0.04],   // RIGHT STAYS HIGH
+    asisL:       [0.18, 0.17],
+    asisR:       [0.80, 0.13],
+    ischiumL:    [0.34, 0.30],   // left sit bone lower (weight-bearing)
+    ischiumR:    [0.64, 0.26],
+    acetabulumL: [0.32, 0.26],
+    acetabulumR: [0.66, 0.22],
+    trochanterL: [0.24, 0.29],
+    trochanterR: [0.74, 0.25],
+    midFemurL:   [0.30, 0.44],   // left femur angled more inward
+    midFemurR:   [0.68, 0.40],
+    kneeL:       [0.32, 0.56],
+    kneeR:       [0.66, 0.54],
+    midTibiaL:   [0.46, 0.66],   // left shin crosses under
+    midTibiaR:   [0.62, 0.66],
+    ankleL:      [0.56, 0.76],   // left ankle emerges on right side
+    ankleR:      [0.60, 0.76],
+    heelL:       [0.56, 0.78],
+    heelR:       [0.60, 0.78],
+    toeL:        [0.60, 0.84],   // left foot on right side
+    toeR:        [0.60, 0.86],
+    pelvisTilt:      10,
+    pelvicObliquity: 12,         // 12 deg lateral tilt — LEFT LOWER
+    hipHeightDiff:  -0.04,
+    footMode:        'tawarruk',
+  },
+  tasleem_r: {
+    // Same pelvis as tawarruk (body unchanged during tasleem)
+    L5:          [0.48, 0.06],
+    sacrumTop:   [0.48, 0.09],
+    sacrumMidL:  [0.42, 0.15],
+    sacrumMidR:  [0.55, 0.13],
+    sacrumTip:   [0.48, 0.21],
+    coccyx:      [0.47, 0.25],
+    siJointL:    [0.38, 0.11],
+    siJointR:    [0.59, 0.09],
+    iliacCrestL: [0.22, 0.08],
+    iliacCrestR: [0.76, 0.04],
+    asisL:       [0.18, 0.17],
+    asisR:       [0.80, 0.13],
+    ischiumL:    [0.34, 0.30],
+    ischiumR:    [0.64, 0.26],
+    acetabulumL: [0.32, 0.26],
+    acetabulumR: [0.66, 0.22],
+    trochanterL: [0.24, 0.29],
+    trochanterR: [0.74, 0.25],
+    midFemurL:   [0.30, 0.44],
+    midFemurR:   [0.68, 0.40],
+    kneeL:       [0.32, 0.56],
+    kneeR:       [0.66, 0.54],
+    midTibiaL:   [0.46, 0.66],
+    midTibiaR:   [0.62, 0.66],
+    ankleL:      [0.56, 0.76],
+    ankleR:      [0.60, 0.76],
+    heelL:       [0.56, 0.78],
+    heelR:       [0.60, 0.78],
+    toeL:        [0.60, 0.84],
+    toeR:        [0.60, 0.86],
+    pelvisTilt:      10,
+    pelvicObliquity: 12,
+    hipHeightDiff:  -0.04,
+    footMode:        'tawarruk',
+  },
+  tasleem_l: {
+    L5:          [0.48, 0.06],
+    sacrumTop:   [0.48, 0.09],
+    sacrumMidL:  [0.42, 0.15],
+    sacrumMidR:  [0.55, 0.13],
+    sacrumTip:   [0.48, 0.21],
+    coccyx:      [0.47, 0.25],
+    siJointL:    [0.38, 0.11],
+    siJointR:    [0.59, 0.09],
+    iliacCrestL: [0.22, 0.08],
+    iliacCrestR: [0.76, 0.04],
+    asisL:       [0.18, 0.17],
+    asisR:       [0.80, 0.13],
+    ischiumL:    [0.34, 0.30],
+    ischiumR:    [0.64, 0.26],
+    acetabulumL: [0.32, 0.26],
+    acetabulumR: [0.66, 0.22],
+    trochanterL: [0.24, 0.29],
+    trochanterR: [0.74, 0.25],
+    midFemurL:   [0.30, 0.44],
+    midFemurR:   [0.68, 0.40],
+    kneeL:       [0.32, 0.56],
+    kneeR:       [0.66, 0.54],
+    midTibiaL:   [0.46, 0.66],
+    midTibiaR:   [0.62, 0.66],
+    ankleL:      [0.56, 0.76],
+    ankleR:      [0.60, 0.76],
+    heelL:       [0.56, 0.78],
+    heelR:       [0.60, 0.78],
+    toeL:        [0.60, 0.84],
+    toeR:        [0.60, 0.86],
+    pelvisTilt:      10,
+    pelvicObliquity: 12,
+    hipHeightDiff:  -0.04,
+    footMode:        'tawarruk',
+  },
+};
+
+// Map animation stages to pelvis pose keys
+function getBVPose(stage) {
+  const map = {
+    'qiyam': 'qiyam', 'qiyam_return': 'qiyam',
+    'ruku': 'ruku',
+    'trans_sujud': 'goingDown',
+    'sujud_1': 'sujud', 'sujud_2': 'sujud',
+    'juloos_1': 'iftirash',
+    'tashahhud': 'tawarruk',
+    'tasleem_r': 'tasleem_r',
+    'tasleem_mid': 'tawarruk',
+    'tasleem_l': 'tasleem_l',
+  };
+  return map[stage] || 'qiyam';
+}
+
+// Interpolate pelvis poses
+let bvCurrentPose = null;
+const BV_LERP = 0.06;
+
+function lerpBV(current, target) {
+  if (!current) return JSON.parse(JSON.stringify(target));
+  const result = {};
+  for (const key in target) {
+    if (Array.isArray(target[key])) {
+      result[key] = [
+        current[key][0] + (target[key][0] - current[key][0]) * BV_LERP,
+        current[key][1] + (target[key][1] - current[key][1]) * BV_LERP,
+      ];
+    } else if (typeof target[key] === 'number') {
+      result[key] = current[key] + (target[key] - current[key]) * BV_LERP;
+    } else {
+      result[key] = target[key];
+    }
+  }
+  return result;
+}
+
+function bvToCanvas(nx, ny) {
+  const padX = 25, padY = 15;
+  return [padX + nx * (BVW - 2 * padX), padY + ny * (BVH - 2 * padY)];
+}
+
+function drawPelvisView(stage) {
+  const targetPoseKey = getBVPose(stage);
+  const targetPose = PELVIS_POSES[targetPoseKey];
+  bvCurrentPose = lerpBV(bvCurrentPose, targetPose);
+  const p = bvCurrentPose;
+  const c = bvCtx;
+
+  c.clearRect(0, 0, BVW, BVH);
+  c.fillStyle = '#0a0e14';
+  c.fillRect(0, 0, BVW, BVH);
+
+  const boneColor = '#e8e0d0';
+  const boneStroke = '#e8e0d0cc';
+  const boneFill = '#1a2233';
+  const gold = '#d4af37';
+
+  // ---- GROUND + MAT ----
+  const [, groundY] = bvToCanvas(0, 0.93);
+  c.strokeStyle = '#21262d';
+  c.lineWidth = 1;
+  c.beginPath();
+  c.moveTo(0, groundY);
+  c.lineTo(BVW, groundY);
+  c.stroke();
+
+  const [matLx] = bvToCanvas(0.10, 0);
+  const [matRx] = bvToCanvas(0.90, 0);
+  c.fillStyle = '#1a2a1a';
+  c.fillRect(matLx, groundY - 3, matRx - matLx, 6);
+
+  // ---- LAYER 1: PELVIS OUTLINE (butterfly shape from behind) ----
+  const [icLx, icLy] = bvToCanvas(...p.iliacCrestL);
+  const [icRx, icRy] = bvToCanvas(...p.iliacCrestR);
+  const [asLx, asLy] = bvToCanvas(...p.asisL);
+  const [asRx, asRy] = bvToCanvas(...p.asisR);
+  const [isLx, isLy] = bvToCanvas(...p.ischiumL);
+  const [isRx, isRy] = bvToCanvas(...p.ischiumR);
+  const [acLx, acLy] = bvToCanvas(...p.acetabulumL);
+  const [acRx, acRy] = bvToCanvas(...p.acetabulumR);
+  const [stx, sty] = bvToCanvas(...p.sacrumTop);
+  const [ccx, ccy] = bvToCanvas(...p.coccyx);
+
+  c.save();
+  c.globalAlpha = 0.25;
+  c.fillStyle = boneFill;
+  c.strokeStyle = boneStroke;
+  c.lineWidth = 1.5;
+  c.beginPath();
+  // Left iliac crest → down outer edge → ASIS → acetabulum → ischium
+  c.moveTo(icLx, icLy);
+  c.bezierCurveTo(icLx - 8, icLy + 15, asLx - 5, asLy - 8, asLx, asLy);
+  c.bezierCurveTo(asLx + 5, asLy + 8, acLx - 8, acLy - 5, acLx, acLy);
+  c.bezierCurveTo(acLx - 2, acLy + 8, isLx - 5, isLy - 5, isLx, isLy);
+  // Bottom arc to center (through pubic area)
+  c.quadraticCurveTo((isLx + isRx) / 2, isLy + 8, isRx, isRy);
+  // Right side (mirror) up
+  c.bezierCurveTo(isRx + 5, isRy - 5, acRx + 2, acRy + 8, acRx, acRy);
+  c.bezierCurveTo(acRx + 8, acRy - 5, asRx + 5, asRy + 8, asRx, asRy);
+  c.bezierCurveTo(asRx + 5, asRy - 8, icRx + 8, icRy + 15, icRx, icRy);
+  // Top arc back (through sacrum area)
+  c.quadraticCurveTo(stx, icLy - 8, icLx, icLy);
+  c.closePath();
+  c.fill();
+  c.globalAlpha = 0.5;
+  c.stroke();
+  c.restore();
+
+  // ---- LAYER 2: SACRUM (inverted triangle) ----
+  const [siLx, siLy] = bvToCanvas(...p.siJointL);
+  const [siRx, siRy] = bvToCanvas(...p.siJointR);
+  const [smLx, smLy] = bvToCanvas(...p.sacrumMidL);
+  const [smRx, smRy] = bvToCanvas(...p.sacrumMidR);
+  const [stpx, stpy] = bvToCanvas(...p.sacrumTip);
+
+  c.save();
+  c.globalAlpha = 0.4;
+  c.fillStyle = '#1e2a3a';
+  c.strokeStyle = boneColor + 'aa';
+  c.lineWidth = 1.5;
+  c.beginPath();
+  c.moveTo(siLx, siLy);
+  c.lineTo(stx, sty);
+  c.lineTo(siRx, siRy);
+  c.lineTo(smRx, smRy);
+  c.lineTo(stpx, stpy);
+  c.lineTo(smLx, smLy);
+  c.closePath();
+  c.fill();
+  c.globalAlpha = 0.7;
+  c.stroke();
+  c.restore();
+
+  // Sacral vertebral lines (S1-S5 dividers)
+  c.save();
+  c.strokeStyle = boneColor + '44';
+  c.lineWidth = 0.8;
+  for (let i = 1; i <= 4; i++) {
+    const t = i / 5;
+    const ly = siLy + (stpy - siLy) * t;
+    const lw = (1 - t * 0.6) * (siRx - siLx) / 2;
+    const cx2 = (siLx + siRx) / 2;
+    c.beginPath();
+    c.moveTo(cx2 - lw, ly);
+    c.lineTo(cx2 + lw, ly);
+    c.stroke();
+  }
+  // Sacral foramina (nerve openings — 4 pairs)
+  c.fillStyle = '#0a0e14';
+  for (let i = 1; i <= 4; i++) {
+    const t = i / 5;
+    const fy = siLy + (stpy - siLy) * t;
+    const fw = (1 - t * 0.5) * (siRx - siLx) / 2 * 0.55;
+    const cx2 = (siLx + siRx) / 2;
+    c.beginPath();
+    c.arc(cx2 - fw, fy, 2, 0, Math.PI * 2);
+    c.fill();
+    c.beginPath();
+    c.arc(cx2 + fw, fy, 2, 0, Math.PI * 2);
+    c.fill();
+  }
+  c.restore();
+
+  // ---- LAYER 3: COCCYX ----
+  c.save();
+  c.strokeStyle = boneColor + '88';
+  c.lineWidth = 2;
+  c.beginPath();
+  c.moveTo(stpx, stpy);
+  c.quadraticCurveTo(ccx - 2, (stpy + ccy) / 2, ccx, ccy);
+  c.stroke();
+  // Coccyx tip
+  c.fillStyle = boneColor + '66';
+  c.beginPath();
+  c.arc(ccx, ccy, 2.5, 0, Math.PI * 2);
+  c.fill();
+  c.restore();
+
+  // ---- LAYER 4: L5 VERTEBRA ----
+  const [l5x, l5y] = bvToCanvas(...p.L5);
+  c.save();
+  c.fillStyle = '#1e2a3a';
+  c.strokeStyle = boneColor + 'aa';
+  c.lineWidth = 1.2;
+  // Vertebral body (rectangular)
+  const vbW = 16, vbH = 8;
+  c.fillRect(l5x - vbW / 2, l5y - vbH / 2, vbW, vbH);
+  c.strokeRect(l5x - vbW / 2, l5y - vbH / 2, vbW, vbH);
+  // Spinous process (posterior bump)
+  c.beginPath();
+  c.moveTo(l5x - 3, l5y - vbH / 2);
+  c.lineTo(l5x, l5y - vbH / 2 - 6);
+  c.lineTo(l5x + 3, l5y - vbH / 2);
+  c.fill();
+  c.stroke();
+  // Transverse processes
+  c.lineWidth = 1.5;
+  c.beginPath();
+  c.moveTo(l5x - vbW / 2, l5y);
+  c.lineTo(l5x - vbW / 2 - 8, l5y - 2);
+  c.stroke();
+  c.beginPath();
+  c.moveTo(l5x + vbW / 2, l5y);
+  c.lineTo(l5x + vbW / 2 + 8, l5y - 2);
+  c.stroke();
+  c.restore();
+
+  // ---- LAYER 5: SI JOINTS (gold-highlighted) ----
+  for (const [jx, jy] of [[siLx, siLy], [siRx, siRy]]) {
+    // Glow
+    c.save();
+    const siGlow = c.createRadialGradient(jx, jy, 1, jx, jy, 8);
+    siGlow.addColorStop(0, 'rgba(212,175,55,0.3)');
+    siGlow.addColorStop(1, 'rgba(212,175,55,0)');
+    c.fillStyle = siGlow;
+    c.fillRect(jx - 10, jy - 10, 20, 20);
+    c.restore();
+    // Dot
+    c.fillStyle = gold;
+    c.beginPath();
+    c.arc(jx, jy, 3.5, 0, Math.PI * 2);
+    c.fill();
+  }
+
+  // ---- LAYER 6: ACETABULA + FEMORAL HEADS ----
+  for (const side of ['L', 'R']) {
+    const [ax, ay] = bvToCanvas(...p['acetabulum' + side]);
+    // Acetabulum (socket ring)
+    c.strokeStyle = boneColor + '88';
+    c.lineWidth = 2;
+    c.beginPath();
+    c.arc(ax, ay, 8, 0, Math.PI * 2);
+    c.stroke();
+    // Femoral head (ball)
+    c.fillStyle = boneFill;
+    c.strokeStyle = boneColor;
+    c.lineWidth = 1.5;
+    c.beginPath();
+    c.arc(ax, ay, 5.5, 0, Math.PI * 2);
+    c.fill();
+    c.stroke();
+    // Femoral neck to trochanter
+    const [tx, ty] = bvToCanvas(...p['trochanter' + side]);
+    c.strokeStyle = boneColor;
+    c.lineWidth = 2.5;
+    c.beginPath();
+    c.moveTo(ax, ay);
+    c.lineTo(tx, ty);
+    c.stroke();
+    // Greater trochanter bump
+    c.fillStyle = gold + '88';
+    c.beginPath();
+    c.arc(tx, ty, 3, 0, Math.PI * 2);
+    c.fill();
+  }
+
+  // ---- LAYER 7: FEMUR BONES ----
+  c.strokeStyle = boneColor;
+  c.lineWidth = 3;
+  for (const side of ['L', 'R']) {
+    const [tx, ty] = bvToCanvas(...p['trochanter' + side]);
+    const [mx, my] = bvToCanvas(...p['midFemur' + side]);
+    const [kx, ky] = bvToCanvas(...p['knee' + side]);
+    c.beginPath();
+    c.moveTo(tx, ty);
+    c.quadraticCurveTo(mx, my, kx, ky);
+    c.stroke();
+    // Knee condyles (wider endpoint)
+    c.fillStyle = boneFill;
+    c.strokeStyle = boneColor + 'cc';
+    c.lineWidth = 1.5;
+    c.beginPath();
+    c.ellipse(kx, ky, 7, 4.5, 0, 0, Math.PI * 2);
+    c.fill();
+    c.stroke();
+    // Knee joint marker
+    c.fillStyle = gold;
+    c.beginPath();
+    c.arc(kx, ky, 3, 0, Math.PI * 2);
+    c.fill();
+  }
+
+  // ---- LAYER 8: LOWER LEGS (tibia) ----
+  c.strokeStyle = boneColor;
+  c.lineWidth = 2.5;
+  for (const side of ['L', 'R']) {
+    const [kx, ky] = bvToCanvas(...p['knee' + side]);
+    const [mtx, mty] = bvToCanvas(...p['midTibia' + side]);
+    const [ax2, ay2] = bvToCanvas(...p['ankle' + side]);
+    c.beginPath();
+    c.moveTo(kx, ky);
+    c.quadraticCurveTo(mtx, mty, ax2, ay2);
+    c.stroke();
+    // Ankle joint
+    c.fillStyle = gold;
+    c.beginPath();
+    c.arc(ax2, ay2, 3, 0, Math.PI * 2);
+    c.fill();
+  }
+
+  // ---- LAYER 9: FEET ----
+  const footMode = p.footMode || 'normal';
+  const [aLx2, aLy2] = bvToCanvas(...p.ankleL);
+  const [aRx2, aRy2] = bvToCanvas(...p.ankleR);
+  const [hLx, hLy] = bvToCanvas(...p.heelL);
+  const [hRx, hRy] = bvToCanvas(...p.heelR);
+  const [tLx, tLy] = bvToCanvas(...p.toeL);
+  const [tRx, tRy] = bvToCanvas(...p.toeR);
+
+  if (footMode === 'iftirash') {
+    // LEFT foot: sole visible (tucked under body) — oval from behind
+    c.save();
+    c.fillStyle = '#2a1f1a';
+    c.strokeStyle = boneColor + 'aa';
+    c.lineWidth = 1.5;
+    c.beginPath();
+    c.ellipse(tLx, tLy, 14, 8, 0, 0, Math.PI * 2);
+    c.fill();
+    c.stroke();
+    // Toe bumps (5 small arcs at top of oval)
+    c.strokeStyle = '#3a2f24';
+    c.lineWidth = 1;
+    for (let i = -2; i <= 2; i++) {
+      const tx2 = tLx + i * 4.5;
+      c.beginPath();
+      c.arc(tx2, tLy - 6, 2, Math.PI, 0);
+      c.stroke();
+    }
+    // Arch line
+    c.strokeStyle = '#4a3f34';
+    c.lineWidth = 0.8;
+    c.beginPath();
+    c.moveTo(tLx - 10, tLy + 1);
+    c.quadraticCurveTo(tLx, tLy + 4, tLx + 10, tLy + 1);
+    c.stroke();
+    // Heel circle
+    c.strokeStyle = '#3a2f24';
+    c.lineWidth = 1;
+    c.beginPath();
+    c.arc(tLx, tLy + 4, 4, 0, Math.PI * 2);
+    c.stroke();
+    c.restore();
+    // Label
+    c.fillStyle = '#8b949e66';
+    c.font = '7px sans-serif';
+    c.textAlign = 'center';
+    c.fillText('SOLE', tLx, tLy + 16);
+
+    // RIGHT foot: upright with toes curled (dorsiflexed)
+    c.save();
+    c.strokeStyle = boneColor;
+    c.lineWidth = 2;
+    c.beginPath();
+    c.moveTo(aRx2, aRy2);
+    c.lineTo(tRx, tRy);
+    c.stroke();
+    // Toes curled at bottom (wider arc with notches)
+    c.strokeStyle = boneColor + 'aa';
+    c.lineWidth = 1.5;
+    c.beginPath();
+    c.arc(tRx, tRy, 6, 0, Math.PI);
+    c.stroke();
+    // Toe notches
+    for (let i = -2; i <= 2; i++) {
+      c.beginPath();
+      c.moveTo(tRx + i * 2.2, tRy + 6);
+      c.lineTo(tRx + i * 2.2, tRy + 3);
+      c.stroke();
+    }
+    // Heel bump
+    c.fillStyle = boneFill;
+    c.strokeStyle = boneColor + '88';
+    c.lineWidth = 1;
+    c.beginPath();
+    c.arc(aRx2, aRy2, 4.5, 0, Math.PI * 2);
+    c.fill();
+    c.stroke();
+    c.restore();
+    c.fillStyle = '#8b949e66';
+    c.font = '7px sans-serif';
+    c.textAlign = 'center';
+    c.fillText('TOES', tRx, tRy + 16);
+
+  } else if (footMode === 'tawarruk') {
+    // LEFT foot: emerges on right side, sole partially visible
+    c.save();
+    c.fillStyle = '#2a1f1a';
+    c.strokeStyle = boneColor + 'aa';
+    c.lineWidth = 1.5;
+    c.beginPath();
+    c.ellipse(tLx, tLy, 12, 7, 0.3, 0, Math.PI * 2);
+    c.fill();
+    c.stroke();
+    // Toe bumps
+    c.strokeStyle = '#3a2f24';
+    c.lineWidth = 0.8;
+    for (let i = -2; i <= 2; i++) {
+      const tx2 = tLx + i * 3.5 * Math.cos(0.3) - 5 * Math.sin(0.3);
+      const ty2 = tLy + i * 3.5 * Math.sin(0.3) - 5 * Math.cos(0.3);
+      c.beginPath();
+      c.arc(tx2, ty2, 1.5, 0, Math.PI * 2);
+      c.stroke();
+    }
+    c.restore();
+
+    // RIGHT foot: upright with toes curled (same as iftirash right)
+    c.save();
+    c.strokeStyle = boneColor;
+    c.lineWidth = 2;
+    c.beginPath();
+    c.moveTo(aRx2, aRy2);
+    c.lineTo(tRx, tRy);
+    c.stroke();
+    c.strokeStyle = boneColor + 'aa';
+    c.lineWidth = 1.5;
+    c.beginPath();
+    c.arc(tRx, tRy, 6, 0, Math.PI);
+    c.stroke();
+    c.fillStyle = boneFill;
+    c.strokeStyle = boneColor + '88';
+    c.lineWidth = 1;
+    c.beginPath();
+    c.arc(aRx2, aRy2, 4.5, 0, Math.PI * 2);
+    c.fill();
+    c.stroke();
+    c.restore();
+
+  } else {
+    // Normal feet — simple outlines
+    for (const [ax, ay, hx, hy, tx, ty] of [
+      [aLx2, aLy2, hLx, hLy, tLx, tLy],
+      [aRx2, aRy2, hRx, hRy, tRx, tRy],
+    ]) {
+      c.strokeStyle = boneColor;
+      c.lineWidth = 2;
+      c.beginPath();
+      c.moveTo(ax, ay);
+      c.lineTo(hx, hy);
+      c.lineTo(tx, ty);
+      c.stroke();
+      c.fillStyle = gold;
+      c.beginPath();
+      c.arc(tx, ty, 2.5, 0, Math.PI * 2);
+      c.fill();
+    }
+  }
+
+  // ---- LAYER 10: PELVIC TILT ARC ----
+  const tiltDeg = p.pelvisTilt || 0;
+  if (Math.abs(tiltDeg) > 1) {
+    const arcX = BVW - 35;
+    const arcY = sty + 10;
+    const arcR = 18;
+    const startAng = -Math.PI / 2;
+    const sweepRad = (tiltDeg / 90) * (Math.PI / 2);
+
+    // Arc
+    c.save();
+    c.strokeStyle = tiltDeg > 30 ? '#ff6b6bcc' : '#f9a825cc';
+    c.lineWidth = 2;
+    c.beginPath();
+    c.arc(arcX, arcY, arcR, startAng, startAng + sweepRad, false);
+    c.stroke();
+
+    // Arrow head at end of arc
+    const endAng = startAng + sweepRad;
+    const ahx = arcX + Math.cos(endAng) * arcR;
+    const ahy = arcY + Math.sin(endAng) * arcR;
+    c.fillStyle = tiltDeg > 30 ? '#ff6b6bcc' : '#f9a825cc';
+    c.beginPath();
+    c.arc(ahx, ahy, 2.5, 0, Math.PI * 2);
+    c.fill();
+
+    // Label
+    c.fillStyle = '#8b949ecc';
+    c.font = '8px sans-serif';
+    c.textAlign = 'center';
+    c.fillText('Tilt', arcX, arcY - arcR - 6);
+    c.fillStyle = tiltDeg > 30 ? '#ff6b6b' : '#f9a825';
+    c.font = 'bold 9px sans-serif';
+    c.fillText(`${Math.round(tiltDeg)}°`, arcX, arcY - arcR + 5);
+    c.restore();
+  }
+
+  // ---- LAYER 11: OBLIQUITY INDICATOR (tawarruk only) ----
+  const obliq = p.pelvicObliquity || 0;
+  if (Math.abs(obliq) > 1) {
+    // Dashed level reference line
+    c.save();
+    c.setLineDash([4, 3]);
+    c.strokeStyle = '#484f58';
+    c.lineWidth = 1;
+    const refY = (icLy + icRy) / 2;
+    c.beginPath();
+    c.moveTo(icLx - 15, refY);
+    c.lineTo(icRx + 15, refY);
+    c.stroke();
+    c.setLineDash([]);
+
+    // Actual tilted crest line (solid gold)
+    c.strokeStyle = '#f9a825cc';
+    c.lineWidth = 2;
+    c.beginPath();
+    c.moveTo(icLx, icLy);
+    c.lineTo(icRx, icRy);
+    c.stroke();
+
+    // Angle arc at center
+    const midCx = (icLx + icRx) / 2;
+    c.strokeStyle = '#f9a825aa';
+    c.lineWidth = 1.5;
+    const obliqRad = Math.atan2(icRy - icLy, icRx - icLx);
+    c.beginPath();
+    c.arc(midCx, refY, 14, 0, obliqRad, obliqRad > 0);
+    c.stroke();
+
+    // Label
+    c.fillStyle = '#f9a825';
+    c.font = 'bold 8px sans-serif';
+    c.textAlign = 'left';
+    c.fillText(`${Math.round(obliq)}° obliq.`, icRx + 8, icRy + 4);
+
+    // Side markers
+    if (obliq > 0) {
+      // Left side lower
+      c.fillStyle = '#ff6b6b88';
+      c.font = '7px sans-serif';
+      c.textAlign = 'right';
+      c.fillText('LOWER', icLx - 3, icLy + 4);
+      c.fillStyle = '#4ecdc488';
+      c.textAlign = 'left';
+      c.fillText('HIGHER', icRx + 3, icRy + 14);
+    }
+    c.restore();
+  }
+
+  // ---- LAYER 12: JOINT LABELS ----
+  c.save();
+  c.font = '7px sans-serif';
+  c.fillStyle = '#8b949e66';
+  c.textAlign = 'center';
+
+  // SI Joints
+  c.fillText('SI', siLx - 12, siLy + 3);
+  c.fillText('SI', siRx + 12, siRy + 3);
+
+  // Key labels only when space allows (not during sujud where things compress)
+  if (tiltDeg < 40) {
+    c.fillText('L5', l5x, l5y - 14);
+    c.fillText('العَجُز', stx, stpy + 12);  // sacrum
+  }
+  c.restore();
+
+  // ---- LAYER 13: SITTING VARIANT LABELS ----
+  if (targetPoseKey === 'iftirash') {
+    c.fillStyle = '#d4af37aa';
+    c.font = 'bold 9px sans-serif';
+    c.textAlign = 'center';
+    c.fillText('إِفْتِرَاش — Iftirash', BVW / 2, BVH - 26);
+    c.fillStyle = '#4ecdc4aa';
+    c.font = '8px sans-serif';
+    c.fillText('Pelvis Level | Symmetric', BVW / 2, BVH - 15);
+  } else if (targetPoseKey === 'tawarruk' || targetPoseKey === 'tasleem_r' || targetPoseKey === 'tasleem_l') {
+    c.fillStyle = '#d4af37aa';
+    c.font = 'bold 9px sans-serif';
+    c.textAlign = 'center';
+    c.fillText('تَوَرُّك — Tawarruk', BVW / 2, BVH - 26);
+    c.fillStyle = '#f9a825aa';
+    c.font = '8px sans-serif';
+    c.fillText(`L hip lower | Asymmetric ${Math.round(obliq)}°`, BVW / 2, BVH - 15);
+  }
+
+  // ---- STAGE LABEL ----
+  c.fillStyle = '#8b949e66';
+  c.font = '8px sans-serif';
+  c.textAlign = 'right';
+  c.fillText(stage.replace(/_/g, ' '), BVW - 8, BVH - 4);
+}
+
+// Sujud Spot Zoom View — مَوْضِعِ السُّجُود
+// Shows zoomed view of the spot where the forehead lands
+const SUJUD_SPOT_NX = 0.593; // normalized x of forehead landing spot
+const SUJUD_SPOT_NY = 0.95;  // normalized y (on the mat surface)
+
+// Zoom level per stage (1 = normal, higher = more zoomed in)
+const ZOOM_LEVELS = {
+  qiyam: 1.0,
+  ruku: 2.0,
+  qiyam_return: 1.0,
+  trans_sujud: 3.5,
+  sujud_1: 6.0,
+  sujud_2: 6.0,
+  juloos_1: 1.5,
+  tashahhud: 1.2,
+  tasleem_r: 1.0,
+  tasleem_mid: 1.0,
+  tasleem_l: 1.0,
+};
+
+let currentZoom = 1.0;
+const ZOOM_LERP = 0.06;
+
+function drawZoomView(stage, pose) {
+  const targetZoom = ZOOM_LEVELS[stage] || 1.0;
+  currentZoom += (targetZoom - currentZoom) * ZOOM_LERP;
+
+  const ew = eyeCanvas.width, eh = eyeCanvas.height;
+  const c = eyeCtx;
+  c.clearRect(0, 0, ew, eh);
+
+  // Background
+  c.fillStyle = '#0a0e14';
+  c.fillRect(0, 0, ew, eh);
+
+  const midX = ew / 2;
+  const midY = eh / 2;
+  const viewRadius = Math.min(midX, midY) - 8;
+
+  // Clip to circular viewport
+  c.save();
+  c.beginPath();
+  c.arc(midX, midY, viewRadius, 0, Math.PI * 2);
+  c.clip();
+
+  // The "camera" is centered on the sujud spot
+  // Zoom factor determines how much area we see
+  const zoomScale = currentZoom * 2.5; // pixels per normalized unit
+  const viewW = ew / zoomScale;
+  const viewH = eh / zoomScale;
+
+  // Map normalized coordinates to canvas position within the zoom circle
+  function zoomToCanvas(nx, ny) {
+    const relX = (nx - SUJUD_SPOT_NX) * zoomScale + midX;
+    const relY = (ny - SUJUD_SPOT_NY) * zoomScale + midY;
+    return [relX, relY];
+  }
+
+  // ---- Draw zoomed prayer mat ----
+  const matTop = SUJUD_SPOT_NY - 0.015;
+  const matBot = SUJUD_SPOT_NY + 0.015;
+  const [matX1, matY1] = zoomToCanvas(0.05, matTop);
+  const [matX2, matY2] = zoomToCanvas(0.85, matBot);
+  // Mat fill
+  c.fillStyle = '#1a2a1a';
+  c.fillRect(matX1, matY1, matX2 - matX1, matY2 - matY1);
+  c.strokeStyle = '#d4af3733';
+  c.lineWidth = 1;
+  c.strokeRect(matX1, matY1, matX2 - matX1, matY2 - matY1);
+  // Mat weave pattern
+  c.strokeStyle = '#1f3320';
+  c.lineWidth = 0.5 * Math.min(currentZoom, 3);
+  const weaveSpacing = 0.025;
+  for (let wx = 0.05; wx < 0.85; wx += weaveSpacing) {
+    const [lx] = zoomToCanvas(wx, 0);
+    if (lx > -20 && lx < ew + 20) {
+      c.beginPath();
+      c.moveTo(lx, matY1 + 1);
+      c.lineTo(lx, matY2 - 1);
+      c.stroke();
+    }
+  }
+
+  // ---- Draw ground line ----
+  const [, groundY] = zoomToCanvas(0, 0.97);
+  c.strokeStyle = '#21262d';
+  c.lineWidth = 1.5;
+  c.beginPath();
+  c.moveTo(0, groundY);
+  c.lineTo(ew, groundY);
+  c.stroke();
+
+  // ---- Draw the sujud spot marker ----
+  const [spotX, spotY] = zoomToCanvas(SUJUD_SPOT_NX, SUJUD_SPOT_NY);
+  const pulse = 0.5 + 0.5 * Math.sin(Date.now() / 500);
+
+  // Outer rings (more visible when zoomed in)
+  const ringAlpha = Math.min(currentZoom / 6, 0.6);
+  for (let ring = 3; ring >= 1; ring--) {
+    const r = (6 + ring * 5) * Math.min(currentZoom * 0.3, 2);
+    c.beginPath();
+    c.arc(spotX, spotY, r, 0, Math.PI * 2);
+    c.strokeStyle = `rgba(212,175,55,${ringAlpha * (0.15 + pulse * 0.1) / ring})`;
+    c.lineWidth = 1;
+    c.stroke();
+  }
+  // Center dot
+  const dotR = 3 * Math.min(currentZoom * 0.4, 2.5);
+  c.beginPath();
+  c.arc(spotX, spotY, dotR, 0, Math.PI * 2);
+  c.fillStyle = `rgba(212,175,55,${0.6 + pulse * 0.3})`;
+  c.fill();
+
+  // ---- Draw the forehead approaching (when close enough) ----
+  if (pose) {
+    const headNX = pose.head[0];
+    const headNY = pose.head[1];
+    const dist = Math.sqrt((headNX - SUJUD_SPOT_NX) ** 2 + (headNY - SUJUD_SPOT_NY) ** 2);
+
+    // Only draw head when it's within view range
+    if (dist < 0.5) {
+      const [hx, hy] = zoomToCanvas(headNX, headNY);
+      const headR = 18 * currentZoom * 0.15;
+
+      // Head circle
+      c.beginPath();
+      c.arc(hx, hy, Math.max(headR, 4), 0, Math.PI * 2);
+      c.fillStyle = '#161b22';
+      c.fill();
+      c.strokeStyle = '#e8e0d0';
+      c.lineWidth = Math.max(currentZoom * 0.3, 1.5);
+      c.stroke();
+
+      // Forehead indicator (small line on the front of head)
+      if (currentZoom > 2) {
+        const fhR = Math.max(headR * 0.6, 3);
+        // In sujud the "front" of head points down toward the spot
+        const dx = spotX - hx;
+        const dy = spotY - hy;
+        const dLen = Math.sqrt(dx * dx + dy * dy);
+        if (dLen > 0.1) {
+          const fhx = hx + (dx / dLen) * Math.max(headR, 4);
+          const fhy = hy + (dy / dLen) * Math.max(headR, 4);
+          c.beginPath();
+          c.arc(fhx, fhy, fhR * 0.4, 0, Math.PI * 2);
+          c.fillStyle = '#d4af37aa';
+          c.fill();
+        }
+      }
+
+      // Draw connecting dashed line from head to spot (gaze line)
+      if (dist > 0.02) {
+        c.save();
+        c.setLineDash([4, 4]);
+        c.strokeStyle = `rgba(212,175,55,${Math.min(0.5, 0.1 + currentZoom * 0.05)})`;
+        c.lineWidth = 1;
+        c.beginPath();
+        c.moveTo(hx, hy);
+        c.lineTo(spotX, spotY);
+        c.stroke();
+        c.setLineDash([]);
+        c.restore();
+      }
+    }
+  }
+
+  c.restore(); // un-clip
+
+  // ---- Circular frame border ----
+  c.beginPath();
+  c.arc(midX, midY, viewRadius, 0, Math.PI * 2);
+  c.strokeStyle = '#d4af3766';
+  c.lineWidth = 2;
+  c.stroke();
+  // Outer glow
+  c.beginPath();
+  c.arc(midX, midY, viewRadius + 2, 0, Math.PI * 2);
+  c.strokeStyle = '#d4af3722';
+  c.lineWidth = 3;
+  c.stroke();
+
+  // ---- Zoom level indicator ----
+  c.fillStyle = '#484f58';
+  c.font = '9px sans-serif';
+  c.textAlign = 'left';
+  c.fillText(`${currentZoom.toFixed(1)}x`, 6, eh - 4);
+
+  // ---- Label ----
+  c.fillStyle = '#d4af3788';
+  c.font = '10px sans-serif';
+  c.textAlign = 'center';
+  c.fillText('مَوْضِعِ السُّجُود', midX, eh - 4);
+
+  // ---- Distance/status text at top ----
+  if (pose) {
+    const dist = Math.sqrt((pose.head[0] - SUJUD_SPOT_NX) ** 2 + (pose.head[1] - SUJUD_SPOT_NY) ** 2);
+    c.fillStyle = '#8b949e';
+    c.font = '9px sans-serif';
+    c.textAlign = 'center';
+    if (dist < 0.03) {
+      c.fillStyle = '#d4af37';
+      c.fillText('جَبْهَة ON SPOT', midX, 12);
+    } else if (dist < 0.15) {
+      c.fillText(`approaching: ${(dist * 100).toFixed(0)}cm`, midX, 12);
+    } else {
+      c.fillText(`gaze target: ${(dist * 100).toFixed(0)}cm away`, midX, 12);
+    }
+  }
+}
+
+// ============================================================
+// UI UPDATES
+// ============================================================
+function updateUI(time) {
+  const stage = getCurrentStage(time);
+  const info = STAGE_INFO[stage] || STAGE_INFO.qiyam;
+
+  // Stage banner
+  document.getElementById('stageArabic').textContent = info.ar;
+  document.getElementById('stageTranslit').textContent = info.tr;
+  document.getElementById('stageEnglish').textContent = info.en;
+  document.getElementById('rakahCounter').textContent = `Stage ${info.num} / 11`;
+
+  // Ligament list
+  const ligs = STAGE_LIGAMENTS[stage] || STAGE_LIGAMENTS.qiyam;
+  const ligList = document.getElementById('ligamentList');
+  let ligHTML = '';
+  const stateLabels = { rest: 'Resting', stretch: 'STRETCHING', 'return': 'Returning', engage: 'Engaging' };
+  // Sort: active first
+  const entries = Object.entries(ligs).sort((a, b) => {
+    const order = { stretch: 0, engage: 1, 'return': 2, rest: 3 };
+    return (order[a[1]] || 3) - (order[b[1]] || 3);
+  });
+  // Show max 10 to keep panel compact
+  let shown = 0;
+  let activeCount = 0;
+  for (const [id, state] of entries) {
+    if (state !== 'rest') activeCount++;
+    if (shown < 10) {
+      const lab = LIGAMENT_REGIONS[id]?.label || id;
+      ligHTML += `<li><span class="lig-dot ${state}"></span><span class="lig-label">${lab}</span><span class="lig-state">${stateLabels[state]}</span></li>`;
+      shown++;
+    }
+  }
+  if (entries.length > 10) {
+    ligHTML += `<li style="color:#8b949e;font-size:0.85em;">+${entries.length - 10} more...</li>`;
+  }
+  ligList.innerHTML = ligHTML;
+
+  // Zoom view of sujud spot (called every frame for smooth animation)
+  const { pose: currentPose } = getCurrentPose(time);
+  drawZoomView(stage, currentPose);
+
+  // Top-down bird's eye view (animated)
+  drawTopDown(stage);
+
+  // Pelvis / Sacrum zoom view
+  drawPelvisView(stage);
+  const eyeData = EYE_DATA[stage] || EYE_DATA.qiyam;
+  const eyeInfoEl = document.getElementById('eyeInfo');
+  const zoomLvl = ZOOM_LEVELS[stage] || 1.0;
+  const dist = currentPose ? Math.sqrt((currentPose.head[0] - SUJUD_SPOT_NX) ** 2 + (currentPose.head[1] - SUJUD_SPOT_NY) ** 2) : 1;
+  const distLabel = dist < 0.03 ? '<span style="color:#d4af37">FOREHEAD ON SPOT</span>' :
+                    dist < 0.15 ? `Approaching: ${(dist * 100).toFixed(0)}cm` :
+                    `Distance: ${(dist * 100).toFixed(0)}cm`;
+  eyeInfoEl.innerHTML = `
+    <div class="eye-label">${eyeData.arabic}</div>
+    <div>Gaze target: ${eyeData.label}</div>
+    <div style="color:#8b949e;font-size:0.9em;margin-top:3px">${distLabel} · Zoom: ${zoomLvl.toFixed(1)}x</div>
+  `;
+
+  // Muscle activation panel
+  const muscleData = MUSCLE_ACTIVATION[stage] || MUSCLE_ACTIVATION.qiyam;
+  const musclePanelEl = document.getElementById('musclePanel');
+  let muscleHTML = '';
+  // Sort by activation level (highest first)
+  const sortedMuscles = Object.entries(muscleData).sort((a, b) => b[1] - a[1]);
+  for (const [name, val] of sortedMuscles) {
+    const pct = Math.round(val * 100);
+    let color = '#484f58';
+    if (val >= 0.7) color = '#ff6b6b';
+    else if (val >= 0.4) color = '#f9a825';
+    else if (val >= 0.2) color = '#4ecdc4';
+    muscleHTML += `<div class="muscle-row">
+      <span class="muscle-name">${name}</span>
+      <div class="muscle-bar-bg"><div class="muscle-bar-fill" style="width:${pct}%;background:${color}"></div></div>
+      <span class="muscle-val" style="color:${color}">${pct}%</span>
+    </div>`;
+  }
+  musclePanelEl.innerHTML = muscleHTML;
+
+  // Force lines legend
+  const fl = FORCE_LINES[stage] || FORCE_LINES.qiyam;
+  const flEl = document.getElementById('forceLinesLegend');
+  let flHTML = '';
+  for (const [key, label] of Object.entries(FORCE_LINE_LABELS)) {
+    const val = fl[key] || 0;
+    const pct = Math.round(val * 100);
+    const col = FORCE_LINE_COLORS[key];
+    flHTML += `<div class="fl-item">
+      <span class="fl-dot" style="background:${col};opacity:${0.3 + val * 0.7}"></span>
+      <span class="fl-label">${label}</span>
+      <span class="fl-val" style="color:${col}">${pct}%</span>
+    </div>`;
+  }
+  flEl.innerHTML = flHTML;
+
+  // Joint angles with Ibn Sina distributed spinal data
+  const angles = JOINT_ANGLES[stage] || JOINT_ANGLES.qiyam;
+  const spineData = IBN_SINA_SPINE[stage] || IBN_SINA_SPINE.qiyam;
+  const jaEl = document.getElementById('jointAngles');
+  let jaHTML = '';
+  for (const [joint, angle] of Object.entries(angles)) {
+    jaHTML += `<div class="joint-angle-item"><span class="jl">${joint}</span><span class="jv">${angle}</span></div>`;
+  }
+  // Add Ibn Sina distributed spinal data
+  jaHTML += `<div style="grid-column:1/-1;margin-top:6px;border-top:1px solid #21262d;padding-top:6px;font-size:0.92em;color:#8b949e;">
+    <div style="color:#d4af37;margin-bottom:3px;font-weight:600;">Ibn Sina — Distributed Spinal Flexion</div>
+    <div>Lumbar (5 vert.): <span style="color:#e8e0d0;font-weight:600;">${spineData.lumbar}°</span></div>
+    <div>Thoracic (12 vert.): <span style="color:#e8e0d0;font-weight:600;">${spineData.thoracic}°</span></div>
+    <div>Cervical (7 vert.): <span style="color:#e8e0d0;font-weight:600;">${spineData.cervical}°</span></div>
+    <div>Atlantoaxial (C1-C2): <span style="color:#e8e0d0;font-weight:600;">${spineData.atlantoaxial}°</span></div>
+    <div>Total: <span style="color:#d4af37;font-weight:600;">${spineData.lumbar + spineData.thoracic + spineData.cervical + spineData.atlantoaxial}°</span></div>
+    <div style="color:#484f58;font-size:0.88em;margin-top:2px;">${spineData.note}</div>
+  </div>`;
+  jaEl.innerHTML = jaHTML;
+
+  // Diagnostics panel (replaces old stats)
+  const statsEl = document.getElementById('statsPanel');
+  const totalMuscleActivation = Object.values(muscleData).reduce((s, v) => s + v, 0);
+  const avgActivation = (totalMuscleActivation / Object.keys(muscleData).length * 100).toFixed(0);
+  const dominantForce = Object.entries(fl).sort((a, b) => b[1] - a[1])[0];
+  statsEl.innerHTML = `
+    <div>Active ligaments: <span class="stat-val">${activeCount} / 17</span></div>
+    <div>Average muscle activation: <span class="stat-val">${avgActivation}%</span></div>
+    <div>Dominant force line: <span class="stat-val">${FORCE_LINE_LABELS[dominantForce[0]]} (${Math.round(dominantForce[1] * 100)}%)</span></div>
+    <div style="margin-top:6px;border-top:1px solid #21262d;padding-top:6px;">
+      <div style="color:#d4af37;font-weight:600;margin-bottom:3px;">Daily Cycles (17 obligatory)</div>
+      <div style="padding-left:8px;">
+        Fajr: <span class="stat-val">2</span> | Dhuhr: <span class="stat-val">4</span> | Asr: <span class="stat-val">4</span>
+      </div>
+      <div style="padding-left:8px;">
+        Maghrib: <span class="stat-val">3</span> | Isha: <span class="stat-val">4</span>
+      </div>
+      <div style="margin-top:3px;">Full-body ligament circuits: <span class="stat-val">17/day</span></div>
+      <div>Ophthalmological cycles: <span class="stat-val">17/day</span></div>
+      <div>Muscle activation cycles: <span class="stat-val">17/day</span></div>
+    </div>
+  `;
+
+  // ── QUR'ANIC ATTESTATION PANEL ──
+  const qData = QURAN_PER_STAGE[stage] || QURAN_PER_STAGE.qiyam;
+  document.getElementById('quranPanel').innerHTML = `
+    <div class="quran-ayah">${qData.ayah}</div>
+    <div style="color:#d4af37;font-size:0.92em;margin:4px 0;">${qData.ref}</div>
+    <div style="color:#8b949e;font-size:0.88em;font-style:italic;">${qData.trans}</div>
+  `;
+
+  // ── NAFS / QALB STATE PANEL ──
+  const nData = NAFS_PER_STAGE[stage] || NAFS_PER_STAGE.qiyam;
+  const activeNafs = NAFS_LEVELS[nData.level];
+  let nafsHTML = '<div style="display:flex;gap:6px;margin-bottom:8px;">';
+  for (let i = 0; i < NAFS_LEVELS.length; i++) {
+    const nl = NAFS_LEVELS[i];
+    const isActive = i === nData.level;
+    nafsHTML += `<div class="nafs-dot${isActive ? ' nafs-active' : ''}" style="background:${isActive ? nl.color : '#21262d'}" title="${nl.en}"></div>`;
+  }
+  nafsHTML += '</div>';
+  nafsHTML += `<div class="nafs-level" style="color:${activeNafs.color}">
+    <span style="font-weight:700;">${activeNafs.en}</span>
+    <span style="font-size:0.85em;color:#8b949e;margin-left:6px;">${activeNafs.ref}</span>
+  </div>`;
+  nafsHTML += `<div class="qalb-state">
+    <span style="color:#d4af37;">قلب:</span> ${nData.qalbAr} — <span style="color:#8b949e;">${nData.qalbEn}</span>
+  </div>`;
+  nafsHTML += `<div style="color:#484f58;font-size:0.85em;margin-top:3px;">صدر state: ${nData.sadr}</div>`;
+  document.getElementById('nafsPanel').innerHTML = nafsHTML;
+
+  // ── SENSORY ACTIVATION PANEL ──
+  const sData = SENSORY_PER_STAGE[stage] || SENSORY_PER_STAGE.qiyam;
+  let sensHTML = '';
+  for (let i = 0; i < SENSES.length; i++) {
+    const s = SENSES[i];
+    const val = sData[i] || 0;
+    const pctS = Math.round(val * 100);
+    sensHTML += `<div class="sense-row">
+      <span style="width:22px;text-align:center;">${s.icon}</span>
+      <span style="width:75px;font-size:0.88em;color:#c9d1d9;">${s.name}</span>
+      <div class="sense-bar-bg"><div class="sense-bar-fill" style="width:${pctS}%;background:${s.color};"></div></div>
+      <span style="width:32px;text-align:right;font-size:0.85em;color:${s.color};">${pctS}%</span>
+    </div>`;
+  }
+  document.getElementById('sensoryPanel').innerHTML = sensHTML;
+
+  // ── CROSS-HEPTAD VIEW PANEL ──
+  const hData = HEPTAD_PER_STAGE[stage] || HEPTAD_PER_STAGE.qiyam;
+  let heptHTML = '';
+  for (let i = 0; i < 7; i++) {
+    const label = HEPTAD_LABELS[i];
+    const color = HEPTAD_COLORS[i];
+    const detail = hData[i] || '—';
+    const isAct = heptadHighlight_k === i;
+    heptHTML += `<div class="heptad-row" style="cursor:pointer;${isAct?'background:'+color+'22;border-left:2px solid '+color:''}" onclick="heptadHighlight_k=${i};heptadHighlightTimer_k=3" title="Highlight H${i+1}">
+      <span class="heptad-badge" style="background:${color};">H${i + 1}</span>
+      <span class="heptad-text">${label}</span>
+      <span class="heptad-arabic">${detail}</span>
+    </div>`;
+  }
+  document.getElementById('heptadPanel').innerHTML = heptHTML;
+
+  // ── PANEL 6: COLOUR / THERAPY (H2) ──
+  const therD = KN_THER[stage] || KN_THER.qiyam;
+  if (therD) {
+    const tc = KN_THER_C[therD.cl];
+    const tLbl_k = tintEnabled ? 'ON' : 'OFF';
+    let th = `<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div onclick="tintEnabled=!tintEnabled" style="width:40px;height:20px;border-radius:4px;background:${tc.hex};cursor:pointer;position:relative" title="Toggle tint"><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:0.55em;color:#fff;text-shadow:0 0 2px #000">${tLbl_k}</span></div><span style="color:${tc.hex};font-weight:700">${tc.name}</span> <span style="color:#8b949e;font-size:0.85em">${tc.en}</span></div>`;
+    th += `<div style="font-size:0.85em;color:#c9d1d9">${tc.eff} — ${therD.temp}</div>`;
+    th += `<div style="font-size:0.8em;color:#484f58">${therD.note} | ${therD.sound} CPM</div>`;
+    document.getElementById('therapyPanel').innerHTML = th;
+  }
+
+  // ── PANEL 7: FORMULA RATIO (H3) ──
+  const formD = KN_FORM[stage] || KN_FORM.qiyam;
+  if (formD) {
+    let fh = '';
+    if (formD.val > 0) fh += `<div style="text-align:center;font-size:1.2em;color:#d4af37;font-weight:700">${formD.ratio} <span style="font-size:0.7em;color:#8b949e">= ${formD.val}</span></div>`;
+    else fh += `<div style="text-align:center;font-size:1em;color:#484f58;font-style:italic">${formD.ratio}</div>`;
+    const bwP = Math.round((formD.bw / 1.5) * 100);
+    fh += `<div style="display:flex;align-items:center;gap:6px;margin:4px 0"><span style="font-size:0.75em;color:#8b949e">${formD.bw}×</span><div style="flex:1;height:5px;background:#21262d;border-radius:3px;overflow:hidden"><div style="height:100%;width:${bwP}%;background:#d4af37;border-radius:3px"></div></div><span style="font-size:0.75em;color:#8b949e">BW</span></div>`;
+    fh += `<div style="font-size:0.8em;color:#c9d1d9">${formD.label}</div>`;
+    document.getElementById('formulaPanel').innerHTML = fh;
+  }
+
+  // ── PANEL 8: METABOLIC STATE (H6) ──
+  const nutrD = KN_NUTR[stage] || KN_NUTR.qiyam;
+  if (nutrD) {
+    const org = ['Stomach','Intestine','Liver','Pelvis'], orgI = ['🟡','🟢','🟤','🔵'];
+    let mh = '<div style="display:flex;gap:3px;margin-bottom:4px">';
+    for (let i = 0; i < org.length; i++) {
+      const a = nutrD.organ === org[i] || nutrD.organ === 'System';
+      mh += `<div style="flex:1;text-align:center;padding:2px;border-radius:3px;font-size:0.7em;${a?'background:#66bb6a22;color:#66bb6a;border:1px solid #66bb6a44':'color:#484f58;border:1px solid #21262d'}">${orgI[i]} ${org[i]}</div>`;
+    }
+    mh += `</div><div style="font-size:0.85em;color:#c9d1d9;font-weight:600">${nutrD.state}</div>`;
+    mh += `<div style="font-size:0.8em;color:#8b949e">${nutrD.effect}</div>`;
+    if (nutrD.ar !== '-') mh += `<div style="font-size:0.78em;color:#d4af37">${nutrD.ar} <span style="color:#484f58">${nutrD.ref}</span></div>`;
+    document.getElementById('metabolicPanel').innerHTML = mh;
+  }
+
+  // ── PANEL 9: LIFECYCLE / SPIRIT (H7) ──
+  const lifeD = KN_LIFE[stage] || KN_LIFE.qiyam;
+  if (lifeD) {
+    const stI = KN_LIFE_S.findIndex(s => s.id === lifeD.stage);
+    let lh = '<div style="display:flex;gap:4px;margin-bottom:4px">';
+    for (let i = 0; i < KN_LIFE_S.length; i++) {
+      const a = i === stI;
+      lh += `<div style="width:8px;height:8px;border-radius:50%;${a?'background:'+KN_LIFE_S[i].color+';box-shadow:0 0 6px '+KN_LIFE_S[i].color:'background:#21262d'}"></div>`;
+    }
+    lh += '</div>';
+    const ls = KN_LIFE_S[stI];
+    lh += `<div style="font-weight:700;font-size:0.88em;color:${ls.color}">${ls.ar} — ${ls.en}</div>`;
+    lh += `<div style="font-size:0.82em;color:#c9d1d9">${lifeD.detail}</div>`;
+    document.getElementById('lifecyclePanel').innerHTML = lh;
+  }
+
+  // Timeline
+  const pct = (time / TOTAL_TIME) * 100;
+  document.getElementById('timelineFill').style.width = pct + '%';
+  document.getElementById('timeDisplay').textContent = `${time.toFixed(1)}s / ${TOTAL_TIME.toFixed(1)}s`;
+}
+
+// ── O2: Audio functions (KINE) ──
+function initAudio_k(){
+  if(audioCtx_k)return;audioCtx_k=new(window.AudioContext||window.webkitAudioContext)();
+  audioOsc_k=audioCtx_k.createOscillator();audioGain_k=audioCtx_k.createGain();
+  audioOsc_k.type='sine';audioGain_k.gain.value=0;
+  const lfo=audioCtx_k.createOscillator(),lg=audioCtx_k.createGain();
+  lfo.type='sine';lfo.frequency.value=0.67;lg.gain.value=0.15;
+  lfo.connect(lg);lg.connect(audioGain_k.gain);lfo.start();
+  audioOsc_k.frequency.value=110;audioOsc_k.connect(audioGain_k);audioGain_k.connect(audioCtx_k.destination);audioOsc_k.start();
+  audioOsc_k._lfo=lfo;
+}
+function updateAudioCPM_k(cpm){
+  if(!audioCtx_k||!audioEnabled_k)return;
+  audioOsc_k._lfo.frequency.setTargetAtTime(Math.max(0.2,cpm/60),audioCtx_k.currentTime,0.3);
+  audioOsc_k.frequency.setTargetAtTime(80+(cpm/60)*50,audioCtx_k.currentTime,0.3);
+}
+function toggleAudio_k(){
+  if(!audioCtx_k)initAudio_k();audioEnabled_k=!audioEnabled_k;
+  if(audioEnabled_k){audioGain_k.gain.setTargetAtTime(0.08,audioCtx_k.currentTime,0.2);if(audioCtx_k.state==='suspended')audioCtx_k.resume();}
+  else audioGain_k.gain.setTargetAtTime(0,audioCtx_k.currentTime,0.2);
+  document.getElementById('btnAudio_k').classList.toggle('active',audioEnabled_k);
+}
+
+// ============================================================
+// ANIMATION CONTROLLER
+// ============================================================
+let currentTime = 0;
+let isPlaying = false;
+let lastFrameTime = null;
+let speed = 1;
+const FPS_CAP = 30;
+const FRAME_MIN_MS = 1000 / FPS_CAP;
+let _lastRender = 0;
+
+function animate(timestamp) {
+  requestAnimationFrame(animate);
+  if (timestamp - _lastRender < FRAME_MIN_MS) return;
+  _lastRender = timestamp;
+
+  if (!lastFrameTime) lastFrameTime = timestamp;
+  const dt = (timestamp - lastFrameTime) / 1000;
+  lastFrameTime = timestamp;
+
+  if (isPlaying) {
+    currentTime += dt * speed;
+    if (currentTime >= TOTAL_TIME) {
+      currentTime = TOTAL_TIME;
+      isPlaying = false;
+      updatePlayButton();
+    }
+  }
+
+  drawFrame(currentTime);
+  updateUI(currentTime);
+}
+
+function updatePlayButton() {
+  const btn = document.getElementById('btnPlay');
+  btn.textContent = isPlaying ? '\u23F8' : '\u25B6';
+  btn.classList.toggle('active', isPlaying);
+}
+
+function togglePlay() {
+  if (currentTime >= TOTAL_TIME) currentTime = 0;
+  isPlaying = !isPlaying;
+  lastFrameTime = null;
+  updatePlayButton();
+}
+
+function stepNext() {
+  isPlaying = false;
+  updatePlayButton();
+  // Find next keyframe
+  for (const kf of KEYFRAMES) {
+    if (kf.t > currentTime + 0.1) {
+      currentTime = kf.t;
+      return;
+    }
+  }
+  currentTime = TOTAL_TIME;
+}
+
+function stepPrev() {
+  isPlaying = false;
+  updatePlayButton();
+  // Find previous keyframe
+  for (let i = KEYFRAMES.length - 1; i >= 0; i--) {
+    if (KEYFRAMES[i].t < currentTime - 0.5) {
+      currentTime = KEYFRAMES[i].t;
+      return;
+    }
+  }
+  currentTime = 0;
+}
+
+function resetAnimation() {
+  isPlaying = false;
+  currentTime = 0;
+  lastFrameTime = null;
+  updatePlayButton();
+}
+
+// Controls
+document.getElementById('btnPlay').addEventListener('click', togglePlay);
+document.getElementById('btnNext').addEventListener('click', stepNext);
+document.getElementById('btnPrev').addEventListener('click', stepPrev);
+document.getElementById('btnReset').addEventListener('click', resetAnimation);
+
+document.getElementById('speedSelect').addEventListener('change', (e) => {
+  speed = parseFloat(e.target.value);
+});
+
+// Timeline click
+document.getElementById('timelineBar').addEventListener('click', (e) => {
+  const bar = e.currentTarget;
+  const rect = bar.getBoundingClientRect();
+  const pct = (e.clientX - rect.left) / rect.width;
+  currentTime = Math.max(0, Math.min(TOTAL_TIME, pct * TOTAL_TIME));
+  isPlaying = false;
+  lastFrameTime = null;
+  updatePlayButton();
+});
+
+// Keyboard
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+  else if (e.code === 'ArrowRight') { e.preventDefault(); stepNext(); }
+  else if (e.code === 'ArrowLeft') { e.preventDefault(); stepPrev(); }
+  else if (e.code === 'KeyR') { e.preventDefault(); resetAnimation(); }
+});
+
+// Start
+requestAnimationFrame(animate);
+// Force initial render so panels aren't empty on load
+drawFrame(0);
+updateUI(0);
+</script>
+</body>
+</html>

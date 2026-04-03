@@ -1,0 +1,1830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>3D Full Body Kinematic Chain</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0a;color:#ccc;font-family:'Segoe UI',system-ui,sans-serif;display:flex;height:100vh;overflow:hidden}
+#sidebar{width:280px;min-width:280px;flex-shrink:0;background:#111;border-right:1px solid #222;padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+#sidebar h2{color:#4ecdc4;font-size:15px;margin-bottom:2px;text-align:center}
+#sidebar h3{color:#4ecdc4;font-size:11px;font-weight:normal;text-align:center;margin-bottom:6px}
+.stage-box{background:#1a1a1a;border:1px solid #333;border-radius:6px;padding:10px;text-align:center}
+.stage-ar{font-size:22px;color:#f9a825;font-family:'Amiri',serif}
+.stage-tr{font-size:13px;color:#ccc;margin-top:2px}
+.stage-en{font-size:11px;color:#777}
+.angles-box{background:#1a1a1a;border:1px solid #333;border-radius:6px;padding:8px;font-size:11px;font-family:monospace}
+.angles-box .section-label{color:#4ecdc4;font-weight:bold;margin-bottom:4px;font-size:10px;text-transform:uppercase;letter-spacing:1px}
+.angles-box .row{display:flex;justify-content:space-between;padding:1px 0}
+.angles-box .lbl{color:#888}
+.angles-box .val{color:#e8e0d0}
+.angles-box .val.neg{color:#e57373}
+.sym-badge{text-align:center;padding:4px 8px;border-radius:4px;font-size:10px;font-weight:bold;letter-spacing:1px}
+.sym-badge.sym{background:#1b5e20;color:#66bb6a}
+.sym-badge.asym{background:#4e342e;color:#ff8a65}
+.legend{background:#1a1a1a;border:1px solid #333;border-radius:6px;padding:8px;font-size:10px}
+.legend-title{color:#4ecdc4;font-size:10px;margin-bottom:4px}
+.legend-item{display:flex;align-items:center;gap:6px;padding:1px 0}
+.legend-swatch{width:14px;height:3px;border-radius:1px}
+.controls{display:flex;gap:6px;flex-wrap:wrap}
+.controls button{background:#222;border:1px solid #444;color:#ccc;padding:4px 8px;border-radius:3px;cursor:pointer;font-size:10px}
+.controls button:hover{background:#333}
+.controls button.active{background:#4ecdc4;color:#000;border-color:#4ecdc4}
+.timeline{display:flex;align-items:center;gap:6px}
+.timeline input[type=range]{flex:1;accent-color:#4ecdc4}
+.timeline .time-label{font-size:10px;color:#777;min-width:40px}
+#canvas{flex:1;display:block;cursor:grab}
+#canvas:active{cursor:grabbing}
+</style>
+</head>
+<body>
+<div id="sidebar">
+  <h2>3D Full Body Chain</h2>
+  <h3>Head + Spine + Arms + Pelvis + Legs + Feet</h3>
+
+  <div class="controls">
+    <button id="btnPlay">Play</button>
+    <button id="btnSpeed" title="Cycle speed">1x</button>
+    <button id="camAnt">Ant</button>
+    <button id="camPost">Post</button>
+    <button id="camLatR" class="active">Lat R</button>
+    <button id="camLatL">Lat L</button>
+    <button id="camSup">Sup</button>
+  </div>
+
+  <div class="timeline">
+    <span class="time-label" id="timeLabel">0.0s</span>
+    <input type="range" id="scrubber" min="0" max="41" step="0.1" value="3">
+  </div>
+
+  <div class="stage-box">
+    <div class="stage-ar" id="stageAr"></div>
+    <div class="stage-tr" id="stageTr"></div>
+    <div class="stage-en" id="stageEn"></div>
+  </div>
+
+  <div style="display:flex;gap:6px">
+    <div class="angles-box" style="flex:1">
+      <div class="section-label">Pelvis</div>
+      <div class="row"><span class="lbl">Tilt</span><span class="val" id="angTilt">0</span></div>
+      <div class="row"><span class="lbl">Obliquity</span><span class="val" id="angObliq">0</span></div>
+      <div class="row"><span class="lbl">Axial</span><span class="val" id="angAxial">0</span></div>
+    </div>
+    <div class="angles-box" style="flex:1">
+      <div class="section-label">Spine</div>
+      <div class="row"><span class="lbl">Flex</span><span class="val" id="angSpineFlex">0</span></div>
+      <div class="row"><span class="lbl">Lat</span><span class="val" id="angSpineLat">0</span></div>
+      <div class="row"><span class="lbl">Head</span><span class="val" id="angHeadTilt">0</span></div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:6px">
+    <div class="angles-box" style="flex:1">
+      <div class="section-label">Left Arm</div>
+      <div class="row"><span class="lbl">Shldr</span><span class="val" id="angShL">0</span></div>
+      <div class="row"><span class="lbl">Elbow</span><span class="val" id="angElbL">0</span></div>
+    </div>
+    <div class="angles-box" style="flex:1">
+      <div class="section-label">Right Arm</div>
+      <div class="row"><span class="lbl">Shldr</span><span class="val" id="angShR">0</span></div>
+      <div class="row"><span class="lbl">Elbow</span><span class="val" id="angElbR">0</span></div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:6px">
+    <div class="angles-box" style="flex:1">
+      <div class="section-label">Left Leg</div>
+      <div class="row"><span class="lbl">Hip</span><span class="val" id="angHipL">0</span></div>
+      <div class="row"><span class="lbl">Abd</span><span class="val" id="angAbdL">0</span></div>
+      <div class="row"><span class="lbl">Knee</span><span class="val" id="angKneeL">0</span></div>
+      <div class="row"><span class="lbl">Ankle</span><span class="val" id="angAnkleL">0</span></div>
+      <div class="row"><span class="lbl">MTP</span><span class="val" id="angMtpL">0</span></div>
+    </div>
+    <div class="angles-box" style="flex:1">
+      <div class="section-label">Right Leg</div>
+      <div class="row"><span class="lbl">Hip</span><span class="val" id="angHipR">0</span></div>
+      <div class="row"><span class="lbl">Abd</span><span class="val" id="angAbdR">0</span></div>
+      <div class="row"><span class="lbl">Knee</span><span class="val" id="angKneeR">0</span></div>
+      <div class="row"><span class="lbl">Ankle</span><span class="val" id="angAnkleR">0</span></div>
+      <div class="row"><span class="lbl">MTP</span><span class="val" id="angMtpR">0</span></div>
+    </div>
+  </div>
+
+  <div id="symBadge" class="sym-badge sym">SYMMETRIC</div>
+
+  <div class="legend">
+    <div class="legend-title">Anatomy</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#4ecdc4"></div>Sacrum / Pelvis</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#b0bec5"></div>Spine / Vertebrae</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#78909c"></div>Ribcage</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#ffab91"></div>Clavicle / Scapula</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#ce93d8"></div>Head / Skull</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#e8e0d0"></div>Bones (femur/tibia/arm)</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#81c784"></div>Foot / Hand</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#f9a825"></div>Joints</div>
+    <div class="legend-title" style="margin-top:4px">Ghost overlay</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#666;border:1px dashed #999"></div>Neutral (0deg)</div>
+  </div>
+</div>
+
+<canvas id="canvas"></canvas>
+
+<script>
+// ============================================================
+// MATH UTILITIES
+// ============================================================
+const deg = a => a * Math.PI / 180;
+function rotX(p, a) { const c=Math.cos(a),s=Math.sin(a); return {x:p.x, y:p.y*c-p.z*s, z:p.y*s+p.z*c}; }
+function rotY(p, a) { const c=Math.cos(a),s=Math.sin(a); return {x:p.x*c+p.z*s, y:p.y, z:-p.x*s+p.z*c}; }
+function rotZ(p, a) { const c=Math.cos(a),s=Math.sin(a); return {x:p.x*c-p.y*s, y:p.x*s+p.y*c, z:p.z}; }
+function addV(a,b){return{x:a.x+b.x,y:a.y+b.y,z:a.z+b.z}}
+function subV(a,b){return{x:a.x-b.x,y:a.y-b.y,z:a.z-b.z}}
+function scaleV(p,s){return{x:p.x*s,y:p.y*s,z:p.z*s}}
+function lerpV(a,b,t){return{x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t,z:a.z+(b.z-a.z)*t}}
+function cross(a,b){return{x:a.y*b.z-a.z*b.y,y:a.z*b.x-a.x*b.z,z:a.x*b.y-a.y*b.x}}
+function dot(a,b){return a.x*b.x+a.y*b.y+a.z*b.z}
+function norm(v){const l=Math.sqrt(v.x*v.x+v.y*v.y+v.z*v.z);return l>0?scaleV(v,1/l):v}
+function lenV(v){return Math.sqrt(v.x*v.x+v.y*v.y+v.z*v.z)}
+
+// ============================================================
+// CANVAS + PROJECTION
+// ============================================================
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+function resizeCanvas(){canvas.width=canvas.clientWidth;canvas.height=canvas.clientHeight}
+window.addEventListener('resize',resizeCanvas);
+resizeCanvas();
+let W = canvas.width, H = canvas.height;
+
+let camAz = Math.PI/2;   // azimuth (lateral R view)
+let camEl = 0.12;         // elevation
+let camDist = 550;        // distance
+const CAM_NEAR = 200, CAM_FAR = 1100;
+let camFocusY = null;     // dynamic — tracks vertical center of chain (null = snap on first frame)
+let groundYOff = null;    // shifts anatomy so lowest point touches ground (y=0) — null = snap on first frame
+
+function project(p3) {
+  let pt = { x: p3.x, y: p3.y + groundYOff - camFocusY, z: p3.z };
+  pt = rotY(pt, camAz);
+  pt = rotX(pt, camEl);
+  const fov = 600;
+  const z = pt.z + camDist;
+  const scale = fov / Math.max(z, 1);
+  return { sx: W/2 + pt.x*scale, sy: H/2 - pt.y*scale, z: z, scale: scale };
+}
+
+// ============================================================
+// PELVIS MESH DATA
+// ============================================================
+const SACRUM_VERTS = [
+  {x:-28,y:25,z:-10},{x:28,y:25,z:-10},{x:30,y:25,z:5},{x:-30,y:25,z:5},
+  {x:-20,y:0,z:-8},{x:20,y:0,z:-8},{x:22,y:0,z:3},{x:-22,y:0,z:3},
+  {x:-8,y:-22,z:-5},{x:8,y:-22,z:-5},{x:5,y:-22,z:2},{x:-5,y:-22,z:2},
+];
+const SACRUM_FACES = [
+  {verts:[0,1,5,4],color:'#4ecdc4',opacity:0.25},
+  {verts:[3,2,6,7],color:'#4ecdc4',opacity:0.15},
+  {verts:[0,3,7,4],color:'#4ecdc4',opacity:0.18},
+  {verts:[1,2,6,5],color:'#4ecdc4',opacity:0.18},
+  {verts:[4,5,9,8],color:'#4ecdc4',opacity:0.22},
+  {verts:[7,6,10,11],color:'#4ecdc4',opacity:0.12},
+  {verts:[0,1,2,3],color:'#4ecdc4',opacity:0.20},
+  {verts:[8,9,10,11],color:'#4ecdc4',opacity:0.15},
+];
+const SACRUM_EDGES = [[0,1],[1,5],[5,9],[9,8],[8,4],[4,0],[3,2],[2,6],[6,10],[10,11],[11,7],[7,3],[0,3],[1,2],[4,7],[5,6],[8,11],[9,10]];
+
+const COCCYX_VERTS = [{x:0,y:-25,z:-3},{x:0,y:-32,z:0},{x:0,y:-38,z:3}];
+
+const L5_VERTS = [
+  {x:-14,y:30,z:-6},{x:14,y:30,z:-6},{x:14,y:30,z:6},{x:-14,y:30,z:6},
+  {x:-14,y:36,z:-6},{x:14,y:36,z:-6},{x:14,y:36,z:6},{x:-14,y:36,z:6},
+  {x:0,y:33,z:-14},{x:-24,y:33,z:-2},{x:24,y:33,z:-2},
+];
+const L5_FACES = [
+  {verts:[0,1,5,4],color:'#e8e0d0',opacity:0.15},
+  {verts:[3,2,6,7],color:'#e8e0d0',opacity:0.10},
+  {verts:[0,3,7,4],color:'#e8e0d0',opacity:0.12},
+  {verts:[1,2,6,5],color:'#e8e0d0',opacity:0.12},
+  {verts:[4,5,6,7],color:'#e8e0d0',opacity:0.15},
+];
+const L5_EDGES = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7],[4,8],[5,8],[9,4],[9,7],[10,5],[10,6]];
+
+function makeIliacWing(side) {
+  const s = side==='R'?1:-1;
+  return {
+    verts:[
+      {x:s*35,y:28,z:-8},{x:s*75,y:50,z:-15},{x:s*90,y:45,z:0},{x:s*85,y:35,z:20},
+      {x:s*70,y:15,z:30},{x:s*60,y:-5,z:25},{x:s*55,y:-15,z:15},{x:s*50,y:-20,z:0},
+      {x:s*45,y:-15,z:-10},{x:s*35,y:-25,z:-15},{x:s*20,y:-30,z:5},{x:s*30,y:-30,z:15},
+      {x:s*35,y:28,z:5},
+    ],
+    faces:[
+      {verts:[0,1,2,12],color:'#1e3a2e',opacity:0.30},
+      {verts:[12,2,3,4],color:'#1e3a2e',opacity:0.25},
+      {verts:[0,12,4,5,8,9],color:'#1e3a2e',opacity:0.20},
+      {verts:[1,2,3,4,5,8,9],color:'#1e3a2e',opacity:0.22},
+      {verts:[9,10,11,5],color:'#1e3a2e',opacity:0.15},
+    ],
+    edges:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,7],[7,8],[8,9],[9,10],[10,11],[11,5],[0,12],[12,2],[12,4]],
+    acetabulum:7,
+  };
+}
+const R_ILIAC = makeIliacWing('R');
+const L_ILIAC = makeIliacWing('L');
+
+const FORAMINA = [];
+for(let i=1;i<=4;i++){const t=i/5;const y=25-t*47;const xw=(1-t*0.5)*18;FORAMINA.push({x:-xw,y:y,z:-11},{x:xw,y:y,z:-11})}
+
+// ============================================================
+// KNEE DETAIL MESH (condyles, patella) — positioned relative to knee center
+// ============================================================
+const CONDYLE_MED = [
+  {x:-16,y:8,z:-10},{x:-18,y:-4,z:-12},{x:-18,y:-8,z:0},{x:-16,y:-4,z:10},{x:-14,y:8,z:8},{x:-14,y:12,z:0},
+];
+const CONDYLE_LAT = [
+  {x:16,y:8,z:-10},{x:18,y:-4,z:-12},{x:18,y:-8,z:0},{x:16,y:-4,z:10},{x:14,y:8,z:8},{x:14,y:12,z:0},
+];
+// Ligament attach points (knee-local)
+const MCL_FEM = {x:-16,y:4,z:-2};
+const MCL_TIB = {x:-14,y:-28,z:0};
+const LCL_FEM = {x:16,y:4,z:-2};
+// Tibial tuberosity (knee-local, rotates with tibia)
+const TIBIA_TUBEROSITY = {x:0,y:-20,z:12};
+
+// ============================================================
+// FOOT MESH DATA — positioned relative to ankle center
+// ============================================================
+const TALUS = [{x:-10,y:-2,z:-8},{x:10,y:-2,z:-8},{x:12,y:-4,z:5},{x:-10,y:-4,z:8},{x:0,y:3,z:0}];
+const CALCANEUS = [
+  {x:-8,y:-8,z:-12},{x:8,y:-8,z:-12},{x:10,y:-10,z:-30},{x:-8,y:-10,z:-30},
+  {x:-6,y:-18,z:-28},{x:8,y:-18,z:-28},{x:10,y:-16,z:-10},{x:-8,y:-16,z:-10},
+];
+const MIDFOOT = [
+  {x:-12,y:-8,z:8},{x:14,y:-8,z:6},{x:14,y:-10,z:28},{x:-14,y:-10,z:30},
+  {x:-12,y:-16,z:8},{x:14,y:-16,z:6},{x:14,y:-16,z:28},{x:-14,y:-16,z:30},
+];
+const MT_BASES = [{x:-14,y:-12,z:32},{x:-6,y:-12,z:30},{x:2,y:-12,z:29},{x:9,y:-12,z:28},{x:14,y:-12,z:26}];
+const MT_HEADS = [{x:-14,y:-16,z:60},{x:-6,y:-16,z:62},{x:2,y:-16,z:61},{x:9,y:-16,z:58},{x:14,y:-16,z:54}];
+const TOE_LENGTHS = [
+  {prox:16,dist:12},{prox:12,mid:8,dist:6},{prox:11,mid:7,dist:5},{prox:10,mid:6,dist:5},{prox:8,mid:5,dist:4},
+];
+
+// ============================================================
+// UPPER BODY MESH DATA — Spine, Ribcage, Shoulders, Arms, Head
+// ============================================================
+
+// Spine segments: each has bottom width, top width, height
+// Defined in pelvis-local coords, stacking upward from L5 top (Y=36)
+const SPINE_SEGMENTS = [
+  // Lumbar (L4→L1): wide, thick — heights scaled ×0.42 for correct arm-to-knee reach (≈86 L4-T1)
+  {h:9, bw:13, tw:14, bd:7, td:7, flex:0.15},  // L4
+  {h:9, bw:14, tw:14, bd:7, td:7, flex:0.15},  // L3
+  {h:9, bw:14, tw:13, bd:7, td:8, flex:0.12},  // L2
+  {h:9, bw:13, tw:12, bd:8, td:8, flex:0.10},  // L1
+  // Thoracic (T12→T1): narrower, taller region — grouped into 4 segments
+  {h:12, bw:12, tw:12, bd:8, td:9, flex:0.10},   // T12-T10
+  {h:13, bw:12, tw:11, bd:9, td:10, flex:0.10},  // T9-T7
+  {h:13, bw:11, tw:10, bd:10, td:10, flex:0.08}, // T6-T4
+  {h:12, bw:10, tw:10, bd:10, td:9, flex:0.08},  // T3-T1
+  // Cervical (C7→C1): thin neck
+  {h:8, bw:8, tw:7, bd:7, td:6, flex:0.06},     // C7-C5
+  {h:7, bw:7, tw:6, bd:6, td:5, flex:0.06},     // C4-C1
+];
+
+// Rib levels: attach at thoracic segments (indices 4-7 of SPINE_SEGMENTS)
+// Each rib = half-ellipse from spine to sternum, mirrored
+const RIB_LEVELS = [
+  {seg:4, t:0.3, rx:85, ry:20, rz:60},   // lower ribs (T11-T10)
+  {seg:5, t:0.5, rx:80, ry:18, rz:55},   // mid ribs (T8-T7)
+  {seg:6, t:0.5, rx:72, ry:16, rz:48},   // upper-mid ribs (T5-T4)
+  {seg:7, t:0.3, rx:60, ry:14, rz:38},   // upper ribs (T2-T1)
+];
+
+const HUMERUS_LEN = 95;
+const FOREARM_LEN = 75;
+
+// Scapula: triangular plate (3 verts in shoulder-local coords)
+const SCAPULA_VERTS = [
+  {x:0, y:0, z:-5},      // acromion (top-lateral)
+  {x:-6, y:-30, z:-7},   // inferior angle
+  {x:3, y:-14, z:-10},   // medial border mid
+];
+
+// Hand: simplified palm + finger stubs in wrist-local coords
+const PALM_VERTS = [
+  {x:-12, y:0, z:0},{x:12, y:0, z:0},
+  {x:14, y:0, z:28},{x:-10, y:0, z:30},
+];
+const FINGER_TIPS = [
+  {x:-8, y:0, z:42},{x:-2, y:0, z:46},{x:4, y:0, z:45},{x:10, y:0, z:42},{x:14, y:0, z:36},
+];
+
+// Head: simplified cranium as ellipsoid outline (profile points)
+const HEAD_PROFILE = [];
+for (let i = 0; i <= 12; i++) {
+  const a = (i / 12) * Math.PI * 2;
+  HEAD_PROFILE.push({
+    x: Math.sin(a) * 22,
+    y: Math.cos(a) * 28 + 30,
+    z: Math.sin(a * 0.5) * 8
+  });
+}
+// Jaw vertices
+const JAW_VERTS = [
+  {x:-16, y:4, z:12}, {x:0, y:-4, z:16}, {x:16, y:4, z:12},
+];
+
+// ============================================================
+// UNIFIED POSES — All joint angles per prayer position
+// ============================================================
+const POSES = {
+  qiyam: {
+    pelvisTilt:5,obliquity:0,axialRot:0,
+    spineFlex:-5,spineLatFlex:0,headTilt:-5,headTurn:0,
+    shoulderFlexL:30,shoulderFlexR:30,shoulderAbdL:2,shoulderAbdR:2,
+    elbowFlexL:140,elbowFlexR:140,wristExtL:0,wristExtR:0,
+    hipFlexL:3,hipFlexR:3,hipAbdL:5,hipAbdR:5,
+    kneeFlexL:2,kneeFlexR:2,
+    ankleDorsiL:5,ankleDorsiR:5,subtalarInvL:0,subtalarInvR:0,
+    mtpExtL:0,mtpExtR:0,toeCurlL:0,toeCurlR:0,
+  },
+  ruku: {
+    pelvisTilt:85,obliquity:0,axialRot:0,
+    spineFlex:0,spineLatFlex:0,headTilt:0,headTurn:0,
+    // shoulderFlex≈33: arms angle down+back toward knees (palm lands on kneecap)
+    shoulderFlexL:33,shoulderFlexR:33,shoulderAbdL:3,shoulderAbdR:3,
+    elbowFlexL:10,elbowFlexR:10,wristExtL:0,wristExtR:0,
+    hipFlexL:3,hipFlexR:3,hipAbdL:5,hipAbdR:5,
+    kneeFlexL:2,kneeFlexR:2,
+    ankleDorsiL:12,ankleDorsiR:12,subtalarInvL:0,subtalarInvR:0,
+    mtpExtL:5,mtpExtR:5,toeCurlL:5,toeCurlR:5,
+  },
+  goingDown: {
+    pelvisTilt:45,obliquity:0,axialRot:0,
+    spineFlex:15,spineLatFlex:0,headTilt:15,headTurn:0,
+    // Transition: midway between ruku (sf=33) and sujud (sf=180)
+    shoulderFlexL:100,shoulderFlexR:100,shoulderAbdL:18,shoulderAbdR:18,
+    elbowFlexL:15,elbowFlexR:15,wristExtL:0,wristExtR:0,
+    hipFlexL:40,hipFlexR:40,hipAbdL:8,hipAbdR:8,
+    kneeFlexL:75,kneeFlexR:75,
+    ankleDorsiL:25,ankleDorsiR:25,subtalarInvL:0,subtalarInvR:0,
+    mtpExtL:25,mtpExtR:25,toeCurlL:10,toeCurlR:10,
+  },
+  sujud: {
+    pelvisTilt:80,obliquity:0,axialRot:0,
+    spineFlex:25,spineLatFlex:0,headTilt:28,headTurn:0,
+    // spineCumFlex≈102, arms reach forward to floor: sf=180 → worldAngle≈78° fwd
+    // Elbows ~18 units above ground (hadith: forearms off ground), palms at ear-level Z
+    shoulderFlexL:180,shoulderFlexR:180,shoulderAbdL:35,shoulderAbdR:35,
+    elbowFlexL:5,elbowFlexR:5,wristExtL:0,wristExtR:0,
+    hipFlexL:72,hipFlexR:72,hipAbdL:10,hipAbdR:10,
+    kneeFlexL:135,kneeFlexR:135,
+    ankleDorsiL:50,ankleDorsiR:50,subtalarInvL:0,subtalarInvR:0,
+    mtpExtL:70,mtpExtR:70,toeCurlL:20,toeCurlR:20,
+  },
+  // IFTIRASH: Sit ON the left foot. Left foot flat (dorsum down), right foot upright on toes.
+  // Both hips at same flexion so both knees reach same Y level.
+  // Left: deep kneeFlex + plantarflex (foot under body)
+  // Right: moderate kneeFlex + dorsiflex (foot upright, toes forward)
+  // Pelvis level (obliquity ≈ 0) — weight supported by left foot
+  iftirash: {
+    pelvisTilt:5,obliquity:2,axialRot:0,
+    spineFlex:-5,spineLatFlex:0,headTilt:-5,headTurn:0,
+    // Arms hang down, hands rest on mid-thigh (palmY≈60, kneeY≈3)
+    shoulderFlexL:5,shoulderFlexR:5,shoulderAbdL:3,shoulderAbdR:3,
+    elbowFlexL:10,elbowFlexR:10,wristExtL:-5,wristExtR:-5,
+    hipFlexL:50,hipFlexR:50,hipAbdL:12,hipAbdR:12,
+    kneeFlexL:155,kneeFlexR:135,
+    ankleDorsiL:-45,ankleDorsiR:55,subtalarInvL:5,subtalarInvR:0,
+    mtpExtL:-5,mtpExtR:55,toeCurlL:0,toeCurlR:10,
+  },
+  // TAWARRUK: Sit on LEFT BUTTOCK. Left foot passes UNDER right leg.
+  // Left ankle wedges under right femur, lifting right hip significantly.
+  // Left toes peek from under right foot. Hip external rotation routes the leg under.
+  // hipRotL: positive = internal rotation for left leg (knee turns inward,
+  //   lower leg swings medially under the right leg when deeply flexed)
+  tawarruk: {
+    pelvisTilt:5,obliquity:25,axialRot:0,
+    spineFlex:-5,spineLatFlex:0,headTilt:-5,headTurn:0,
+    // Arms hang down, hands on thighs
+    shoulderFlexL:5,shoulderFlexR:5,shoulderAbdL:3,shoulderAbdR:3,
+    elbowFlexL:10,elbowFlexR:10,wristExtL:-5,wristExtR:-5,
+    hipFlexL:55,hipFlexR:50,hipAbdL:-5,hipAbdR:12,
+    hipRotL:80,hipRotR:0,
+    kneeFlexL:155,kneeFlexR:135,
+    ankleDorsiL:-40,ankleDorsiR:55,subtalarInvL:30,subtalarInvR:0,
+    mtpExtL:-5,mtpExtR:55,toeCurlL:0,toeCurlR:10,
+  },
+  tasleem_r: {
+    pelvisTilt:5,obliquity:25,axialRot:-15,
+    spineFlex:-5,spineLatFlex:-5,headTilt:-5,headTurn:-45,
+    shoulderFlexL:5,shoulderFlexR:5,shoulderAbdL:3,shoulderAbdR:3,
+    elbowFlexL:10,elbowFlexR:10,wristExtL:-5,wristExtR:-5,
+    hipFlexL:55,hipFlexR:50,hipAbdL:-5,hipAbdR:12,
+    hipRotL:80,hipRotR:0,
+    kneeFlexL:155,kneeFlexR:135,
+    ankleDorsiL:-40,ankleDorsiR:55,subtalarInvL:30,subtalarInvR:0,
+    mtpExtL:-5,mtpExtR:55,toeCurlL:0,toeCurlR:10,
+  },
+  tasleem_l: {
+    pelvisTilt:5,obliquity:25,axialRot:15,
+    spineFlex:-5,spineLatFlex:5,headTilt:-5,headTurn:45,
+    shoulderFlexL:5,shoulderFlexR:5,shoulderAbdL:3,shoulderAbdR:3,
+    elbowFlexL:10,elbowFlexR:10,wristExtL:-5,wristExtR:-5,
+    hipFlexL:55,hipFlexR:50,hipAbdL:-5,hipAbdR:12,
+    hipRotL:80,hipRotR:0,
+    kneeFlexL:155,kneeFlexR:135,
+    ankleDorsiL:-40,ankleDorsiR:55,subtalarInvL:30,subtalarInvR:0,
+    mtpExtL:-5,mtpExtR:55,toeCurlL:0,toeCurlR:10,
+  },
+};
+
+const NEUTRAL_POSE = {
+  pelvisTilt:0,obliquity:0,axialRot:0,
+  spineFlex:0,spineLatFlex:0,headTilt:0,headTurn:0,
+  shoulderFlexL:0,shoulderFlexR:0,shoulderAbdL:5,shoulderAbdR:5,
+  elbowFlexL:0,elbowFlexR:0,wristExtL:0,wristExtR:0,
+  hipFlexL:0,hipFlexR:0,hipAbdL:0,hipAbdR:0,
+  kneeFlexL:0,kneeFlexR:0,
+  ankleDorsiL:0,ankleDorsiR:0,subtalarInvL:0,subtalarInvR:0,
+  mtpExtL:0,mtpExtR:0,toeCurlL:0,toeCurlR:0,
+};
+
+// ============================================================
+// STAGE INFO + KEYFRAMES
+// ============================================================
+const STAGE_INFO = {
+  qiyam:       {ar:'قِيَام',tr:'Qiyam',en:'Standing'},
+  qiyam_return:{ar:'قِيَام',tr:'Qiyam',en:'Return to Standing'},
+  ruku:        {ar:'رُكُوع',tr:'Ruku',en:'Bowing'},
+  trans_sujud: {ar:'اِنْتِقَال',tr:'Intiqal',en:'Transition'},
+  sujud_1:     {ar:'سُجُود',tr:'Sujud',en:'Prostration (1st)'},
+  sujud_2:     {ar:'سُجُود',tr:'Sujud',en:'Prostration (2nd)'},
+  juloos_1:    {ar:'جُلُوس',tr:'Juloos',en:'Sitting (Iftirash)'},
+  tashahhud:   {ar:'تَشَهُّد',tr:'Tashahhud',en:'Testimony (Tawarruk)'},
+  tasleem_r:   {ar:'تَسْلِيم',tr:'Tasleem',en:'Peace Greeting (Right)'},
+  tasleem_mid: {ar:'تَسْلِيم',tr:'Tasleem',en:'Peace (Center)'},
+  tasleem_l:   {ar:'تَسْلِيم',tr:'Tasleem',en:'Peace Greeting (Left)'},
+};
+
+const KEYFRAMES = [
+  {t:0,stage:'qiyam'},{t:3,stage:'qiyam'},
+  {t:5,stage:'ruku'},{t:8,stage:'ruku'},
+  {t:10,stage:'qiyam_return'},{t:12,stage:'qiyam_return'},
+  {t:13.5,stage:'trans_sujud'},
+  {t:15,stage:'sujud_1'},{t:18,stage:'sujud_1'},
+  {t:20,stage:'juloos_1'},{t:23,stage:'juloos_1'},
+  {t:24.5,stage:'trans_sujud'},
+  {t:26,stage:'sujud_2'},{t:29,stage:'sujud_2'},
+  {t:31,stage:'tashahhud'},{t:34,stage:'tashahhud'},
+  {t:35.5,stage:'tasleem_r'},{t:37,stage:'tasleem_r'},
+  {t:38,stage:'tasleem_mid'},
+  {t:39,stage:'tasleem_l'},{t:41,stage:'tasleem_l'},
+];
+const TOTAL_TIME = 41;
+
+function getPoseKey(stage) {
+  const map = {
+    qiyam:'qiyam',qiyam_return:'qiyam',ruku:'ruku',trans_sujud:'goingDown',
+    sujud_1:'sujud',sujud_2:'sujud',juloos_1:'iftirash',tashahhud:'tawarruk',
+    tasleem_r:'tasleem_r',tasleem_mid:'tawarruk',tasleem_l:'tasleem_l',
+  };
+  return map[stage] || 'qiyam';
+}
+
+function getStageAt(t) {
+  for (let i = KEYFRAMES.length-1; i >= 0; i--) {
+    if (t >= KEYFRAMES[i].t) return KEYFRAMES[i].stage;
+  }
+  return KEYFRAMES[0].stage;
+}
+
+// ============================================================
+// ANIMATION STATE
+// ============================================================
+let currentTime = 0;
+let isPlaying = false;
+// lastFrameTime removed — using performance.now() delta in animate()
+let speed = 1;
+const LERP_NEUTRAL = 0.08;
+const LERP_DOWN = 0.13;    // gravity-assisted: heavier, faster descent
+const LERP_UP = 0.045;     // against gravity: slow, effortful rise
+let currentPose = null;
+let poseVelocity = {};      // track per-property velocity for settle effect
+
+function lerpPose(cur, tgt) {
+  if (!cur) { poseVelocity = {}; return { ...tgt }; }
+  const r = {};
+
+  // Detect overall movement direction from center-of-mass indicators
+  const isDescending = (tgt.hipFlexL > cur.hipFlexL + 3) ||
+                       (tgt.pelvisTilt > cur.pelvisTilt + 5) ||
+                       (tgt.kneeFlexL > cur.kneeFlexL + 5);
+  const isAscending = (tgt.hipFlexL < cur.hipFlexL - 3) ||
+                      (tgt.pelvisTilt < cur.pelvisTilt - 5) ||
+                      (tgt.kneeFlexL < cur.kneeFlexL - 5);
+
+  const lf = isDescending ? LERP_DOWN : isAscending ? LERP_UP : LERP_NEUTRAL;
+
+  for (const k in tgt) {
+    if (typeof tgt[k] === 'number') {
+      const diff = tgt[k] - cur[k];
+      const prevVel = poseVelocity[k] || 0;
+      let newVal = cur[k] + diff * lf;
+
+      // Settle overshoot: when nearly arrived but still carrying momentum
+      if (Math.abs(diff) < 1.5 && Math.abs(prevVel) > 0.15) {
+        newVal += prevVel * 0.18; // momentum carry → slight overshoot
+      }
+
+      poseVelocity[k] = newVal - cur[k];
+      r[k] = newVal;
+    } else r[k] = tgt[k];
+  }
+  return r;
+}
+
+// ============================================================
+// TRANSFORMATION FUNCTIONS
+// ============================================================
+const FEMUR_LEN = 132;
+const TIBIA_LEN = 110;
+
+// Hip-centered rotation: effective rotation center between acetabulum and spine base
+// Anatomically closer to the femoral heads than the raw acetabulum position
+const HIP_CENTER = {x:0, y: -5, z:0};
+
+// Compute offset to keep hip joints stationary when pelvis rotates
+function pelvisHipOffset(pose) {
+  let rotated = {...HIP_CENTER};
+  rotated = rotX(rotated, deg(pose.pelvisTilt));
+  rotated = rotZ(rotated, deg(pose.obliquity));
+  rotated = rotY(rotated, deg(pose.axialRot));
+  return {
+    x: HIP_CENTER.x - rotated.x,
+    y: HIP_CENTER.y - rotated.y,
+    z: HIP_CENTER.z - rotated.z,
+  };
+}
+
+function transformPelvis(verts, pose) {
+  const off = pelvisHipOffset(pose);
+  return verts.map(v => {
+    let p = {...v};
+    p = rotX(p, deg(pose.pelvisTilt));
+    p = rotZ(p, deg(pose.obliquity));
+    p = rotY(p, deg(pose.axialRot));
+    p.x += off.x; p.y += off.y; p.z += off.z;
+    return p;
+  });
+}
+
+function transformLeg(pose, side) {
+  const isLeft = side === 'L';
+  const s = isLeft ? -1 : 1;
+  const hipFlex = isLeft ? pose.hipFlexL : pose.hipFlexR;
+  const hipAbd = isLeft ? pose.hipAbdL : pose.hipAbdR;
+  const hipRot = isLeft ? (pose.hipRotL || 0) : (pose.hipRotR || 0);
+  const kneeFlex = isLeft ? pose.kneeFlexL : pose.kneeFlexR;
+  const ankleDorsi = isLeft ? pose.ankleDorsiL : pose.ankleDorsiR;
+  const subtalarInv = isLeft ? pose.subtalarInvL : pose.subtalarInvR;
+  const mtpExt = isLeft ? pose.mtpExtL : pose.mtpExtR;
+  const toeCurl = isLeft ? pose.toeCurlL : pose.toeCurlR;
+
+  // 1. HIP PIVOT — acetabulum rotated with pelvis, hip-centered
+  const iliac = isLeft ? L_ILIAC : R_ILIAC;
+  const off = pelvisHipOffset(pose);
+  let pivot = {...iliac.verts[iliac.acetabulum]};
+  pivot = rotX(pivot, deg(pose.pelvisTilt));
+  pivot = rotZ(pivot, deg(pose.obliquity));
+  pivot = rotY(pivot, deg(pose.axialRot));
+  pivot.x += off.x; pivot.y += off.y; pivot.z += off.z;
+
+  // Greater trochanter (pelvis-level landmark)
+  let trochanter = {x: s*62, y:-18, z:-8};
+  trochanter = rotX(trochanter, deg(pose.pelvisTilt));
+  trochanter = rotZ(trochanter, deg(pose.obliquity));
+  trochanter = rotY(trochanter, deg(pose.axialRot));
+  trochanter.x += off.x; trochanter.y += off.y; trochanter.z += off.z;
+
+  // 2. FEMUR DIRECTION — world-space (gravity-dependent)
+  let femurDir = {x:0,y:-1,z:0};
+  femurDir = rotX(femurDir, deg(-hipFlex));
+  femurDir = rotZ(femurDir, deg(s * hipAbd));
+
+  // 3. KNEE POINT
+  const kneePt = addV(pivot, scaleV(femurDir, FEMUR_LEN));
+
+  // 4. KNEE ANATOMY — condyles (fixed on femur)
+  // Transform condyle vertices from knee-local to world
+  // Hip rotation (axial) rotates condyles around the femur long axis
+  function femurLocal(v) {
+    let p = {x: v.x*s, y: v.y, z: v.z};
+    if (Math.abs(hipRot) > 0.1) p = rotY(p, deg(hipRot * s));
+    p = rotX(p, deg(-hipFlex));
+    p = rotZ(p, deg(s * hipAbd));
+    return addV(p, kneePt);
+  }
+  const condyleMed = CONDYLE_MED.map(v => femurLocal(v));
+  const condyleLat = CONDYLE_LAT.map(v => femurLocal(v));
+  const mclFemPt = femurLocal(MCL_FEM);
+  const lclFemPt = femurLocal(LCL_FEM);
+
+  // 5. PATELLA — parametric tracking based on knee flexion
+  const pFrac = Math.min(kneeFlex / 140, 1);
+  const patY = 8 - pFrac * 22;
+  const patZ = 18 - pFrac * 12;
+  const patScale = 1 - pFrac * 0.15;
+  const patella = {
+    base: femurLocal({x:0, y:patY+6*patScale, z:patZ}),
+    apex: femurLocal({x:0, y:patY-8*patScale, z:patZ-2}),
+    medR: femurLocal({x:-8*patScale, y:patY, z:patZ-2}),
+    latR: femurLocal({x:8*patScale, y:patY, z:patZ-2}),
+  };
+
+  // 6. TIBIA DIRECTION — world-space (hip rotation changes knee flexion plane)
+  let tibiaDir = {x:0,y:-1,z:0};
+  tibiaDir = rotX(tibiaDir, deg(kneeFlex));
+  if (Math.abs(hipRot) > 0.1) tibiaDir = rotY(tibiaDir, deg(hipRot * s));
+  tibiaDir = rotX(tibiaDir, deg(-hipFlex));
+  tibiaDir = rotZ(tibiaDir, deg(s * hipAbd));
+
+  // 7. ANKLE POINT
+  const anklePt = addV(kneePt, scaleV(tibiaDir, TIBIA_LEN));
+
+  // Tibia-local transform (for items that rotate with tibia around knee)
+  // Decomposed: kneeFlex in femur frame → hipRot → hipFlex → hipAbd
+  function tibiaLocal(v) {
+    let p = {x: v.x*s, y: v.y, z: v.z};
+    p = rotX(p, deg(kneeFlex));
+    if (Math.abs(hipRot) > 0.1) p = rotY(p, deg(hipRot * s));
+    p = rotX(p, deg(-hipFlex));
+    p = rotZ(p, deg(s * hipAbd));
+    return addV(p, kneePt);
+  }
+  const tuberosity = tibiaLocal(TIBIA_TUBEROSITY);
+  const mclTibPt = tibiaLocal(MCL_TIB);
+
+  // Fibula (parallel to tibia, slight lateral offset)
+  const fibHead = tibiaLocal({x:20, y:-14, z:-4});
+  const fibShaftEnd = tibiaLocal({x:14, y:-70, z:-2});
+
+  // 8. FOOT — transform relative to ankle point using tibia orientation
+  // Build local-to-world transform for foot vertices
+  // The foot mesh is defined with Y=up, Z=anterior in ankle-local coords
+  // When attached to the tibia, "up" for the foot = opposite of tibiaDir
+  function footLocal(v, applySubtalar) {
+    let p = {x: v.x*s, y: v.y, z: v.z};
+    // Apply ankle dorsiflexion (rotation around X/medial axis in local)
+    p = rotX(p, deg(-ankleDorsi));
+    // Apply subtalar inversion for calcaneus
+    if (applySubtalar) {
+      p = rotZ(p, deg(-subtalarInv * s));
+    }
+    // Rotate to world: kneeFlex → hipRot → hipFlex → hipAbd
+    p = rotX(p, deg(kneeFlex));
+    if (Math.abs(hipRot) > 0.1) p = rotY(p, deg(hipRot * s));
+    p = rotX(p, deg(-hipFlex));
+    p = rotZ(p, deg(s * hipAbd));
+    return addV(p, anklePt);
+  }
+
+  const talus = TALUS.map(v => footLocal(v, false));
+  const calcaneus = CALCANEUS.map(v => footLocal(v, true));
+  const midfoot = MIDFOOT.map(v => footLocal(v, false));
+  const mtBases = MT_BASES.map(v => footLocal(v, false));
+  const mtHeads = MT_HEADS.map(v => footLocal(v, false));
+
+  // 9. TOES — MTP extension + curl
+  const toes = [];
+  for (let t = 0; t < 5; t++) {
+    const toeInfo = TOE_LENGTHS[t];
+    const mtpScale = [1.0, 0.85, 0.7, 0.55, 0.4][t];
+    const mtpAngle = deg(-mtpExt * mtpScale);
+
+    // Proximal phalanx direction (in ankle-local coords)
+    let relProx = rotX({x:0, y:0, z:toeInfo.prox}, mtpAngle);
+    // Proximal end in ankle-local = MT_HEADS[t] + relProx
+    let proxEnd = addV(MT_HEADS[t], relProx);
+    let proxEndWorld = footLocal(proxEnd, false);
+
+    if (t === 0) {
+      // Big toe: 2 bones
+      const curlAngle = deg(toeCurl * 0.8);
+      let relDist = rotX({x:0, y:0, z:toeInfo.dist}, mtpAngle + curlAngle);
+      let distEnd = addV(MT_HEADS[t], addV(relProx, relDist));
+      let distEndWorld = footLocal(distEnd, false);
+      toes.push({ mtp: mtHeads[t], proxEnd: proxEndWorld, distEnd: distEndWorld, segments: 2 });
+    } else {
+      // Toes 2-5: 3 bones
+      const pipCurl = deg(toeCurl);
+      const dipCurl = deg(toeCurl * 0.6);
+      let relMid = rotX({x:0, y:0, z:toeInfo.mid}, mtpAngle + pipCurl);
+      let relDist = rotX({x:0, y:0, z:toeInfo.dist}, mtpAngle + pipCurl + dipCurl);
+      let midEnd = addV(MT_HEADS[t], addV(relProx, relMid));
+      let distEnd = addV(MT_HEADS[t], addV(relProx, addV(relMid, relDist)));
+      let midEndWorld = footLocal(midEnd, false);
+      let distEndWorld = footLocal(distEnd, false);
+      toes.push({ mtp: mtHeads[t], proxEnd: proxEndWorld, midEnd: midEndWorld, distEnd: distEndWorld, segments: 3 });
+    }
+  }
+
+  return {
+    side, pivot, trochanter, kneePt, anklePt,
+    femurDir, tibiaDir,
+    condyleMed, condyleLat, patella,
+    mclFemPt, mclTibPt, lclFemPt, fibHead,
+    tuberosity, fibShaftEnd,
+    talus, calcaneus, midfoot, mtBases, mtHeads, toes,
+  };
+}
+
+// ============================================================
+// SPINE + UPPER BODY TRANSFORM
+// ============================================================
+function transformSpine(pose) {
+  const spineFlex = pose.spineFlex || 0;
+  const spineLatFlex = pose.spineLatFlex || 0;
+  const headTilt = pose.headTilt || 0;
+  const headTurn = pose.headTurn || 0;
+
+  // Start from L5 top surface center — hip-centered rotation
+  let basePos = {x:0, y:36, z:0};
+  // Apply pelvis rotation to get world-space starting point
+  basePos = rotX(basePos, deg(pose.pelvisTilt));
+  basePos = rotZ(basePos, deg(pose.obliquity));
+  basePos = rotY(basePos, deg(pose.axialRot));
+  const off = pelvisHipOffset(pose);
+  basePos.x += off.x; basePos.y += off.y; basePos.z += off.z;
+
+  // Cumulative rotation from pelvis
+  let cumFlex = pose.pelvisTilt;
+  let cumLat = pose.obliquity;
+  let cumAxial = pose.axialRot;
+
+  const segments = [];
+  let segTop = basePos;
+
+  for (let i = 0; i < SPINE_SEGMENTS.length; i++) {
+    const seg = SPINE_SEGMENTS[i];
+    // Distribute spineFlex across segments according to flex weight
+    const segFlex = spineFlex * seg.flex;
+    const segLat = spineLatFlex * seg.flex;
+    cumFlex += segFlex;
+    cumLat += segLat;
+
+    // Direction "up" in current segment orientation
+    let upDir = {x:0, y:1, z:0};
+    upDir = rotX(upDir, deg(cumFlex));
+    upDir = rotZ(upDir, deg(cumLat));
+    upDir = rotY(upDir, deg(cumAxial));
+
+    const newTop = addV(segTop, scaleV(upDir, seg.h));
+
+    // Build 8 vertices for this segment box (4 bottom, 4 top)
+    const bw = seg.bw, tw = seg.tw, bd = seg.bd, td = seg.td;
+    const boxLocal = [
+      {x:-bw, y:0, z:-bd}, {x:bw, y:0, z:-bd}, {x:bw, y:0, z:bd}, {x:-bw, y:0, z:bd},
+      {x:-tw, y:seg.h, z:-td}, {x:tw, y:seg.h, z:-td}, {x:tw, y:seg.h, z:td}, {x:-tw, y:seg.h, z:td},
+    ];
+
+    // Transform box to world space
+    const worldVerts = boxLocal.map(v => {
+      let p = {...v};
+      p = rotX(p, deg(cumFlex));
+      p = rotZ(p, deg(cumLat));
+      p = rotY(p, deg(cumAxial));
+      return addV(p, segTop);
+    });
+
+    segments.push({verts: worldVerts, bottom: segTop, top: newTop, idx: i});
+    segTop = newTop;
+  }
+
+  // Shoulder attachment: between T3-T1 segment (index 7) top
+  const shoulderSeg = segments[7];
+  const shoulderCenter = shoulderSeg.top;
+
+  // Clavicle endpoints: lateral from shoulder center
+  const shoulderSpread = 55;
+  let clavL = {x:-shoulderSpread, y:0, z:5};
+  let clavR = {x:shoulderSpread, y:0, z:5};
+  // Rotate clavicles with spine orientation
+  clavL = rotX(clavL, deg(cumFlex)); clavL = rotZ(clavL, deg(cumLat)); clavL = rotY(clavL, deg(cumAxial));
+  clavR = rotX(clavR, deg(cumFlex)); clavR = rotZ(clavR, deg(cumLat)); clavR = rotY(clavR, deg(cumAxial));
+  const shoulderJointL = addV(shoulderCenter, clavL);
+  const shoulderJointR = addV(shoulderCenter, clavR);
+
+  // Sternum: front of thorax at shoulder level
+  let sternumDir = {x:0, y:-10, z:22};
+  sternumDir = rotX(sternumDir, deg(cumFlex)); sternumDir = rotZ(sternumDir, deg(cumLat)); sternumDir = rotY(sternumDir, deg(cumAxial));
+  const sternumTop = addV(shoulderCenter, sternumDir);
+
+  // Scapulae: transform to world
+  const transformScap = (side) => {
+    const s = side === 'L' ? -1 : 1;
+    const anchor = side === 'L' ? shoulderJointL : shoulderJointR;
+    return SCAPULA_VERTS.map(v => {
+      let p = {x: v.x * s, y: v.y, z: v.z};
+      p = rotX(p, deg(cumFlex)); p = rotZ(p, deg(cumLat)); p = rotY(p, deg(cumAxial));
+      return addV(p, anchor);
+    });
+  };
+
+  // Neck top (C1): top of last cervical segment
+  const neckTop = segments[segments.length - 1].top;
+  const neckCumFlex = cumFlex;
+  const neckCumLat = cumLat;
+  const neckCumAxial = cumAxial;
+
+  // Head: transform from neck top with head-specific rotations
+  const headCumFlex = neckCumFlex + headTilt;
+  const headCumAxial = neckCumAxial + headTurn;
+  const headVerts = HEAD_PROFILE.map(v => {
+    let p = {...v};
+    p = rotX(p, deg(headCumFlex));
+    p = rotZ(p, deg(neckCumLat));
+    p = rotY(p, deg(headCumAxial));
+    return addV(p, neckTop);
+  });
+  const jawWorld = JAW_VERTS.map(v => {
+    let p = {...v};
+    p = rotX(p, deg(headCumFlex));
+    p = rotZ(p, deg(neckCumLat));
+    p = rotY(p, deg(headCumAxial));
+    return addV(p, neckTop);
+  });
+
+  // Ribs: transform rib ellipses
+  const ribs = RIB_LEVELS.map(rl => {
+    const seg = segments[rl.seg];
+    const ribCenter = lerpV(seg.bottom, seg.top, rl.t);
+    // Get orientation at this segment
+    const sFlex = pose.pelvisTilt + spineFlex * SPINE_SEGMENTS.slice(0, rl.seg + 1).reduce((s, sg) => s + sg.flex, 0);
+    const sLat = pose.obliquity + spineLatFlex * SPINE_SEGMENTS.slice(0, rl.seg + 1).reduce((s, sg) => s + sg.flex, 0);
+    const sAxial = pose.axialRot;
+    const pts = [];
+    for (let i = 0; i <= 8; i++) {
+      const a = (i / 8) * Math.PI;
+      let p = {x: Math.cos(a) * rl.rx, y: Math.sin(a) * rl.ry - rl.ry * 0.3, z: Math.sin(a) * rl.rz};
+      p = rotX(p, deg(sFlex)); p = rotZ(p, deg(sLat)); p = rotY(p, deg(sAxial));
+      pts.push(addV(p, ribCenter));
+    }
+    // Mirror for right side
+    const ptsR = [];
+    for (let i = 0; i <= 8; i++) {
+      const a = (i / 8) * Math.PI;
+      let p = {x: -Math.cos(a) * rl.rx, y: Math.sin(a) * rl.ry - rl.ry * 0.3, z: Math.sin(a) * rl.rz};
+      p = rotX(p, deg(sFlex)); p = rotZ(p, deg(sLat)); p = rotY(p, deg(sAxial));
+      ptsR.push(addV(p, ribCenter));
+    }
+    return {left: pts, right: ptsR, center: ribCenter};
+  });
+
+  return {
+    segments, shoulderCenter, shoulderJointL, shoulderJointR,
+    sternumTop, scapulaL: transformScap('L'), scapulaR: transformScap('R'),
+    neckTop, headVerts, jawWorld, ribs,
+    cumFlex, cumLat, cumAxial,
+  };
+}
+
+function transformArm(pose, side, shoulderJoint, spineCumFlex, spineCumLat, spineCumAxial) {
+  const isLeft = side === 'L';
+  const s = isLeft ? -1 : 1;
+  const shoulderFlex = isLeft ? (pose.shoulderFlexL || 0) : (pose.shoulderFlexR || 0);
+  const shoulderAbd = isLeft ? (pose.shoulderAbdL || 0) : (pose.shoulderAbdR || 0);
+  const elbowFlex = isLeft ? (pose.elbowFlexL || 0) : (pose.elbowFlexR || 0);
+  const wristExt = isLeft ? (pose.wristExtL || 0) : (pose.wristExtR || 0);
+
+  // Humerus direction: starts pointing down, then shoulder flex + abd
+  let humDir = {x:0, y:-1, z:0};
+  humDir = rotX(humDir, deg(-shoulderFlex));
+  humDir = rotZ(humDir, deg(s * shoulderAbd));
+  // Apply spine orientation
+  humDir = rotX(humDir, deg(spineCumFlex));
+  humDir = rotZ(humDir, deg(spineCumLat));
+  humDir = rotY(humDir, deg(spineCumAxial));
+
+  const elbowPt = addV(shoulderJoint, scaleV(humDir, HUMERUS_LEN));
+
+  // Forearm direction: relative to humerus, add elbow flex
+  // Elbow flexion bends forearm FORWARD (anterior) from humerus
+  let foreDir = {x:0, y:-1, z:0};
+  foreDir = rotX(foreDir, deg(-elbowFlex));
+  foreDir = rotX(foreDir, deg(-shoulderFlex));
+  foreDir = rotZ(foreDir, deg(s * shoulderAbd));
+  foreDir = rotX(foreDir, deg(spineCumFlex));
+  foreDir = rotZ(foreDir, deg(spineCumLat));
+  foreDir = rotY(foreDir, deg(spineCumAxial));
+
+  const wristPt = addV(elbowPt, scaleV(foreDir, FOREARM_LEN));
+
+  // Hand: transform palm and fingers relative to wrist
+  // Hand stays flat/horizontal in world space; wristExt adjusts extension/flexion
+  // Old formula (spineCumFlex - sf - ef + wristExt) produced extreme values (-170° in qiyam)
+  const handFlex = wristExt;
+  const handVerts = PALM_VERTS.map(v => {
+    let p = {x: v.x * s, y: v.y, z: v.z};
+    p = rotX(p, deg(handFlex));
+    p = rotZ(p, deg(spineCumLat + s * shoulderAbd));
+    p = rotY(p, deg(spineCumAxial));
+    return addV(p, wristPt);
+  });
+  const fingerVerts = FINGER_TIPS.map(v => {
+    let p = {x: v.x * s, y: v.y, z: v.z};
+    p = rotX(p, deg(handFlex));
+    p = rotZ(p, deg(spineCumLat + s * shoulderAbd));
+    p = rotY(p, deg(spineCumAxial));
+    return addV(p, wristPt);
+  });
+
+  return {shoulderJoint, elbowPt, wristPt, handVerts, fingerVerts, humDir, foreDir};
+}
+
+// ============================================================
+// GROUND ANCHORING — compute offset to plant feet on ground
+// ============================================================
+function computeGroundOff(pose) {
+  // Determine pose type for smart grounding
+  const isSitting = (pose.kneeFlexL > 120 || pose.kneeFlexR > 120) && pose.pelvisTilt < 20;
+  const maxKnee = Math.max(pose.kneeFlexL, pose.kneeFlexR);
+
+  let footMinY = Infinity, kneeMinY = Infinity;
+  for (const side of ['L','R']) {
+    const leg = transformLeg(pose, side);
+    // Foot vertices (always tracked)
+    for (const v of [...leg.talus, ...leg.calcaneus, ...leg.midfoot, ...leg.mtBases, ...leg.mtHeads]) {
+      footMinY = Math.min(footMinY, v.y);
+    }
+    for (const toe of leg.toes) {
+      footMinY = Math.min(footMinY, toe.proxEnd.y);
+      if (toe.distEnd) footMinY = Math.min(footMinY, toe.distEnd.y);
+      if (toe.midEnd) footMinY = Math.min(footMinY, toe.midEnd.y);
+    }
+    // Knee positions
+    kneeMinY = Math.min(kneeMinY, leg.kneePt.y);
+  }
+
+  if (isSitting) {
+    // Sitting: anchor to knees
+    return -kneeMinY;
+  }
+
+  // Smooth blend between foot-grounding and knee-grounding during transitions.
+  // This prevents the level-jump when going from ruku (foot-grounded) to sujud (knee-grounded).
+  // Blend factor: 0 = pure foot, 1 = pure knee
+  // Based on both pelvisTilt (how forward the body is) and kneeFlex (how bent the knees are)
+  const ptBlend = Math.max(0, Math.min(1, (pose.pelvisTilt - 30) / 30)); // 0 at pt≤30, 1 at pt≥60
+  const kfBlend = Math.max(0, Math.min(1, (maxKnee - 80) / 40));         // 0 at kf≤80, 1 at kf≥120
+  const kneeWeight = ptBlend * kfBlend; // both must be high for knee-grounding
+
+  const footOff = -Math.min(footMinY, kneeMinY);
+  const kneeOff = -kneeMinY;
+
+  return footOff + (kneeOff - footOff) * kneeWeight;
+}
+
+// ============================================================
+// BUILD RENDER LIST
+// ============================================================
+function buildRenderList(pose) {
+  const items = [];
+
+  // --- PELVIS ---
+  const sacVerts = transformPelvis(SACRUM_VERTS, pose);
+  const l5Verts = transformPelvis(L5_VERTS, pose);
+  const cocVerts = transformPelvis(COCCYX_VERTS, pose);
+  const rIliacVerts = transformPelvis(R_ILIAC.verts, pose);
+  const lIliacVerts = transformPelvis(L_ILIAC.verts, pose);
+
+  // Sacrum faces
+  for (const f of SACRUM_FACES) {
+    items.push({type:'face',pts:f.verts.map(i=>sacVerts[i]),color:f.color,opacity:f.opacity,layer:1});
+  }
+  // Sacrum edges
+  for (const e of SACRUM_EDGES) {
+    items.push({type:'edge',p0:sacVerts[e[0]],p1:sacVerts[e[1]],color:'#4ecdc4',width:1,layer:1});
+  }
+  // L5 faces
+  for (const f of L5_FACES) {
+    items.push({type:'face',pts:f.verts.map(i=>l5Verts[i]),color:f.color,opacity:f.opacity,layer:1});
+  }
+  // L5 edges
+  for (const e of L5_EDGES) {
+    items.push({type:'edge',p0:l5Verts[e[0]],p1:l5Verts[e[1]],color:'#e8e0d0',width:0.6,layer:1});
+  }
+  // Coccyx
+  items.push({type:'edge',p0:cocVerts[0],p1:cocVerts[1],color:'#4ecdc4',width:1.5,layer:1});
+  items.push({type:'edge',p0:cocVerts[1],p1:cocVerts[2],color:'#4ecdc4',width:1,layer:1});
+  // Iliac wings
+  for (const wData of [{verts:rIliacVerts,wing:R_ILIAC},{verts:lIliacVerts,wing:L_ILIAC}]) {
+    for (const f of wData.wing.faces) {
+      items.push({type:'face',pts:f.verts.map(i=>wData.verts[i]),color:f.color,opacity:f.opacity,layer:1});
+    }
+    for (const e of wData.wing.edges) {
+      items.push({type:'edge',p0:wData.verts[e[0]],p1:wData.verts[e[1]],color:'#2e5e4e',width:0.8,layer:1});
+    }
+    // Acetabulum marker
+    items.push({type:'dot',pt:wData.verts[wData.wing.acetabulum],color:'#f9a825',radius:3,layer:4,glow:true,label:'HIP'});
+  }
+  // Foramina
+  const forVerts = transformPelvis(FORAMINA, pose);
+  for (const f of forVerts) {
+    items.push({type:'dot',pt:f,color:'#333',radius:2,layer:1});
+  }
+
+  // --- LEGS (both sides) ---
+  for (const side of ['L','R']) {
+    const leg = transformLeg(pose, side);
+
+    // Femur shaft (trochanter → knee)
+    items.push({type:'edge',p0:leg.trochanter,p1:leg.kneePt,color:'#e8e0d0',width:3,layer:2});
+    // Femur shaft upper segment (pivot → trochanter)
+    items.push({type:'edge',p0:leg.pivot,p1:leg.trochanter,color:'#e8e0d0',width:2,layer:2});
+
+    // Condyles (outline)
+    for (const cData of [leg.condyleMed, leg.condyleLat]) {
+      for (let i = 0; i < cData.length; i++) {
+        const j = (i+1) % cData.length;
+        items.push({type:'edge',p0:cData[i],p1:cData[j],color:'#e8e0d0',width:1,layer:2});
+      }
+    }
+
+    // Patella
+    const pat = leg.patella;
+    const patPts = [pat.base, pat.latR, pat.apex, pat.medR];
+    items.push({type:'face',pts:patPts,color:'#f9a825',opacity:0.25,layer:3});
+    for (let i = 0; i < patPts.length; i++) {
+      items.push({type:'edge',p0:patPts[i],p1:patPts[(i+1)%patPts.length],color:'#f9a825',width:1.2,layer:3});
+    }
+
+    // Patellar tendon (patella apex → tibial tuberosity)
+    items.push({type:'edge',p0:pat.apex,p1:leg.tuberosity,color:'#ffd54f',width:1,layer:3});
+
+    // MCL (medial collateral ligament)
+    items.push({type:'edge',p0:leg.mclFemPt,p1:leg.mclTibPt,color:'#e57373',width:1.2,layer:2});
+    // LCL (lateral collateral ligament → fibular head)
+    items.push({type:'edge',p0:leg.lclFemPt,p1:leg.fibHead,color:'#42a5f5',width:1.2,layer:2});
+
+    // Tibia shaft (knee → ankle) with tibial tuberosity
+    items.push({type:'edge',p0:leg.kneePt,p1:leg.anklePt,color:'#e8e0d0',width:2.5,layer:3});
+    items.push({type:'dot',pt:leg.tuberosity,color:'#e8e0d0',radius:2.5,layer:3});
+
+    // Fibula
+    items.push({type:'edge',p0:leg.fibHead,p1:leg.fibShaftEnd,color:'#607d8b',width:1.5,layer:3});
+    items.push({type:'dot',pt:leg.fibHead,color:'#607d8b',radius:2.5,layer:3});
+
+    // Knee joint center
+    items.push({type:'dot',pt:leg.kneePt,color:'#4ecdc4',radius:3,layer:4,glow:true});
+
+    // Ankle joint center
+    items.push({type:'dot',pt:leg.anklePt,color:'#4ecdc4',radius:3,layer:4,glow:true});
+
+    // --- FOOT ---
+    // Talus edges
+    const talusEdges = [[0,1],[1,2],[2,3],[3,0],[0,4],[1,4],[2,4],[3,4]];
+    for (const e of talusEdges) {
+      items.push({type:'edge',p0:leg.talus[e[0]],p1:leg.talus[e[1]],color:'#81c784',width:0.8,layer:4});
+    }
+    // Calcaneus edges
+    const calcEdges = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,7],[1,6],[2,5],[3,4]];
+    for (const e of calcEdges) {
+      items.push({type:'edge',p0:leg.calcaneus[e[0]],p1:leg.calcaneus[e[1]],color:'#81c784',width:0.8,layer:4});
+    }
+    // Calcaneus faces (just bottom + posterior)
+    items.push({type:'face',pts:[leg.calcaneus[4],leg.calcaneus[5],leg.calcaneus[6],leg.calcaneus[7]],color:'#81c784',opacity:0.08,layer:4});
+    items.push({type:'face',pts:[leg.calcaneus[2],leg.calcaneus[3],leg.calcaneus[4],leg.calcaneus[5]],color:'#81c784',opacity:0.06,layer:4});
+
+    // Midfoot edges
+    const midEdges = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+    for (const e of midEdges) {
+      items.push({type:'edge',p0:leg.midfoot[e[0]],p1:leg.midfoot[e[1]],color:'#81c784',width:0.6,layer:4});
+    }
+
+    // Metatarsals (base → head)
+    for (let m = 0; m < 5; m++) {
+      items.push({type:'edge',p0:leg.mtBases[m],p1:leg.mtHeads[m],color:'#81c784',width:1,layer:5});
+      items.push({type:'dot',pt:leg.mtHeads[m],color:'#81c784',radius:1.5,layer:5});
+    }
+
+    // Toes
+    for (let t = 0; t < 5; t++) {
+      const toe = leg.toes[t];
+      items.push({type:'edge',p0:toe.mtp,p1:toe.proxEnd,color:'#a5d6a7',width:0.8,layer:5});
+      if (toe.segments === 2) {
+        items.push({type:'edge',p0:toe.proxEnd,p1:toe.distEnd,color:'#a5d6a7',width:0.6,layer:5});
+      } else {
+        items.push({type:'edge',p0:toe.proxEnd,p1:toe.midEnd,color:'#a5d6a7',width:0.7,layer:5});
+        items.push({type:'edge',p0:toe.midEnd,p1:toe.distEnd,color:'#a5d6a7',width:0.5,layer:5});
+      }
+    }
+
+    // Side label
+    const labelPt = addV(leg.pivot, {x: side==='L'?-20:20, y:15, z:0});
+    items.push({type:'label',pt:labelPt,text:side==='L'?'LEFT':'RIGHT',color:'#555',layer:6});
+  }
+
+  // --- SPINE + UPPER BODY ---
+  const spine = transformSpine(pose);
+
+  // Spine vertebral segments
+  for (const seg of spine.segments) {
+    const v = seg.verts;
+    // Front face
+    items.push({type:'face',pts:[v[0],v[1],v[5],v[4]],color:'#b0bec5',opacity:0.12,layer:1});
+    // Back face
+    items.push({type:'face',pts:[v[2],v[3],v[7],v[6]],color:'#b0bec5',opacity:0.08,layer:1});
+    // Edges (vertical + top/bottom outlines)
+    const segEdges = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+    for (const e of segEdges) {
+      items.push({type:'edge',p0:v[e[0]],p1:v[e[1]],color:'#b0bec5',width:0.5,layer:1});
+    }
+    // Spinous process marker (posterior midline)
+    const spMid = lerpV(v[2], v[6], 0.5);
+    items.push({type:'dot',pt:spMid,color:'#90a4ae',radius:1.2,layer:1});
+  }
+
+  // Spine centerline (for visual continuity)
+  for (let i = 0; i < spine.segments.length - 1; i++) {
+    items.push({type:'edge',p0:spine.segments[i].top,p1:spine.segments[i+1].top,color:'#b0bec5',width:1.5,layer:1});
+  }
+
+  // Ribcage
+  for (const rib of spine.ribs) {
+    // Left rib arcs
+    for (let i = 0; i < rib.left.length - 1; i++) {
+      items.push({type:'edge',p0:rib.left[i],p1:rib.left[i+1],color:'#78909c',width:0.8,layer:1});
+    }
+    // Right rib arcs
+    for (let i = 0; i < rib.right.length - 1; i++) {
+      items.push({type:'edge',p0:rib.right[i],p1:rib.right[i+1],color:'#78909c',width:0.8,layer:1});
+    }
+  }
+
+  // Sternum
+  if (spine.ribs.length >= 2) {
+    items.push({type:'edge',p0:spine.ribs[0].left[0],p1:spine.sternumTop,color:'#78909c',width:1.2,layer:1});
+    items.push({type:'edge',p0:spine.sternumTop,p1:spine.ribs[spine.ribs.length-1].left[0],color:'#78909c',width:1,layer:1});
+  }
+
+  // Clavicles
+  items.push({type:'edge',p0:spine.sternumTop,p1:spine.shoulderJointL,color:'#ffab91',width:2,layer:2});
+  items.push({type:'edge',p0:spine.sternumTop,p1:spine.shoulderJointR,color:'#ffab91',width:2,layer:2});
+
+  // Scapulae
+  for (const scap of [spine.scapulaL, spine.scapulaR]) {
+    items.push({type:'edge',p0:scap[0],p1:scap[1],color:'#ffab91',width:1,layer:1});
+    items.push({type:'edge',p0:scap[1],p1:scap[2],color:'#ffab91',width:1,layer:1});
+    items.push({type:'edge',p0:scap[2],p1:scap[0],color:'#ffab91',width:1,layer:1});
+    items.push({type:'face',pts:scap,color:'#ffab91',opacity:0.08,layer:1});
+  }
+
+  // Shoulder joint dots
+  items.push({type:'dot',pt:spine.shoulderJointL,color:'#f9a825',radius:3.5,layer:4,glow:true,label:'SHLDR'});
+  items.push({type:'dot',pt:spine.shoulderJointR,color:'#f9a825',radius:3.5,layer:4,glow:true,label:'SHLDR'});
+
+  // Arms (both sides)
+  for (const side of ['L','R']) {
+    const sj = side === 'L' ? spine.shoulderJointL : spine.shoulderJointR;
+    const arm = transformArm(pose, side, sj, spine.cumFlex, spine.cumLat, spine.cumAxial);
+
+    // Humerus
+    items.push({type:'edge',p0:arm.shoulderJoint,p1:arm.elbowPt,color:'#e8e0d0',width:2.5,layer:2});
+    // Elbow joint
+    items.push({type:'dot',pt:arm.elbowPt,color:'#4ecdc4',radius:2.5,layer:4,glow:true});
+    // Forearm
+    items.push({type:'edge',p0:arm.elbowPt,p1:arm.wristPt,color:'#e8e0d0',width:2,layer:3});
+    // Wrist joint
+    items.push({type:'dot',pt:arm.wristPt,color:'#4ecdc4',radius:2,layer:4,glow:true});
+
+    // Hand: palm outline
+    const hv = arm.handVerts;
+    if (hv.length >= 4) {
+      for (let i = 0; i < hv.length; i++) {
+        items.push({type:'edge',p0:hv[i],p1:hv[(i+1)%hv.length],color:'#81c784',width:0.8,layer:5});
+      }
+      // Fingers
+      const fv = arm.fingerVerts;
+      for (let f = 0; f < Math.min(fv.length, 5); f++) {
+        const base = f < 3 ? hv[3] : (f < 4 ? hv[2] : hv[1]);
+        items.push({type:'edge',p0:base,p1:fv[f],color:'#a5d6a7',width:0.6,layer:5});
+      }
+    }
+  }
+
+  // Head
+  // Cranium outline
+  for (let i = 0; i < spine.headVerts.length - 1; i++) {
+    items.push({type:'edge',p0:spine.headVerts[i],p1:spine.headVerts[i+1],color:'#ce93d8',width:1.2,layer:1});
+  }
+  // Close the loop
+  if (spine.headVerts.length > 2) {
+    items.push({type:'edge',p0:spine.headVerts[spine.headVerts.length-1],p1:spine.headVerts[0],color:'#ce93d8',width:1.2,layer:1});
+  }
+  // Head fill (subtle)
+  items.push({type:'face',pts:spine.headVerts.slice(0, 6),color:'#ce93d8',opacity:0.06,layer:1});
+  items.push({type:'face',pts:spine.headVerts.slice(6),color:'#ce93d8',opacity:0.06,layer:1});
+
+  // Jaw
+  for (let i = 0; i < spine.jawWorld.length - 1; i++) {
+    items.push({type:'edge',p0:spine.jawWorld[i],p1:spine.jawWorld[i+1],color:'#ce93d8',width:1,layer:1});
+  }
+
+  // Neck (C1 → head base)
+  items.push({type:'edge',p0:spine.neckTop,p1:spine.headVerts[0],color:'#b0bec5',width:1.5,layer:1});
+
+  // Depth sort: layer first, then z in camera space
+  items.sort((a, b) => {
+    function getCenter(item) {
+      if (item.type==='dot'||item.type==='label') return item.pt;
+      if (item.type==='edge') return lerpV(item.p0, item.p1, 0.5);
+      if (item.type==='face') {
+        let cx=0,cy=0,cz=0;
+        for(const p of item.pts){cx+=p.x;cy+=p.y;cz+=p.z}
+        const n=item.pts.length;
+        return {x:cx/n,y:cy/n,z:cz/n};
+      }
+      return {x:0,y:0,z:0};
+    }
+    const ac = getCenter(a), bc = getCenter(b);
+    const az = rotY(rotX({x:ac.x,y:ac.y-camFocusY,z:ac.z},camEl),camAz);
+    const bz = rotY(rotX({x:bc.x,y:bc.y-camFocusY,z:bc.z},camEl),camAz);
+    if (a.layer !== b.layer) return a.layer - b.layer;
+    return az.z - bz.z;
+  });
+
+  return items;
+}
+
+// ============================================================
+// DRAWING FUNCTIONS
+// ============================================================
+function drawFace(item) {
+  if (item.pts.length < 3) return;
+  const projected = item.pts.map(p => project(p));
+  ctx.save();
+  ctx.globalAlpha = item.opacity;
+  ctx.fillStyle = item.color;
+  ctx.strokeStyle = item.color;
+  ctx.lineWidth = 0.5;
+  ctx.beginPath();
+  ctx.moveTo(projected[0].sx, projected[0].sy);
+  for (let i = 1; i < projected.length; i++) ctx.lineTo(projected[i].sx, projected[i].sy);
+  ctx.closePath();
+  ctx.fill();
+  ctx.globalAlpha = Math.min(item.opacity * 1.5, 1);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawEdge(item) {
+  const p0 = project(item.p0), p1 = project(item.p1);
+  ctx.save();
+  ctx.strokeStyle = item.color;
+  ctx.lineWidth = item.width;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(p0.sx, p0.sy);
+  ctx.lineTo(p1.sx, p1.sy);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawDot(item) {
+  const p = project(item.pt);
+  const r = item.radius * (p.scale / 1.5);
+  ctx.save();
+  if (item.glow) {
+    const grd = ctx.createRadialGradient(p.sx, p.sy, 0, p.sx, p.sy, r*3);
+    grd.addColorStop(0, item.color + '44');
+    grd.addColorStop(1, item.color + '00');
+    ctx.fillStyle = grd;
+    ctx.beginPath();
+    ctx.arc(p.sx, p.sy, r*3, 0, Math.PI*2);
+    ctx.fill();
+  }
+  ctx.fillStyle = item.color;
+  ctx.beginPath();
+  ctx.arc(p.sx, p.sy, r, 0, Math.PI*2);
+  ctx.fill();
+  if (item.label) {
+    ctx.fillStyle = item.color;
+    ctx.font = '8px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(item.label, p.sx, p.sy - r - 4);
+  }
+  ctx.restore();
+}
+
+function drawLabel(item) {
+  const p = project(item.pt);
+  ctx.save();
+  ctx.fillStyle = item.color;
+  ctx.font = 'bold 10px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(item.text, p.sx, p.sy);
+  ctx.restore();
+}
+
+// ============================================================
+// REFERENCE FRAME + GRID + GHOST NEUTRAL
+// ============================================================
+function drawGroundShadow(pose) {
+  // Dark ellipse at ground level beneath feet to visually anchor the model
+  const savedOff = groundYOff;
+  groundYOff = 0;
+  ctx.save();
+  // Project center and edge points of shadow ellipse
+  const cx = 0, cz = 0;
+  const rx = 60, rz = 40;
+  const segs = 24;
+  ctx.beginPath();
+  for (let i = 0; i <= segs; i++) {
+    const a = (i / segs) * Math.PI * 2;
+    const pt = project({x: cx + Math.cos(a)*rx, y: 0, z: cz + Math.sin(a)*rz});
+    if (i === 0) ctx.moveTo(pt.sx, pt.sy);
+    else ctx.lineTo(pt.sx, pt.sy);
+  }
+  ctx.closePath();
+  const center = project({x: cx, y: 0, z: cz});
+  const grd = ctx.createRadialGradient(center.sx, center.sy, 0, center.sx, center.sy, 80);
+  grd.addColorStop(0, 'rgba(0,0,0,0.25)');
+  grd.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = grd;
+  ctx.fill();
+  ctx.restore();
+  groundYOff = savedOff;
+}
+
+function drawGrid() {
+  // Ground plane grid at y=0 (ground level) — drawn WITHOUT anatomy offset
+  const savedOff = groundYOff;
+  groundYOff = 0;
+  const gridY = 0;
+  const gridSize = 200;
+  const step = 40;
+  ctx.save();
+  ctx.strokeStyle = '#ffffff14';
+  ctx.lineWidth = 0.5;
+  for (let x = -gridSize; x <= gridSize; x += step) {
+    const p0 = project({x:x, y:gridY, z:-gridSize});
+    const p1 = project({x:x, y:gridY, z:gridSize});
+    ctx.beginPath(); ctx.moveTo(p0.sx,p0.sy); ctx.lineTo(p1.sx,p1.sy); ctx.stroke();
+  }
+  for (let z = -gridSize; z <= gridSize; z += step) {
+    const p0 = project({x:-gridSize, y:gridY, z:z});
+    const p1 = project({x:gridSize, y:gridY, z:z});
+    ctx.beginPath(); ctx.moveTo(p0.sx,p0.sy); ctx.lineTo(p1.sx,p1.sy); ctx.stroke();
+  }
+  ctx.restore();
+  groundYOff = savedOff;
+}
+
+function drawReferenceFrame() {
+  // Draw world-fixed reference WITHOUT anatomy offset
+  const savedOff = groundYOff;
+  groundYOff = 0;
+  ctx.save();
+  // Ground origin marker
+  const origin = project({x:0, y:0, z:0});
+  const grd = ctx.createRadialGradient(origin.sx, origin.sy, 0, origin.sx, origin.sy, 12);
+  grd.addColorStop(0, '#ffffff15');
+  grd.addColorStop(1, '#ffffff00');
+  ctx.fillStyle = grd;
+  ctx.beginPath(); ctx.arc(origin.sx, origin.sy, 12, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#ffffff30';
+  ctx.beginPath(); ctx.arc(origin.sx, origin.sy, 2, 0, Math.PI*2); ctx.fill();
+
+  // Vertical plumb line (from ground up)
+  ctx.strokeStyle = '#ffffff08';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 6]);
+  const vTop = project({x:0, y:350, z:0});
+  const vBot = project({x:0, y:0, z:0});
+  ctx.beginPath(); ctx.moveTo(vTop.sx,vTop.sy); ctx.lineTo(vBot.sx,vBot.sy); ctx.stroke();
+
+  // Horizontal ref at ground
+  const hL = project({x:-140, y:0, z:0});
+  const hR = project({x:140, y:0, z:0});
+  ctx.beginPath(); ctx.moveTo(hL.sx,hL.sy); ctx.lineTo(hR.sx,hR.sy); ctx.stroke();
+
+  ctx.setLineDash([]);
+  ctx.restore();
+  groundYOff = savedOff;
+}
+
+function drawGhostNeutral() {
+  // Ghost uses its OWN ground offset (neutral pose standing straight)
+  const savedOff = groundYOff;
+  groundYOff = computeGroundOff(NEUTRAL_POSE);
+  ctx.save();
+  ctx.setLineDash([3, 5]);
+  ctx.globalAlpha = 0.12;
+
+  // Ghost pelvis
+  const gSac = transformPelvis(SACRUM_VERTS, NEUTRAL_POSE);
+  ctx.strokeStyle = '#4ecdc4';
+  ctx.lineWidth = 0.8;
+  const sacOutline = [0,1,5,9,8,4,0];
+  ctx.beginPath();
+  let gp = project(gSac[sacOutline[0]]);
+  ctx.moveTo(gp.sx, gp.sy);
+  for (let i=1;i<sacOutline.length;i++){gp=project(gSac[sacOutline[i]]);ctx.lineTo(gp.sx,gp.sy)}
+  ctx.stroke();
+
+  // Ghost iliac wings
+  const gRI = transformPelvis(R_ILIAC.verts, NEUTRAL_POSE);
+  const gLI = transformPelvis(L_ILIAC.verts, NEUTRAL_POSE);
+  for (const wData of [{verts:gRI,edges:R_ILIAC.edges},{verts:gLI,edges:L_ILIAC.edges}]) {
+    ctx.strokeStyle = '#e8e0d0';
+    ctx.lineWidth = 0.6;
+    for (const e of wData.edges) {
+      const p0=project(wData.verts[e[0]]),p1=project(wData.verts[e[1]]);
+      ctx.beginPath();ctx.moveTo(p0.sx,p0.sy);ctx.lineTo(p1.sx,p1.sy);ctx.stroke();
+    }
+  }
+
+  // Ghost legs
+  for (const side of ['L','R']) {
+    const leg = transformLeg(NEUTRAL_POSE, side);
+
+    // Femur shaft
+    ctx.strokeStyle = '#e8e0d0';
+    ctx.lineWidth = 1.5;
+    let a=project(leg.trochanter),b=project(leg.kneePt);
+    ctx.beginPath();ctx.moveTo(a.sx,a.sy);ctx.lineTo(b.sx,b.sy);ctx.stroke();
+
+    // Condyle outlines
+    ctx.lineWidth = 0.6;
+    for (const cData of [leg.condyleMed, leg.condyleLat]) {
+      for (let i=0;i<cData.length;i++){
+        const j=(i+1)%cData.length;
+        a=project(cData[i]);b=project(cData[j]);
+        ctx.beginPath();ctx.moveTo(a.sx,a.sy);ctx.lineTo(b.sx,b.sy);ctx.stroke();
+      }
+    }
+
+    // Tibia shaft
+    ctx.strokeStyle = '#4ecdc4';
+    ctx.lineWidth = 1.5;
+    a=project(leg.kneePt);b=project(leg.anklePt);
+    ctx.beginPath();ctx.moveTo(a.sx,a.sy);ctx.lineTo(b.sx,b.sy);ctx.stroke();
+
+    // Patella outline
+    ctx.strokeStyle = '#f9a825';
+    ctx.lineWidth = 0.6;
+    const gPat = [leg.patella.base,leg.patella.latR,leg.patella.apex,leg.patella.medR,leg.patella.base];
+    ctx.beginPath();
+    a=project(gPat[0]);ctx.moveTo(a.sx,a.sy);
+    for(let i=1;i<gPat.length;i++){b=project(gPat[i]);ctx.lineTo(b.sx,b.sy)}
+    ctx.stroke();
+
+    // Foot outline (simplified: talus outline + calcaneus outline + metatarsals)
+    ctx.strokeStyle = '#81c784';
+    ctx.lineWidth = 0.5;
+    // Talus base
+    for(let i=0;i<4;i++){
+      const j=(i+1)%4;
+      a=project(leg.talus[i]);b=project(leg.talus[j]);
+      ctx.beginPath();ctx.moveTo(a.sx,a.sy);ctx.lineTo(b.sx,b.sy);ctx.stroke();
+    }
+    // Calcaneus outline (bottom)
+    const calcOut = [4,5,6,7,4];
+    ctx.beginPath();
+    a=project(leg.calcaneus[calcOut[0]]);ctx.moveTo(a.sx,a.sy);
+    for(let i=1;i<calcOut.length;i++){b=project(leg.calcaneus[calcOut[i]]);ctx.lineTo(b.sx,b.sy)}
+    ctx.stroke();
+    // Metatarsals
+    for(let m=0;m<5;m++){
+      a=project(leg.mtBases[m]);b=project(leg.mtHeads[m]);
+      ctx.beginPath();ctx.moveTo(a.sx,a.sy);ctx.lineTo(b.sx,b.sy);ctx.stroke();
+    }
+  }
+
+  // Ghost spine centerline
+  const gSpine = transformSpine(NEUTRAL_POSE);
+  ctx.strokeStyle = '#b0bec5';
+  ctx.lineWidth = 0.6;
+  for (let i = 0; i < gSpine.segments.length; i++) {
+    const seg = gSpine.segments[i];
+    // Draw centerline through each segment bottom→top
+    const p0 = project(seg.bottom), p1 = project(seg.top);
+    ctx.beginPath(); ctx.moveTo(p0.sx,p0.sy); ctx.lineTo(p1.sx,p1.sy); ctx.stroke();
+  }
+
+  // Ghost shoulder line
+  ctx.strokeStyle = '#ffab91';
+  ctx.lineWidth = 0.5;
+  let gsl = project(gSpine.shoulderJointL), gsr = project(gSpine.shoulderJointR);
+  ctx.beginPath(); ctx.moveTo(gsl.sx,gsl.sy); ctx.lineTo(gsr.sx,gsr.sy); ctx.stroke();
+
+  // Ghost head outline
+  ctx.strokeStyle = '#ce93d8';
+  ctx.lineWidth = 0.4;
+  for (let i = 0; i < gSpine.headVerts.length; i++) {
+    const j = (i+1) % gSpine.headVerts.length;
+    const hp0 = project(gSpine.headVerts[i]), hp1 = project(gSpine.headVerts[j]);
+    ctx.beginPath(); ctx.moveTo(hp0.sx,hp0.sy); ctx.lineTo(hp1.sx,hp1.sy); ctx.stroke();
+  }
+
+  // Label
+  ctx.globalAlpha = 0.15;
+  ctx.fillStyle = '#4ecdc4';
+  ctx.font = '8px sans-serif';
+  ctx.textAlign = 'center';
+  const nlp = project(gSac[0]);
+  ctx.fillText('NEUTRAL', nlp.sx, nlp.sy - 10);
+
+  ctx.setLineDash([]);
+  ctx.restore();
+  groundYOff = savedOff;
+}
+
+// ============================================================
+// MAIN DRAW SCENE
+// ============================================================
+function drawScene(pose) {
+  W = canvas.width; H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // Background gradient
+  const bgGrd = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W,H)*0.7);
+  bgGrd.addColorStop(0, '#111');
+  bgGrd.addColorStop(1, '#060606');
+  ctx.fillStyle = bgGrd;
+  ctx.fillRect(0, 0, W, H);
+
+  // Compute ground offset — shift anatomy so lowest point touches y=0
+  // Temporal smoothing prevents level-jumps during transitions (e.g. ruku→sujud
+  // where grounding switches from feet to knees, dropping groundOff from ~270 to ~56).
+  // Asymmetric rates: faster going down (gravity-assisted), slower going up (effortful).
+  const targetGroundOff = computeGroundOff(pose);
+  if (groundYOff === null) {
+    groundYOff = targetGroundOff;  // snap on first frame — no floating
+  } else {
+    const goSmooth = targetGroundOff < groundYOff ? 0.07 : 0.04; // down faster, up slower
+    groundYOff += (targetGroundOff - groundYOff) * goSmooth;
+  }
+  // Smoothly adjust camera focus to vertical center of grounded anatomy
+  const targetFocusY = groundYOff * 0.45;
+  if (camFocusY === null) {
+    camFocusY = targetFocusY;  // snap on first frame — no floating
+  } else {
+    camFocusY += (targetFocusY - camFocusY) * 0.05;
+  }
+
+  drawGrid();
+  drawGroundShadow(pose);
+  drawReferenceFrame();
+  drawGhostNeutral();
+
+  // Build and render
+  const items = buildRenderList(pose);
+  for (const item of items) {
+    if (item.type === 'face') drawFace(item);
+    else if (item.type === 'edge') drawEdge(item);
+    else if (item.type === 'dot') drawDot(item);
+    else if (item.type === 'label') drawLabel(item);
+  }
+
+  // Title annotation
+  ctx.save();
+  ctx.fillStyle = '#4ecdc4';
+  ctx.font = 'bold 12px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('Full Body Kinematic Chain', 10, 20);
+  ctx.font = '10px sans-serif';
+  ctx.fillStyle = '#666';
+  ctx.fillText('Head + Spine + Arms + Pelvis + Legs + Feet', 10, 34);
+
+  // Axis indicator (bottom-right) — pure direction arrows via camera rotation
+  const axR = W - 50, axB = H - 40;
+  const axLen = 25;
+  ctx.lineWidth = 1;
+  const axO = rotX(rotY({x:0,y:0,z:0}, camAz), camEl);
+  const axX = rotX(rotY({x:1,y:0,z:0}, camAz), camEl);
+  const axYv = rotX(rotY({x:0,y:1,z:0}, camAz), camEl);
+  const axZ = rotX(rotY({x:0,y:0,z:1}, camAz), camEl);
+  const drawAx = (dir, label, color) => {
+    const dx = dir.x - axO.x, dy = -(dir.y - axO.y);
+    const l = Math.sqrt(dx*dx+dy*dy);
+    if (l < 0.01) return;
+    const nx = dx/l*axLen, ny = dy/l*axLen;
+    ctx.strokeStyle = color;
+    ctx.beginPath(); ctx.moveTo(axR, axB); ctx.lineTo(axR+nx, axB+ny); ctx.stroke();
+    ctx.fillStyle = color;
+    ctx.font = '9px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(label, axR+nx*1.3, axB+ny*1.3+3);
+  };
+  drawAx(axX, 'X', '#e57373');
+  drawAx(axYv, 'Y', '#81c784');
+  drawAx(axZ, 'Z', '#64b5f6');
+  ctx.restore();
+}
+
+// ============================================================
+// SIDEBAR UPDATE
+// ============================================================
+function updateInfo(pose, stage) {
+  const info = STAGE_INFO[stage] || STAGE_INFO.qiyam;
+  document.getElementById('stageAr').textContent = info.ar;
+  document.getElementById('stageTr').textContent = info.tr;
+  document.getElementById('stageEn').textContent = info.en;
+
+  const fmt = (v) => (v >= 0 ? '+' : '') + v.toFixed(0) + '\u00B0';
+  const setVal = (id, v) => {
+    const el = document.getElementById(id);
+    el.textContent = fmt(v);
+    el.className = 'val' + (v < 0 ? ' neg' : '');
+  };
+
+  setVal('angTilt', pose.pelvisTilt);
+  setVal('angObliq', pose.obliquity);
+  setVal('angAxial', pose.axialRot);
+  setVal('angHipL', pose.hipFlexL);
+  setVal('angAbdL', pose.hipAbdL);
+  setVal('angKneeL', pose.kneeFlexL);
+  setVal('angAnkleL', pose.ankleDorsiL);
+  setVal('angMtpL', pose.mtpExtL);
+  setVal('angHipR', pose.hipFlexR);
+  setVal('angAbdR', pose.hipAbdR);
+  setVal('angKneeR', pose.kneeFlexR);
+  setVal('angAnkleR', pose.ankleDorsiR);
+  setVal('angMtpR', pose.mtpExtR);
+
+  // Upper body angles
+  setVal('angSpineFlex', pose.spineFlex);
+  setVal('angSpineLat', pose.spineLatFlex);
+  setVal('angHeadTilt', pose.headTilt);
+  setVal('angShL', pose.shoulderFlexL);
+  setVal('angElbL', pose.elbowFlexL);
+  setVal('angShR', pose.shoulderFlexR);
+  setVal('angElbR', pose.elbowFlexR);
+
+  // Symmetry badge
+  const badge = document.getElementById('symBadge');
+  const isSymmetric = Math.abs(pose.kneeFlexL - pose.kneeFlexR) < 5 &&
+                      Math.abs(pose.hipFlexL - pose.hipFlexR) < 5 &&
+                      Math.abs(pose.ankleDorsiL - pose.ankleDorsiR) < 10;
+  badge.textContent = isSymmetric ? 'SYMMETRIC' : 'ASYMMETRIC';
+  badge.className = 'sym-badge ' + (isSymmetric ? 'sym' : 'asym');
+
+  document.getElementById('timeLabel').textContent = currentTime.toFixed(1) + 's';
+  document.getElementById('scrubber').value = currentTime;
+}
+
+// ============================================================
+// ANIMATION LOOP
+// ============================================================
+let lastTickTime = performance.now();
+function animate() {
+  const now = performance.now();
+  const elapsed = (now - lastTickTime) / 1000;
+  lastTickTime = now;
+
+  if (isPlaying) {
+    const dt = Math.min(elapsed, 0.1) * speed;  // cap dt to avoid jumps
+    currentTime += dt;
+    if (currentTime >= TOTAL_TIME) currentTime = 0;
+  }
+
+  const stage = getStageAt(currentTime);
+  const poseKey = getPoseKey(stage);
+  const targetPose = POSES[poseKey];
+  currentPose = lerpPose(currentPose, targetPose);
+
+  // Breathing / weight micro-movement: subtle oscillation during holds
+  // Simulates ~70-100kg body maintaining balance, breathing
+  if (currentPose) {
+    const t = performance.now() / 1000;
+    const breathPhase = t * 0.4 * Math.PI * 2;  // ~0.4 Hz breathing
+    const swayPhase = t * 0.13 * Math.PI * 2;   // ~0.13 Hz weight shift
+    // Pelvis micro-tilt (breathing expands ribcage → pelvis tilts slightly)
+    currentPose.pelvisTilt += Math.sin(breathPhase) * 0.35;
+    // Subtle lateral sway (weight shifting on ground contact points)
+    currentPose.obliquity += Math.sin(swayPhase) * 0.2;
+    // Knee micro-flex (absorbing body weight)
+    currentPose.kneeFlexL += Math.sin(breathPhase + 0.5) * 0.15;
+    currentPose.kneeFlexR += Math.sin(breathPhase + 0.5) * 0.15;
+  }
+
+  drawScene(currentPose);
+  updateInfo(currentPose, stage);
+}
+
+// ============================================================
+// CAMERA CONTROLS
+// ============================================================
+const CAM_PRESETS = {
+  camAnt:  {az:0, el:0.1},
+  camPost: {az:Math.PI, el:0.12},
+  camLatR: {az:Math.PI/2, el:0.1},
+  camLatL: {az:-Math.PI/2, el:0.1},
+  camSup:  {az:Math.PI/2, el:1.1},
+};
+
+let targetAz = camAz, targetEl = camEl;
+let camLerping = false;
+
+function lerpCam() {
+  if (!camLerping) return;
+  camAz += (targetAz - camAz) * 0.08;
+  camEl += (targetEl - camEl) * 0.08;
+  if (Math.abs(camAz-targetAz)<0.001 && Math.abs(camEl-targetEl)<0.001) {
+    camAz = targetAz; camEl = targetEl; camLerping = false;
+  }
+  requestAnimationFrame(lerpCam);
+}
+
+for (const [id, preset] of Object.entries(CAM_PRESETS)) {
+  const btn = document.getElementById(id);
+  if (btn) btn.addEventListener('click', () => {
+    targetAz = preset.az; targetEl = preset.el;
+    camLerping = true; lerpCam();
+    document.querySelectorAll('.controls button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+}
+
+// Mouse drag for camera rotation
+let isDragging = false, dragStartX = 0, dragStartY = 0, dragAzStart = 0, dragElStart = 0;
+canvas.addEventListener('mousedown', e => { isDragging=true; dragStartX=e.clientX; dragStartY=e.clientY; dragAzStart=camAz; dragElStart=camEl; camLerping=false; });
+canvas.addEventListener('mousemove', e => {
+  if (!isDragging) return;
+  camAz = dragAzStart + (e.clientX - dragStartX) * 0.005;
+  camEl = Math.max(-1.2, Math.min(1.5, dragElStart + (e.clientY - dragStartY) * 0.005));
+  targetAz = camAz; targetEl = camEl;
+});
+canvas.addEventListener('mouseup', () => isDragging = false);
+canvas.addEventListener('mouseleave', () => isDragging = false);
+
+// Scroll to zoom
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  camDist = Math.max(CAM_NEAR, Math.min(CAM_FAR, camDist + e.deltaY * 0.5));
+}, { passive: false });
+
+// ============================================================
+// CONTROLS
+// ============================================================
+const btnPlay = document.getElementById('btnPlay');
+btnPlay.addEventListener('click', () => {
+  isPlaying = !isPlaying;
+  btnPlay.textContent = isPlaying ? 'Pause' : 'Play';
+});
+
+const btnSpeed = document.getElementById('btnSpeed');
+const speeds = [0.25, 0.5, 1];
+let speedIdx = 2;
+btnSpeed.addEventListener('click', () => {
+  speedIdx = (speedIdx + 1) % speeds.length;
+  speed = speeds[speedIdx];
+  btnSpeed.textContent = speed + 'x';
+});
+
+const scrubber = document.getElementById('scrubber');
+scrubber.addEventListener('input', () => {
+  currentTime = parseFloat(scrubber.value);
+  currentPose = null; // snap to target immediately
+});
+
+// Keyboard controls
+document.addEventListener('keydown', e => {
+  if (e.key === ' ') { e.preventDefault(); btnPlay.click(); }
+  else if (e.key === '1') document.getElementById('camAnt')?.click();
+  else if (e.key === '2') document.getElementById('camPost')?.click();
+  else if (e.key === '3') document.getElementById('camLatR')?.click();
+  else if (e.key === '4') document.getElementById('camLatL')?.click();
+  else if (e.key === '5') document.getElementById('camSup')?.click();
+  else if (e.key === 'ArrowLeft') currentTime = Math.max(0, currentTime - 1);
+  else if (e.key === 'ArrowRight') currentTime = Math.min(TOTAL_TIME, currentTime + 1);
+});
+
+// ============================================================
+// INIT
+// ============================================================
+// Use setInterval for reliable timing (works in background tabs)
+setInterval(animate, 1000/30);  // 30 FPS
+
+// Debug: expose key vars for testing
+window._dbg = { get pose(){ return currentPose; }, POSES, set time(v){ currentTime=v; currentPose=null; },
+  get camAz(){ return camAz; }, set camAz(v){ camAz=v; },
+  get camEl(){ return camEl; }, set camEl(v){ camEl=v; },
+  get currentTime(){ return currentTime; }, set currentTime(v){ currentTime=v; },
+  transformLeg, computeGroundOff,
+  get isPlaying(){ return isPlaying; }, set isPlaying(v){ isPlaying=v; },
+  forcePose(name){
+    // Map pose name to appropriate timeline point
+    const timeMap = {qiyam:1,ruku:6,goingDown:13,sujud:16,iftirash:21,tawarruk:32,tasleem_r:36,tasleem_l:40};
+    currentTime = timeMap[name] || 0;
+    currentPose = {...POSES[name]};
+    const stage = getStageAt(currentTime);
+    drawScene(currentPose);
+    updateInfo(currentPose, stage);
+  },
+};
+</script>
+</body>
+</html>

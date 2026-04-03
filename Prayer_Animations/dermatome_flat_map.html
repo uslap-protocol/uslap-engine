@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Dermatome Flat Map — Globe Gore (Cut at Seam)</title>
+<style>
+  body { background: #1a1a2e; color: #eee; font-family: monospace; margin: 20px; }
+  canvas { display: block; margin: 10px auto; cursor: crosshair; }
+  h1 { text-align: center; font-size: 18px; }
+  p.sub { text-align: center; color: #aaa; font-size: 12px; margin: 4px; }
+  .legend { display: flex; justify-content: center; gap: 18px; margin: 10px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; }
+  .swatch { width: 24px; height: 4px; border-radius: 2px; }
+</style>
+</head>
+<body>
+<h1>Dermatome Globe Gore &mdash; Right Leg (Cut at Inner Seam, Peeled Flat)</h1>
+<p class="sub">SPINE at top (above pelvis) &rarr; lines descend into leg &rarr; CUT along ventral axial line (270&deg; inner seam)</p>
+<p class="sub">Hover to see angular positions at any height</p>
+<div class="legend" id="legend"></div>
+<canvas id="c"></canvas>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+const W = Math.min(window.innerWidth - 60, 1100);
+const H = Math.round(W * 1.4);
+canvas.width = W;
+canvas.height = H;
+
+// ═══════════════════════════════════════════
+// COORDINATE SYSTEM — GLOBE GORE LAYOUT
+//
+// The leg cylinder is CUT at 270° (inner seam / ventral axial line)
+// and unrolled flat. The display angle axis goes:
+//
+//   LEFT EDGE  = 270° (seam — CUT)
+//   ¼ from left = 0° (posterior — SPINE CONNECTION)
+//   CENTER     = 90° (lateral / outer leg)
+//   ¾ from left = 180° (anterior / front)
+//   RIGHT EDGE = 270° (seam — CUT)
+//
+// So the display maps: raw_angle → display position
+//   raw 270° → left edge (0% width)
+//   raw 0°   → 25% width
+//   raw 90°  → 50% width (center)
+//   raw 180° → 75% width
+//   raw 270° → right edge (100% width)
+//
+// Y-axis: body height
+//   TOP = spine zone (y=0.95, above pelvis)
+//   pelvis line ≈ y=0.82
+//   BOTTOM = foot (y=0.02)
+//
+// The SPINE is a horizontal zone at the top, NOT a vertical line.
+// All dermatome lines originate from spine at angle ≈ 0° (posterior)
+// and fan outward as they descend into the leg.
+// ═══════════════════════════════════════════
+
+const Y_TOP = 0.96;
+const Y_BOT = 0.02;
+const MX = 80;
+const MY = 50;
+const PELVIS_Y = 0.82;  // where spine ends and leg begins
+
+// Convert raw body angle (0°=posterior) to display X
+// The gore is centered on 90° (lateral)
+// Raw 270° maps to left edge, raw 270°+360° maps to right edge
+function degToX(rawDeg) {
+    // Shift so 270° = 0 display, 270°+360° = 360 display
+    let shifted = rawDeg - 270;
+    while (shifted < 0) shifted += 360;
+    while (shifted > 360) shifted -= 360;
+    return MX + (shifted / 360) * (W - 2 * MX);
+}
+
+function yToCanvas(y) {
+    let t = (Y_TOP - y) / (Y_TOP - Y_BOT);
+    return MY + t * (H - 2 * MY);
+}
+
+// ═══════════════════════════════════════════
+// GRID + ANATOMY
+// ═══════════════════════════════════════════
+function drawGrid() {
+    // Background panels showing body surfaces
+    let xSeamL = degToX(270);  // left edge
+    let xPost  = degToX(0);    // posterior
+    let xLat   = degToX(90);   // lateral
+    let xAnt   = degToX(180);  // anterior
+    let xSeamR = degToX(270 + 359.9); // right edge
+
+    // Actually recalculate — degToX(270) wraps, so:
+    let xLeft  = MX;
+    let xRight = W - MX;
+    let x0deg  = MX + (90/360) * (W - 2*MX);   // 0° = 90/360 of width
+    let x90deg = MX + (180/360) * (W - 2*MX);   // 90° = center
+    let x180deg= MX + (270/360) * (W - 2*MX);   // 180° = 3/4 width
+
+    let yPelvis = yToCanvas(PELVIS_Y);
+
+    // Medial strip (left: 270° to ~340°)
+    ctx.fillStyle = 'rgba(40,60,40,0.25)';
+    ctx.fillRect(xLeft, MY, x0deg - xLeft, H - 2*MY);
+
+    // Posterior strip (0° to 90°)
+    ctx.fillStyle = 'rgba(60,40,40,0.25)';
+    ctx.fillRect(x0deg, MY, x90deg - x0deg, H - 2*MY);
+
+    // Lateral + Anterior strip (90° to 180°)
+    ctx.fillStyle = 'rgba(40,40,60,0.25)';
+    ctx.fillRect(x90deg, MY, x180deg - x90deg, H - 2*MY);
+
+    // Anterior to medial strip (180° to 270°)
+    ctx.fillStyle = 'rgba(40,50,60,0.25)';
+    ctx.fillRect(x180deg, MY, xRight - x180deg, H - 2*MY);
+
+    // ── SPINE ZONE at top ──
+    // The spine is ABOVE the pelvis — a horizontal zone from y=0.96 down to y=0.82
+    // Centered at 0° (posterior midline)
+    ctx.fillStyle = 'rgba(255,200,100,0.12)';
+    let spineLeft = degToX(330);  // spine zone width: ~60° centered on 0°
+    let spineRight = degToX(30);
+    ctx.fillRect(spineLeft, MY, spineRight - spineLeft, yPelvis - MY);
+
+    // Spine label
+    ctx.fillStyle = 'rgba(255,200,100,0.5)';
+    ctx.font = 'bold 14px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('SPINE', x0deg, MY + 20);
+    ctx.font = '10px monospace';
+    ctx.fillText('(above pelvis)', x0deg, MY + 34);
+
+    // Pelvis line — where spine ends and leg begins
+    ctx.strokeStyle = '#ffa050';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 4]);
+    ctx.beginPath();
+    ctx.moveTo(MX, yPelvis);
+    ctx.lineTo(W - MX, yPelvis);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#ffa050';
+    ctx.font = '11px monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText('── PELVIS LINE (y=0.82) ──', MX + 5, yPelvis - 6);
+
+    // Vertical grid every 30°
+    ctx.lineWidth = 0.5;
+    for (let raw = 270; raw <= 270 + 360; raw += 30) {
+        let normRaw = raw % 360;
+        let x = degToX(normRaw);
+        // Adjust: degToX wraps, so compute manually
+        let shifted = raw - 270;
+        let xp = MX + (shifted / 360) * (W - 2 * MX);
+
+        ctx.strokeStyle = (normRaw % 90 === 0) ? '#555' : '#2a2a3a';
+        ctx.beginPath();
+        ctx.moveTo(xp, MY);
+        ctx.lineTo(xp, H - MY);
+        ctx.stroke();
+    }
+
+    // Angle labels at top
+    const angleLabels = [
+        [270, '270° SEAM ✂'],
+        [300, '300°'],
+        [330, '330°'],
+        [0,   '0° POSTERIOR'],
+        [30,  '30°'],
+        [60,  '60°'],
+        [90,  '90° LATERAL'],
+        [120, '120°'],
+        [150, '150°'],
+        [180, '180° ANTERIOR'],
+        [210, '210°'],
+        [240, '240°'],
+        [270, '270° SEAM ✂'],
+    ];
+
+    ctx.font = '9px monospace';
+    ctx.textAlign = 'center';
+    for (let i = 0; i < angleLabels.length; i++) {
+        let [deg, label] = angleLabels[i];
+        let shifted = (i === angleLabels.length - 1) ? 360 : (deg - 270 + 360) % 360;
+        // For the last 270°, shifted should be 360
+        if (i === 0) shifted = 0;
+        if (i === angleLabels.length - 1) shifted = 360;
+        let xp = MX + (shifted / 360) * (W - 2 * MX);
+        ctx.fillStyle = (deg === 270) ? '#ff6666' : (deg === 0) ? '#ffa050' : '#777';
+        ctx.fillText(label, xp, MY - 6);
+    }
+
+    // Surface zone labels (faded)
+    ctx.font = 'bold 12px monospace';
+    ctx.globalAlpha = 0.12;
+    let yMid = yToCanvas(0.50);
+    ctx.fillStyle = '#88ff88';
+    ctx.fillText('MEDIAL', (xLeft + x0deg) / 2, yMid);
+    ctx.fillStyle = '#ff8888';
+    ctx.fillText('POSTERIOR', (x0deg + x90deg) / 2, yMid);
+    ctx.fillStyle = '#8888ff';
+    ctx.fillText('LATERAL', x90deg, yMid - 20);
+    ctx.fillStyle = '#8888ff';
+    ctx.fillText('ANTERIOR', x180deg, yMid);
+    ctx.fillStyle = '#88ff88';
+    ctx.fillText('MEDIAL', (x180deg + xRight) / 2, yMid);
+    ctx.globalAlpha = 1.0;
+
+    // Height labels
+    const heights = [
+        [0.92, 'L1 vert'], [0.90, 'L2'], [0.88, 'L3'], [0.86, 'L4'],
+        [0.84, 'L5'], [0.82, 'S1/S2'],
+        [0.78, 'upper thigh'], [0.70, 'mid thigh'], [0.60, 'lower thigh'],
+        [0.50, 'KNEE'], [0.48, 'below knee'],
+        [0.40, 'upper shin'], [0.30, 'mid shin'],
+        [0.20, 'lower shin'], [0.10, 'ankle'], [0.08, 'foot'],
+    ];
+
+    ctx.lineWidth = 0.5;
+    for (let [y, label] of heights) {
+        let cy = yToCanvas(y);
+        ctx.strokeStyle = (label === 'KNEE') ? '#555' : '#2a2a3a';
+        ctx.beginPath();
+        ctx.moveTo(MX, cy);
+        ctx.lineTo(W - MX, cy);
+        ctx.stroke();
+
+        ctx.fillStyle = '#555';
+        ctx.font = '9px monospace';
+        ctx.textAlign = 'right';
+        ctx.fillText(label, MX - 5, cy + 3);
+        ctx.textAlign = 'left';
+        ctx.fillText(y.toFixed(2), W - MX + 5, cy + 3);
+    }
+
+    // CUT LINES — thick red at both edges (270° seam)
+    ctx.strokeStyle = '#ff4444';
+    ctx.lineWidth = 3;
+    ctx.setLineDash([10, 5]);
+
+    // Left edge = 270° seam
+    ctx.beginPath();
+    ctx.moveTo(MX, MY);
+    ctx.lineTo(MX, H - MY);
+    ctx.stroke();
+
+    // Right edge = 270° seam
+    ctx.beginPath();
+    ctx.moveTo(W - MX, MY);
+    ctx.lineTo(W - MX, H - MY);
+    ctx.stroke();
+
+    ctx.setLineDash([]);
+
+    // CUT labels along edges
+    ctx.fillStyle = '#ff4444';
+    ctx.font = 'bold 10px monospace';
+    ctx.save();
+    ctx.translate(MX - 5, H / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.textAlign = 'center';
+    ctx.fillText('✂ CUT — VENTRAL AXIAL LINE (INNER SEAM)', 0, 0);
+    ctx.restore();
+
+    ctx.save();
+    ctx.translate(W - MX + 14, H / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.textAlign = 'center';
+    ctx.fillText('✂ CUT — VENTRAL AXIAL LINE (INNER SEAM)', 0, 0);
+    ctx.restore();
+
+    // (vertebrae dots removed — they confused with dermatome line labels)
+}
+
+// ═══════════════════════════════════════════
+// DERMATOME DATA
+// ═══════════════════════════════════════════
+const DERMATOMES = [
+    {
+        label: 'L1', color: '#70b8e8', lw: 3,
+        spine_y: 0.92, bot: 0.78,
+        keyframes: [
+            [0,0],[.14,15],[.29,40],[.43,80],
+            [.57,130],[.71,175],[.86,220],[.93,250],[1,270]
+        ]
+    },
+    {
+        label: 'L2', color: '#55a0dd', lw: 3,
+        spine_y: 0.90, bot: 0.55,
+        keyframes: [
+            [0,0],[.06,15],[.14,40],[.23,80],
+            [.34,130],[.49,170],[.57,195],[.71,220],[.86,250],[1,270]
+        ]
+    },
+    {
+        label: 'L3', color: '#e05050', lw: 3,
+        spine_y: 0.88, bot: 0.48,
+        keyframes: [
+            [0,0],[.08,20],[.15,50],[.25,90],
+            [.38,130],[.50,155],[.58,175],[.70,210],[.83,240],[.93,260],[1,270]
+        ]
+    },
+    {
+        label: 'L4', color: '#e8d020', lw: 3,
+        spine_y: 0.86, bot: 0.08,
+        keyframes: [
+            [0,0],[.04,15],[.10,40],[.18,70],
+            [.28,105],[.38,135],[.48,160],[.55,175],
+            [.62,195],[.72,210],[.82,215],[.92,218],[1,220]
+        ]
+    },
+    {
+        label: 'L5', color: '#c8b818', lw: 3,
+        spine_y: 0.84, bot: 0.08,
+        keyframes: [
+            [0,0],[.05,12],[.12,30],[.22,50],
+            [.35,68],[.50,82],[.65,90],[.78,97],[.90,102],[1,105]
+        ]
+    },
+    {
+        label: 'S1', color: '#f07878', lw: 3,
+        spine_y: 0.82, bot: 0.08,
+        keyframes: [
+            [0,0],[.05,10],[.12,22],[.22,36],
+            [.35,46],[.50,53],[.65,58],[.78,61],[.90,63],[1,65]
+        ]
+    },
+    {
+        label: 'S2', color: '#4070d0', lw: 3,
+        spine_y: 0.80, bot: 0.48,
+        keyframes: [
+            [0,0],[.06,6],[.15,12],[.28,15],
+            [.42,12],[.56,3],[.68,-15],[.78,-35],[.88,-60],[1,-90]
+        ]
+    },
+    {
+        label: 'SEAM', color: '#ff2222', lw: 2,
+        spine_y: 0.85, bot: 0.04, dashed: true,
+        keyframes: [[0,270],[1,270]]
+    },
+];
+
+function interpKF(kf, t) {
+    if (t <= kf[0][0]) return kf[0][1];
+    if (t >= kf[kf.length-1][0]) return kf[kf.length-1][1];
+    for (let i = 0; i < kf.length - 1; i++) {
+        let [t0, a0] = kf[i];
+        let [t1, a1] = kf[i+1];
+        if (t0 <= t && t <= t1) {
+            let frac = (t1 !== t0) ? (t - t0) / (t1 - t0) : 0;
+            return a0 + (a1 - a0) * frac;
+        }
+    }
+    return kf[kf.length-1][1];
+}
+
+// Convert raw angle to display X position on the gore
+function rawToGoreX(rawDeg) {
+    // Gore is cut at 270°. Display goes from 270° (left) through 0°, 90°, 180° to 270° (right)
+    let shifted = rawDeg - 270;
+    while (shifted < 0) shifted += 360;
+    while (shifted >= 360) shifted -= 360;
+    return MX + (shifted / 360) * (W - 2 * MX);
+}
+
+function drawDermatome(d) {
+    const steps = 300;
+    ctx.strokeStyle = d.color;
+    ctx.lineWidth = d.lw || 2.5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    if (d.dashed) ctx.setLineDash([8, 5]);
+    else ctx.setLineDash([]);
+
+    ctx.beginPath();
+    let first = true;
+    let prevX = 0;
+
+    for (let s = 0; s <= steps; s++) {
+        let t = s / steps;
+        let y = d.spine_y - t * (d.spine_y - d.bot);
+        let angle = interpKF(d.keyframes, t);
+
+        let cx = rawToGoreX(angle);
+        let cy = yToCanvas(y);
+
+        // Detect wrap-around across the cut (jump > half width)
+        if (!first && Math.abs(cx - prevX) > (W - 2*MX) * 0.4) {
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+        } else if (first) {
+            ctx.moveTo(cx, cy);
+            first = false;
+        } else {
+            ctx.lineTo(cx, cy);
+        }
+        prevX = cx;
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Label at start (spine origin)
+    let startX = rawToGoreX(interpKF(d.keyframes, 0));
+    ctx.fillStyle = d.color;
+    ctx.font = 'bold 12px monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText(d.label, startX + 6, yToCanvas(d.spine_y) - 6);
+
+    // Termination dot + label
+    let endAngle = interpKF(d.keyframes, 1.0);
+    let endX = rawToGoreX(endAngle);
+    let endCY = yToCanvas(d.bot);
+    ctx.beginPath();
+    ctx.arc(endX, endCY, 4, 0, Math.PI * 2);
+    ctx.fillStyle = d.color;
+    ctx.fill();
+
+    // End label
+    let endNorm = endAngle;
+    while (endNorm < 0) endNorm += 360;
+    ctx.font = '10px monospace';
+    ctx.textAlign = 'right';
+    ctx.fillText(d.label + ' →' + Math.round(endNorm) + '°', endX - 6, endCY + 14);
+}
+
+// ═══════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════
+function fullDraw() {
+    ctx.clearRect(0, 0, W, H);
+    drawGrid();
+
+    // SEAM first (behind)
+    drawDermatome(DERMATOMES[DERMATOMES.length - 1]);
+
+    // Dermatomes from deepest (S2) to most superficial (L1)
+    for (let i = DERMATOMES.length - 2; i >= 0; i--) {
+        drawDermatome(DERMATOMES[i]);
+    }
+}
+
+fullDraw();
+
+// ═══════════════════════════════════════════
+// INTERACTIVE HOVER — horizontal scan line
+// ═══════════════════════════════════════════
+canvas.addEventListener('mousemove', function(e) {
+    let rect = canvas.getBoundingClientRect();
+    let mouseY = e.clientY - rect.top;
+
+    fullDraw();
+
+    if (mouseY > MY && mouseY < H - MY) {
+        // Scan line
+        ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(MX, mouseY);
+        ctx.lineTo(W - MX, mouseY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Body height
+        let t = (mouseY - MY) / (H - 2 * MY);
+        let bodyY = Y_TOP - t * (Y_TOP - Y_BOT);
+
+        ctx.fillStyle = '#fff';
+        ctx.font = '11px monospace';
+        ctx.textAlign = 'left';
+        ctx.fillText('y=' + bodyY.toFixed(3) + 'm', W - MX + 5, mouseY + 4);
+
+        // Intersection dots for each active dermatome
+        for (let d of DERMATOMES) {
+            if (d.dashed) continue;
+            if (bodyY > d.spine_y || bodyY < d.bot) continue;
+            let lineT = (d.spine_y - bodyY) / (d.spine_y - d.bot);
+            let angle = interpKF(d.keyframes, lineT);
+            let normAngle = angle;
+            while (normAngle < 0) normAngle += 360;
+
+            let cx = rawToGoreX(angle);
+
+            // Dot
+            ctx.beginPath();
+            ctx.arc(cx, mouseY, 5, 0, Math.PI * 2);
+            ctx.fillStyle = d.color;
+            ctx.fill();
+
+            // Label
+            ctx.fillStyle = d.color;
+            ctx.font = '10px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(d.label + ':' + Math.round(normAngle) + '°', cx, mouseY - 9);
+        }
+
+        // Show gaps between adjacent lines
+        let activeLines = [];
+        for (let d of DERMATOMES) {
+            if (d.dashed) continue;
+            if (bodyY > d.spine_y || bodyY < d.bot) continue;
+            let lineT = (d.spine_y - bodyY) / (d.spine_y - d.bot);
+            let angle = interpKF(d.keyframes, lineT);
+            let normAngle = angle;
+            while (normAngle < 0) normAngle += 360;
+            activeLines.push({ label: d.label, angle: normAngle });
+        }
+        activeLines.sort((a, b) => a.angle - b.angle);
+
+        if (activeLines.length > 1) {
+            let gapText = 'Gaps: ';
+            for (let i = 0; i < activeLines.length - 1; i++) {
+                let gap = activeLines[i+1].angle - activeLines[i].angle;
+                gapText += activeLines[i].label + '→' + activeLines[i+1].label + ':' + Math.round(gap) + '° ';
+            }
+            ctx.fillStyle = 'rgba(255,255,255,0.6)';
+            ctx.font = '9px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(gapText, W / 2, mouseY + 18);
+        }
+    }
+});
+
+// ═══════════════════════════════════════════
+// LEGEND
+// ═══════════════════════════════════════════
+const legend = document.getElementById('legend');
+for (let d of DERMATOMES) {
+    let item = document.createElement('div');
+    item.className = 'legend-item';
+    let swatch = document.createElement('div');
+    swatch.className = 'swatch';
+    swatch.style.background = d.color;
+    if (d.dashed) swatch.style.background = `repeating-linear-gradient(90deg, ${d.color} 0 6px, transparent 6px 10px)`;
+    item.appendChild(swatch);
+    let text = document.createElement('span');
+    text.textContent = d.label;
+    text.style.color = d.color;
+    item.appendChild(text);
+    legend.appendChild(item);
+}
+</script>
+</body>
+</html>

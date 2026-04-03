@@ -1,0 +1,16 @@
+newmtl skin
+Kd 0.80 0.70 0.60
+d 0.8
+
+newmtl axial
+Kd 1.00 0.00 0.00
+
+newmtl s5
+Kd 1.00 0.00 0.00
+
+newmtl s4
+Kd 1.00 0.50 0.00
+
+newmtl s3
+Kd 1.00 1.00 0.00
+

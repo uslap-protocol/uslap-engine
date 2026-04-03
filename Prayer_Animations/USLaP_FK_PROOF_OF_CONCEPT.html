@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>USLaP | FK Prayer Biomechanics — Proof of Concept</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0d1117; color:#e8e0d0; font-family:'Segoe UI',sans-serif;
+  display:flex; flex-direction:column; align-items:center; padding:16px; }
+h1 { color:#d4af37; font-size:1.2em; margin-bottom:4px; }
+.sub { color:#8b949e; font-size:0.8em; margin-bottom:12px; }
+.bis { color:#d4af3799; font-family:'Traditional Arabic',serif; font-size:1.1em; }
+canvas { background:#0a0e14; border:1px solid #30363d; border-radius:8px; }
+.ctl { margin-top:12px; display:flex; gap:8px; align-items:center; }
+.btn { background:#21262d; border:1px solid #30363d; color:#e8e0d0;
+  padding:6px 14px; border-radius:4px; cursor:pointer; font-size:0.85em; }
+.btn:hover { background:#30363d; }
+.btn.on { background:#d4af3733; border-color:#d4af37; color:#d4af37; }
+.stg { color:#d4af37; font-size:1em; font-weight:600; min-width:220px; text-align:center; }
+select { background:#21262d; border:1px solid #30363d; color:#e8e0d0;
+  padding:4px 8px; border-radius:4px; }
+.ang { margin-top:8px; font-size:0.75em; color:#8b949e;
+  display:grid; grid-template-columns:repeat(4,1fr); gap:2px 12px; max-width:800px; }
+.ang span { color:#e8e0d0; }
+.nfo { color:#8b949e; font-size:0.78em; margin-top:10px; text-align:center; line-height:1.6; max-width:800px; }
+.fk-tabs { display:flex; gap:0; max-width:820px; margin-top:12px; width:100%; }
+.fk-tab { flex:1; text-align:center; padding:7px 0; font-size:0.75em; font-weight:600;
+  background:#161b22; border:1px solid #30363d; border-bottom:none; cursor:pointer; color:#8b949e; }
+.fk-tab:first-child { border-radius:6px 0 0 0; }
+.fk-tab:last-child { border-radius:0 6px 0 0; }
+.fk-tab.active { color:#d4af37; background:#0d1117; }
+.fk-grp { display:none; }
+.fk-grp.active { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.panels { max-width:820px; width:100%; }
+.pnl { background:#161b22; border:1px solid #30363d; border-radius:6px; padding:10px 12px; }
+.pnl h4 { color:#d4af37; font-size:0.82em; margin-bottom:6px; border-bottom:1px solid #21262d; padding-bottom:4px; }
+.pnl h4 span { color:#484f58; font-weight:400; font-size:0.9em; }
+.q-ayah { font-family:'Traditional Arabic','Scheherazade',serif; font-size:1.1em; color:#d4af37; direction:rtl; text-align:right; line-height:1.5; }
+.q-ref { color:#d4af37; font-size:0.85em; margin:3px 0; }
+.q-trans { color:#8b949e; font-size:0.82em; font-style:italic; }
+.nafs-dots { display:flex; gap:5px; margin-bottom:6px; }
+.nafs-dot { width:9px; height:9px; border-radius:50%; background:#21262d; }
+.nafs-dot.on { box-shadow:0 0 6px currentColor; }
+.nafs-name { font-weight:700; font-size:0.88em; }
+.nafs-qalb { font-size:0.82em; margin-top:3px; }
+.sense-row { display:flex; align-items:center; gap:5px; margin-bottom:3px; font-size:0.8em; }
+.sense-icon { width:18px; text-align:center; }
+.sense-lbl { width:65px; color:#c9d1d9; }
+.sense-bg { flex:1; height:5px; background:#21262d; border-radius:3px; overflow:hidden; }
+.sense-fill { height:100%; border-radius:3px; transition:width 0.3s; }
+.sense-val { width:28px; text-align:right; font-size:0.85em; }
+.hept-row { display:flex; gap:5px; align-items:center; margin-bottom:3px; }
+.hept-badge { min-width:22px; height:16px; font-size:0.65em; font-weight:700; text-align:center; line-height:16px; border-radius:3px; color:#0d1117; }
+.hept-lbl { font-size:0.78em; color:#8b949e; width:60px; }
+.hept-detail { font-size:0.78em; color:#c9d1d9; }
+/* ── O3: MOBILE RESPONSIVE ── */
+@media (max-width: 850px) {
+  canvas { width: 100%; height: auto; }
+  .ctl { flex-wrap: wrap; justify-content: center; }
+  .stg { min-width: auto; font-size: 0.85em; }
+  .ang { grid-template-columns: repeat(2, 1fr); }
+  .fk-grp.active { grid-template-columns: 1fr; }
+  .panels { width: 100%; }
+}
+@media (max-width: 500px) {
+  body { padding: 8px; }
+  h1 { font-size: 1em; }
+  .ctl { gap: 4px; }
+  .btn { padding: 4px 10px; font-size: 0.8em; }
+  canvas { touch-action: none; }
+}
+</style>
+</head>
+<body>
+<div class="bis">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+<h1>USLaP FK Prayer Biomechanics</h1>
+<div class="sub">Angle-driven Forward Kinematics with Cascaded Timing — DB-driven body lattice</div>
+<canvas id="c" width="800" height="560"></canvas>
+<div class="ctl">
+  <button class="btn" id="bP">⏮</button>
+  <button class="btn" id="bL">▶</button>
+  <button class="btn" id="bN">⏭</button>
+  <button class="btn" id="bR">↺</button>
+  <select id="sp"><option value="0.25">0.25×</option><option value="0.5">0.5×</option>
+    <option value="1" selected>1×</option><option value="2">2×</option></select>
+  <div class="stg" id="sl">قِيَام — Qiyam</div>
+  <button class="btn on" id="btnTint" onclick="tintEnabled=!tintEnabled;this.classList.toggle('on')" title="Toggle colour therapy tint">🎨 Tint</button>
+  <button class="btn" id="btnAudio" onclick="toggleAudio()" title="Toggle therapy sound">🔈 Sound</button>
+</div>
+<div class="ang" id="ad"></div>
+<div class="nfo">
+  <b>Architecture:</b> DB (body_nodes + body_edges + prayer_states) → JSON export → FK solver → all views<br>
+  Cascade: each segment starts at different delay → natural wave motion<br>
+  Space: Play/Pause | ←→: Step | R: Reset
+</div>
+<div class="fk-tabs">
+  <div class="fk-tab active" onclick="switchFKGroup(0)">Qur'an | Nafs | Senses | Heptad</div>
+  <div class="fk-tab" onclick="switchFKGroup(1)">Therapy | Formula | Nutrition | Lifecycle</div>
+</div>
+<div class="panels">
+  <div class="fk-grp active" id="fkG0">
+    <div class="pnl"><h4>QUR'ANIC ATTESTATION <span>(per stage)</span></h4><div id="pQ"></div></div>
+    <div class="pnl"><h4>NAFS / QALB STATE <span>(H4 — شِفَاء)</span></h4><div id="pN"></div></div>
+    <div class="pnl"><h4>SENSORY ACTIVATION <span>(H5 — الحَواسّ)</span></h4><div id="pS"></div></div>
+    <div class="pnl"><h4>CROSS-HEPTAD VIEW <span>(7×7 Body Lattice)</span></h4><div id="pH"></div></div>
+  </div>
+  <div class="fk-grp" id="fkG1">
+    <div class="pnl"><h4>COLOUR / THERAPY <span>(H2 — عِلَاج)</span></h4><div id="pT"></div></div>
+    <div class="pnl"><h4>FORMULA RATIO <span>(H3 — بِقَدَرٍ)</span></h4><div id="pF"></div></div>
+    <div class="pnl"><h4>METABOLIC STATE <span>(H6 — طَعَام)</span></h4><div id="pM"></div></div>
+    <div class="pnl"><h4>LIFECYCLE / SPIRIT <span>(H7 — حَيَاة وَمَوْت)</span></h4><div id="pLL"></div></div>
+  </div>
+</div>
+
+<script src="prayer_panels_data.js"></script>
+<script>
+// ══════════════ FK PANEL ALIASES (from prayer_panels_data.js) ══════════════
+const NAFS_L=PANEL_NAFS_LEVELS, SENS=PANEL_SENSES, H_COL=PANEL_H_COL, H_LBL=PANEL_H_LBL;
+const QUR=FK_QUR, NAFS_S=FK_NAFS, SENS_S=FK_SENS, HEPT_S=FK_HEPT;
+const FK_THER_C=PANEL_THER_COLOURS, FK_LIFE_S=PANEL_LIFE_STAGES;
+// ── O1+O2+O5+O6 State ──
+let therapyTintHex='#43a047',therapyTintAlpha=0,tintEnabled=true;
+let audioCtx=null,audioOsc=null,audioGain=null,audioEnabled=false;
+let heptadHighlight=-1,heptadHighlightTimer=0,formulaBW=1.0;
+
+// ══════════════ SEGMENTS — DEFAULTS (overwritten by DB if available) ══════════════
+const SG=['foot','shin','thigh','lBack','uBack','neck','uArm','fArm'];
+let LN={foot:45,shin:125,thigh:125,lBack:65,uBack:65,neck:50,uArm:80,fArm:90};
+const CM=['foot','shin','thigh','lBack','uBack','neck']; // main chain
+const CA=['uArm','fArm']; // arm chain
+const JN=['toe','ankle','knee','hip','mSp','shldr','head','elbow','wrist'];
+
+// ══════════════ POSES — INLINE FALLBACK ══════════════
+let P={
+  qiyam:    {foot:270,shin:0,thigh:0,lBack:0,uBack:0,neck:5,uArm:170,fArm:50,rX:.55,headTurn:0,finger:'fist'},
+  ruku:     {foot:270,shin:0,thigh:0,lBack:88,uBack:90,neck:88,uArm:220,fArm:230,rX:.35,headTurn:0,finger:'open'},
+  goDown:   {foot:280,shin:30,thigh:350,lBack:40,uBack:55,neck:50,uArm:130,fArm:150,rX:.32,headTurn:0,finger:'open'},
+  sujud:    {foot:345,shin:108,thigh:335,lBack:115,uBack:135,neck:160,uArm:45,fArm:180,rX:.20,headTurn:0,finger:'open'},
+  juloos:   {foot:290,shin:95,thigh:325,lBack:358,uBack:0,neck:5,uArm:165,fArm:120,rX:.35,headTurn:0,finger:'fist'},
+  tashahhud:{foot:290,shin:95,thigh:325,lBack:358,uBack:0,neck:5,uArm:165,fArm:120,rX:.35,headTurn:0,finger:'index'},
+  tasleem_r:{foot:290,shin:95,thigh:325,lBack:358,uBack:0,neck:5,uArm:165,fArm:120,rX:.35,headTurn:80,finger:'fist'},
+  tasleem_l:{foot:290,shin:95,thigh:325,lBack:358,uBack:0,neck:5,uArm:165,fArm:120,rX:.35,headTurn:-80,finger:'fist'},
+};
+
+let SI={
+  qiyam:{a:'قِيَام',e:'Qiyam (Standing)'},ruku:{a:'رُكُوع',e:'Rukūʿ (Bowing)'},
+  qRet:{a:'قِيَام',e:'Return to Standing'},gDn:{a:'اِنْتِقَال',e:'Going Down'},
+  sj1:{a:'سُجُود',e:'1st Prostration'},jul1:{a:'جُلُوس',e:'Sitting'},
+  sj2:{a:'سُجُود',e:'2nd Prostration'},tash:{a:'تَشَهُّد',e:'Tashahhud'},
+  taslR:{a:'تَسْلِيم',e:'Salutation Right'},taslL:{a:'تَسْلِيم',e:'Salutation Left'},
+};
+
+// ══════════════ CASCADE DELAYS — INLINE FALLBACK ══════════════
+let CD={
+  def:   {foot:0,shin:0,thigh:.05,lBack:.0,uBack:.12,neck:.18,uArm:.08,fArm:.2},
+  toRk:  {foot:0,shin:0,thigh:0,lBack:0,uBack:.10,neck:.15,uArm:.05,fArm:.18},
+  toSj:  {foot:.08,shin:0,thigh:0,lBack:.12,uBack:.18,neck:.22,uArm:.10,fArm:.18},
+  frSj:  {foot:.05,shin:0,thigh:0,lBack:.05,uBack:.10,neck:.02,uArm:.08,fArm:.12},
+};
+
+// ══════════════ DB-DRIVEN LOADER ══════════════
+// Source: uslap_database_v3.db → body_lattice_data.json
+// Rebuild: python3 Code_files/uslap_body_lattice.py export
+let DB_DATA=null, DB_LOADED=false;
+
+const STATE_MAP={
+  'QIYAM':'qiyam','RUKU':'ruku','SUJUD':'sujud',
+  'JULOOS':'juloos','GOING_DOWN':'goDown',
+  'TASHAHHUD':'tashahhud','TASLEEM_R':'tasleem_r','TASLEEM_L':'tasleem_l'
+};
+
+async function loadBodyLattice(){
+  try{
+    const resp=await fetch('body_lattice_data.json');
+    DB_DATA=await resp.json();
+
+    // 1. Overwrite segment lengths from body_nodes
+    for(const nd of DB_DATA.nodes){
+      if(nd.fk_segment && nd.fk_segment!=='—' && nd.bone_length_px>0){
+        LN[nd.fk_segment]=nd.bone_length_px;
+      }
+    }
+
+    // 2. Overwrite poses from prayer_states
+    for(const st of DB_DATA.states){
+      const key=STATE_MAP[st.state_id];
+      if(key && st.fk_angles){
+        const fa=typeof st.fk_angles==='string'?JSON.parse(st.fk_angles):st.fk_angles;
+        P[key]=fa;
+      }
+    }
+
+    // 3. Build stage info from states
+    for(const st of DB_DATA.states){
+      const key=STATE_MAP[st.state_id];
+      if(key) SI[key]={a:st.arabic, e:`${st.transliteration} (${st.english})`};
+    }
+    // Alias stage keys for the keyframe sequence
+    SI.qRet=SI.qiyam; SI.gDn=SI.goDown||SI.qiyam;
+    SI.sj1=SI.sujud; SI.sj2=SI.sujud;
+    SI.jul1=SI.juloos; SI.tash=SI.tashahhud||SI.juloos;
+
+    // 4. Overwrite cascade delays from transitions
+    const TRANS_MAP={
+      'T01':'toRk','T02':'def','T03':'toSj','T04':'toSj',
+      'T05':'frSj','T06':'toSj','T07':'def','T08':'def','T09':'def'
+    };
+    for(const tr of DB_DATA.transitions){
+      const key=TRANS_MAP[tr.trans_id];
+      if(key){
+        const cd=typeof tr.cascade_delays==='string'?JSON.parse(tr.cascade_delays):tr.cascade_delays;
+        CD[key]=cd;
+      }
+    }
+
+    DB_LOADED=true;
+    console.log(`DB loaded: ${DB_DATA.nodes.length} nodes, ${DB_DATA.edges.length} edges, ${DB_DATA.states.length} states, ${DB_DATA.transitions.length} transitions`);
+  }catch(e){
+    console.warn('body_lattice_data.json not found — using inline fallback');
+  }
+}
+loadBodyLattice();
+
+// DATA LOADED FROM prayer_panels_data.js (external)
+
+function updatePanels(stg){
+  const q=QUR[stg]||QUR.qiyam;
+  document.getElementById('pQ').innerHTML=`<div class="q-ayah">${q.ay}</div><div class="q-ref">${q.ref}</div><div class="q-trans">${q.tr}</div>`;
+  const n=NAFS_S[stg]||NAFS_S.qiyam;
+  const nl=NAFS_L[n.l];
+  let nh='<div class="nafs-dots">';
+  for(let i=0;i<NAFS_L.length;i++){
+    const a=i===n.l;
+    nh+=`<div class="nafs-dot${a?' on':''}" style="${a?'background:'+NAFS_L[i].color+';color:'+NAFS_L[i].color:''}"></div>`;
+  }
+  nh+=`</div><div class="nafs-name" style="color:${nl.color}">${nl.en} <span style="font-size:0.85em;color:#8b949e">${nl.ref}</span></div>`;
+  nh+=`<div class="nafs-qalb"><span style="color:#d4af37">قلب:</span> ${n.qAr} — <span style="color:#8b949e">${n.qEn}</span> <span style="color:#484f58;font-size:0.9em">(${n.qRef})</span></div>`;
+  nh+=`<div style="color:#484f58;font-size:0.8em;margin-top:2px;">صدر: ${n.sadr}</div>`;
+  document.getElementById('pN').innerHTML=nh;
+  const sv=SENS_S[stg]||SENS_S.qiyam;
+  let sh='';
+  for(let i=0;i<SENS.length;i++){
+    const s=SENS[i],v=Math.round((sv[i]||0)*100);
+    sh+=`<div class="sense-row"><span class="sense-icon">${s.icon}</span><span class="sense-lbl">${s.name}</span><div class="sense-bg"><div class="sense-fill" style="width:${v}%;background:${s.color}"></div></div><span class="sense-val" style="color:${s.color}">${v}%</span></div>`;
+  }
+  document.getElementById('pS').innerHTML=sh;
+  const hd=HEPT_S[stg]||HEPT_S.qiyam;
+  let hh='';
+  for(let i=0;i<7;i++){
+    const act=heptadHighlight===i;
+    hh+=`<div class="hept-row" style="cursor:pointer;${act?'background:'+H_COL[i]+'22;border-left:2px solid '+H_COL[i]:''}" onclick="heptadHighlight=${i};heptadHighlightTimer=3" title="Highlight H${i+1}"><span class="hept-badge" style="background:${H_COL[i]}">H${i+1}</span><span class="hept-lbl">${H_LBL[i]}</span><span class="hept-detail">${hd[i]}</span></div>`;
+  }
+  document.getElementById('pH').innerHTML=hh;
+  // Panel 6: Colour/Therapy
+  const t=FK_THER[stg]||FK_THER.qiyam, tc=FK_THER_C[t.cl];
+  const tLbl=tintEnabled?'ON':'OFF';
+  let th=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div onclick="tintEnabled=!tintEnabled;updatePanels('${stg}')" style="width:50px;height:24px;border-radius:4px;background:${tc.hex};cursor:pointer;position:relative" title="Toggle tint"><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:0.6em;color:#fff;text-shadow:0 0 2px #000">${tLbl}</span></div><div><span style="color:${tc.hex};font-weight:700">${tc.name}</span> <span style="color:#8b949e;font-size:0.82em">${tc.en} — ${tc.el}</span></div></div>`;
+  th+=`<div style="font-size:0.82em"><span style="color:#c9d1d9">${tc.eff}</span> — <span style="color:#8b949e">${t.temp}</span></div>`;
+  th+=`<div style="font-size:0.78em;color:#484f58">${t.note} | ${t.sound} CPM | ${t.ref}</div>`;
+  document.getElementById('pT').innerHTML=th;
+  // Panel 7: Formula
+  const fm=FK_FORM[stg]||FK_FORM.qiyam;
+  let fh='';
+  if(fm.val>0) fh+=`<div style="text-align:center;font-size:1.3em;color:#d4af37;font-weight:700">${fm.ratio} <span style="font-size:0.7em;color:#8b949e">= ${fm.val}</span></div>`;
+  else fh+=`<div style="text-align:center;font-size:1.1em;color:#484f58;font-style:italic">${fm.ratio}</div>`;
+  const bwP=Math.round((fm.bw/1.5)*100);
+  fh+=`<div style="display:flex;align-items:center;gap:6px;margin:5px 0"><span style="font-size:0.75em;color:#8b949e;width:28px">${fm.bw}×</span><div class="sense-bg" style="flex:1"><div class="sense-fill" style="width:${bwP}%;background:#d4af37"></div></div><span style="font-size:0.75em;color:#8b949e">BW</span></div>`;
+  fh+=`<div style="font-size:0.78em;color:#c9d1d9">${fm.label}</div><div style="font-size:0.72em;color:#484f58">${fm.ref}</div>`;
+  document.getElementById('pF').innerHTML=fh;
+  // Panel 8: Metabolic
+  const mt=FK_NUTR[stg]||FK_NUTR.qiyam;
+  const org=['Stomach','Intestine','Liver','Pelvis'],orgI=['🟡','🟢','🟤','🔵'];
+  let mh='<div style="display:flex;gap:4px;margin-bottom:4px">';
+  for(let i=0;i<org.length;i++){const a=mt.organ===org[i]||mt.organ==='System';mh+=`<div style="flex:1;text-align:center;padding:2px;border-radius:3px;font-size:0.7em;${a?'background:#66bb6a22;color:#66bb6a;border:1px solid #66bb6a44':'color:#484f58;border:1px solid #21262d'}">${orgI[i]} ${org[i]}</div>`;}
+  mh+=`</div><div style="font-size:0.85em;color:#c9d1d9;font-weight:600">${mt.state}</div><div style="font-size:0.8em;color:#8b949e;margin-top:2px">${mt.effect}</div>`;
+  if(mt.ar!=='-') mh+=`<div style="font-size:0.78em;margin-top:2px"><span style="color:#d4af37">${mt.ar}</span> <span style="color:#484f58">(${mt.nutr}) ${mt.ref}</span></div>`;
+  document.getElementById('pM').innerHTML=mh;
+  // Panel 9: Lifecycle
+  const lf=FK_LIFE[stg]||FK_LIFE.qiyam, stI=FK_LIFE_S.findIndex(s=>s.id===lf.stage);
+  let lh='<div class="nafs-dots">';
+  for(let i=0;i<FK_LIFE_S.length;i++){const a=i===stI;lh+=`<div class="nafs-dot${a?' on':''}" style="${a?'background:'+FK_LIFE_S[i].color+';color:'+FK_LIFE_S[i].color:''}"></div>`;}
+  lh+='</div>';const ls=FK_LIFE_S[stI];
+  lh+=`<div style="font-weight:700;font-size:0.88em;color:${ls.color}">${ls.ar} — ${ls.en} <span style="font-size:0.85em;color:#8b949e">(${lf.stage})</span></div>`;
+  lh+=`<div style="font-size:0.82em;color:#c9d1d9;margin-top:3px">${lf.detail}</div><div style="font-size:0.72em;color:#484f58">${lf.ref}</div>`;
+  document.getElementById('pLL').innerHTML=lh;
+}
+function switchFKGroup(i){document.querySelectorAll('.fk-tab').forEach((t,j)=>t.classList.toggle('active',j===i));document.querySelectorAll('.fk-grp').forEach((g,j)=>g.classList.toggle('active',j===i));}
+
+
+// ══════════════ KEYFRAMES ══════════════
+const KF=[
+  {t:0,p:'qiyam',s:'qiyam',c:'def'},{t:3,p:'qiyam',s:'qiyam',c:'toRk'},
+  {t:5,p:'ruku',s:'ruku',c:'def'},{t:8,p:'ruku',s:'ruku',c:'def'},
+  {t:10,p:'qiyam',s:'qRet',c:'def'},{t:12,p:'qiyam',s:'qRet',c:'toSj'},
+  {t:13.5,p:'goDown',s:'gDn',c:'toSj'},{t:15,p:'sujud',s:'sj1',c:'def'},
+  {t:18,p:'sujud',s:'sj1',c:'frSj'},{t:20,p:'juloos',s:'jul1',c:'def'},
+  {t:23,p:'juloos',s:'jul1',c:'toSj'},{t:25,p:'sujud',s:'sj2',c:'def'},
+  {t:28,p:'sujud',s:'sj2',c:'frSj'},
+  {t:31,p:'tashahhud',s:'tash',c:'def'},{t:34,p:'tashahhud',s:'tash',c:'def'},
+  {t:36,p:'tasleem_r',s:'taslR',c:'def'},{t:38,p:'tasleem_r',s:'taslR',c:'def'},
+  {t:40,p:'tasleem_l',s:'taslL',c:'def'},{t:42,p:'tasleem_l',s:'taslL',c:'def'},
+];
+const TT=42;
+
+// ══════════════ FK SOLVER ══════════════
+const D2R=Math.PI/180;
+function fk(ang){
+  const gY=520, rX=ang.rX*800;
+  const J={toe:[rX,gY]};
+  let x=rX,y=gY;
+  const mn=['ankle','knee','hip','mSp','shldr','head'];
+  for(let i=0;i<CM.length;i++){
+    const a=ang[CM[i]]*D2R, L=LN[CM[i]];
+    x+=L*Math.sin(a); y-=L*Math.cos(a);
+    J[mn[i]]=[x,y];
+  }
+  let ax=J.shldr[0],ay=J.shldr[1];
+  const an=['elbow','wrist'];
+  for(let i=0;i<CA.length;i++){
+    const a=ang[CA[i]]*D2R, L=LN[CA[i]];
+    ax+=L*Math.sin(a); ay-=L*Math.cos(a);
+    J[an[i]]=[ax,ay];
+  }
+  J._gY=gY;
+  return J;
+}
+
+// ══════════════ INTERPOLATION WITH CASCADE ══════════════
+function lerpA(a,b,t){ let d=((b-a+540)%360)-180; return a+d*t; }
+function ease(t){ return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2; }
+
+function interp(pA,pB,t,ck){
+  const dl=CD[ck]||CD.def;
+  const r={rX:pA.rX+(pB.rX-pA.rX)*ease(t)};
+  for(const s of SG){
+    const d=dl[s]||0;
+    const st=Math.max(0,Math.min(1,(t-d)/Math.max(.01,1-d)));
+    r[s]=lerpA(pA[s],pB[s],ease(st));
+  }
+  // headTurn: smooth interpolation
+  const htA=pA.headTurn||0, htB=pB.headTurn||0;
+  r.headTurn=htA+(htB-htA)*ease(t);
+  // finger: snap to target at t>0.5
+  r.finger=t>0.5?(pB.finger||'fist'):(pA.finger||'fist');
+  return r;
+}
+
+function stateAt(time){
+  let kA=KF[0],kB=KF[0];
+  for(let i=0;i<KF.length-1;i++){
+    if(time>=KF[i].t&&time<=KF[i+1].t){kA=KF[i];kB=KF[i+1];break;}
+    if(i===KF.length-2)kA=kB=KF[KF.length-1];
+  }
+  const dur=kB.t-kA.t;
+  const t=dur>0?Math.min(1,(time-kA.t)/dur):0;
+  const ang=interp(P[kA.p],P[kB.p],t,kB.c);
+  return {ang,stg:kB.s,J:fk(ang)};
+}
+
+// ══════════════ RENDERER ══════════════
+const cv=document.getElementById('c'), cx=cv.getContext('2d');
+const BP=[['toe','ankle'],['ankle','knee'],['knee','hip'],['hip','mSp'],
+  ['mSp','shldr'],['shldr','head'],['shldr','elbow'],['elbow','wrist']];
+
+function draw(time){
+  const {ang,stg,J}=stateAt(time);
+  const gY=J._gY;
+  cx.clearRect(0,0,800,560);
+
+  // BG
+  const g=cx.createLinearGradient(0,0,0,560);
+  g.addColorStop(0,'#0d1117');g.addColorStop(1,'#0a0e14');
+  cx.fillStyle=g;cx.fillRect(0,0,800,560);
+
+  // Ground + mat
+  cx.strokeStyle='#21262d';cx.lineWidth=1;
+  cx.beginPath();cx.moveTo(0,gY);cx.lineTo(800,gY);cx.stroke();
+  cx.fillStyle='#1a2a1a';cx.fillRect(40,gY-1,720,10);
+  cx.strokeStyle='#d4af3733';cx.strokeRect(40,gY-1,720,10);
+
+  // Contact glow
+  for(const n of JN){
+    if(!J[n])continue;
+    const [jx,jy]=J[n];
+    if(jy>=gY-8){
+      cx.beginPath();cx.arc(jx,gY,10,0,Math.PI*2);
+      cx.fillStyle='rgba(212,175,55,0.15)';cx.fill();
+      cx.beginPath();cx.arc(jx,gY,5,0,Math.PI*2);
+      cx.fillStyle='rgba(212,175,55,0.3)';cx.fill();
+    }
+  }
+
+  // Bones
+  cx.lineCap='round';
+  for(const [a,b] of BP){
+    if(!J[a]||!J[b])continue;
+    const isA=(a==='shldr'&&b==='elbow')||(a==='elbow'&&b==='wrist');
+    cx.strokeStyle='#e8e0d0';cx.lineWidth=isA?3.5:5;
+    cx.beginPath();cx.moveTo(...J[a]);cx.lineTo(...J[b]);cx.stroke();
+  }
+
+  // Hand + finger
+  if(J.wrist&&J.elbow){
+    const [wx,wy]=J.wrist,[ex,ey]=J.elbow;
+    const dx=wx-ex,dy=wy-ey,ln=Math.sqrt(dx*dx+dy*dy)||1;
+    const hx=wx+(dx/ln)*12,hy=wy+(dy/ln)*12;
+    cx.strokeStyle='#e8e0d0';cx.lineWidth=2.5;
+    cx.beginPath();cx.moveTo(wx,wy);cx.lineTo(hx,hy);cx.stroke();
+    if(ang.finger==='index'){
+      // Index finger pointing forward (along forearm direction)
+      cx.strokeStyle='#d4af37';cx.lineWidth=2;
+      cx.beginPath();cx.moveTo(hx,hy);cx.lineTo(hx+(dx/ln)*18,hy+(dy/ln)*18);cx.stroke();
+      cx.beginPath();cx.arc(hx+(dx/ln)*18,hy+(dy/ln)*18,2.5,0,Math.PI*2);
+      cx.fillStyle='#d4af37';cx.fill();
+    } else {
+      for(let fa=-.3;fa<=.3;fa+=.3){
+        const c=Math.cos(fa),s=Math.sin(fa),fdx=(dx/ln)*8,fdy=(dy/ln)*8;
+        cx.lineWidth=1.5;cx.strokeStyle='#e8e0d0';cx.beginPath();
+        cx.moveTo(hx,hy);cx.lineTo(hx+fdx*c-fdy*s,hy+fdx*s+fdy*c);cx.stroke();
+      }
+    }
+  }
+
+  // Joints
+  for(const n of JN){
+    if(n==='head'||!J[n])continue;
+    const [jx,jy]=J[n];
+    cx.beginPath();cx.arc(jx,jy,5,0,Math.PI*2);cx.fillStyle='#d4af37';cx.fill();
+    cx.beginPath();cx.arc(jx,jy,8,0,Math.PI*2);cx.fillStyle='#d4af3744';cx.fill();
+  }
+
+  // Head — with turn foreshortening
+  if(J.head){
+    const [hx,hy]=J.head;
+    const ht=ang.headTurn||0;
+    const hcos=Math.cos(ht*D2R); // 1 at 0°, 0 at 90°
+    const rX=18*Math.abs(hcos); // squish horizontally when turned
+    const rY=18;
+    cx.beginPath();cx.ellipse(hx,hy,Math.max(rX,4),rY,0,0,Math.PI*2);
+    cx.fillStyle='#161b22';cx.fill();
+    cx.strokeStyle='#e8e0d0';cx.lineWidth=3;cx.stroke();
+    // Nose dot — shifts with turn
+    const na=ang.neck*D2R;
+    const noseR=10*Math.abs(hcos);
+    const noseOff=ht>0?-5*Math.sin(ht*D2R):ht<0?-5*Math.sin(ht*D2R):0;
+    cx.beginPath();cx.arc(hx+noseR*Math.sin(na)+noseOff,hy-noseR*Math.cos(na),3,0,Math.PI*2);
+    cx.fillStyle='#d4af37';cx.fill();
+    // Turn direction arrow when turning
+    if(Math.abs(ht)>20){
+      const dir=ht>0?'→':'←';
+      cx.fillStyle='#d4af37aa';cx.font='14px sans-serif';
+      cx.fillText(dir,hx+(ht>0?22:-28),hy+5);
+    }
+  }
+
+  // Ruku flat-back annotation
+  if(stg==='ruku'){
+    const [hpx,hpy]=J.hip,[hdx,hdy]=J.head;
+    cx.save();cx.setLineDash([6,4]);cx.strokeStyle='#4ecdc488';cx.lineWidth=1.5;
+    cx.beginPath();cx.moveTo(hpx-10,hpy);cx.lineTo(hdx+25,hpy);cx.stroke();
+    cx.setLineDash([]);cx.font='11px sans-serif';cx.fillStyle='#4ecdc4';
+    cx.fillText('← FLAT BACK →',hpx+15,hpy-10);cx.restore();
+  }
+
+  // Sujud contact count
+  if(stg==='sj1'||stg==='sj2'){
+    let ct=0;
+    for(const n of['head','wrist','knee','toe'])if(J[n]&&J[n][1]>=gY-10)ct++;
+    cx.fillStyle='#d4af37aa';cx.font='12px sans-serif';
+    cx.fillText(`Ground contacts: ${ct} (×2 bilateral = ${Math.min(ct*2,7)})`,20,30);
+  }
+
+  // UI updates
+  const si=SI[stg];
+  if(si)document.getElementById('sl').textContent=`${si.a} — ${si.e}`;
+  let h='';
+  for(const s of SG)h+=`<div>${s}: <span>${ang[s].toFixed(1)}°</span></div>`;
+  document.getElementById('ad').innerHTML=h;
+  updatePanels(stg);
+
+  // ── O1: Therapy tint overlay ──
+  const therD=FK_THER[stg]||FK_THER.qiyam, therC=FK_THER_C[therD.cl];
+  therapyTintHex=therC.hex;
+  const tgt=tintEnabled?0.10:0;
+  therapyTintAlpha+=(tgt-therapyTintAlpha)*0.08;
+  if(therapyTintAlpha>0.001){
+    cx.save();cx.globalCompositeOperation='multiply';cx.globalAlpha=therapyTintAlpha;
+    cx.fillStyle=therapyTintHex;cx.fillRect(0,0,800,560);cx.restore();
+    cx.save();cx.globalCompositeOperation='screen';cx.globalAlpha=therapyTintAlpha*0.35;
+    const vig=cx.createRadialGradient(400,280,60,400,280,400);
+    vig.addColorStop(0,therapyTintHex);vig.addColorStop(1,'transparent');
+    cx.fillStyle=vig;cx.fillRect(0,0,800,560);cx.restore();
+  }
+  // ── O5: Gravity arrow ──
+  formulaBW+=(((FK_FORM[stg]||FK_FORM.qiyam).bw)-formulaBW)*0.08;
+  if(J.hip){
+    const [hx,hy]=J.hip, al=formulaBW*60;
+    cx.save();cx.globalAlpha=0.5;cx.strokeStyle='#90ee90';cx.lineWidth=Math.max(2,formulaBW*3);
+    cx.beginPath();cx.moveTo(hx,hy);cx.lineTo(hx,hy+al);cx.stroke();
+    cx.fillStyle='#90ee90';cx.beginPath();cx.moveTo(hx,hy+al+6);cx.lineTo(hx-5,hy+al-2);cx.lineTo(hx+5,hy+al-2);cx.closePath();cx.fill();
+    cx.globalAlpha=0.7;cx.font='bold 9px sans-serif';cx.fillText(`${formulaBW.toFixed(1)}× BW`,hx+8,hy+al/2);cx.restore();
+  }
+  // ── O6: Heptad highlight pulse ──
+  if(heptadHighlight>=0&&heptadHighlightTimer>0){
+    const pulse=0.5+0.5*Math.sin(Date.now()*0.005),a=0.06+pulse*0.06;
+    cx.save();cx.globalCompositeOperation='screen';cx.globalAlpha=a*(heptadHighlightTimer/3);
+    const grd=cx.createRadialGradient(400,280,20,400,280,350);
+    grd.addColorStop(0,H_COL[heptadHighlight]);grd.addColorStop(1,'transparent');
+    cx.fillStyle=grd;cx.fillRect(0,0,800,560);
+    cx.globalCompositeOperation='source-over';cx.globalAlpha=0.9*(heptadHighlightTimer/3);
+    cx.fillStyle=H_COL[heptadHighlight];cx.font='bold 12px sans-serif';cx.textAlign='center';
+    cx.fillText(`H${heptadHighlight+1} — ${H_LBL[heptadHighlight]}`,400,30);cx.restore();
+    heptadHighlightTimer=Math.max(0,heptadHighlightTimer-0.033);
+    if(heptadHighlightTimer<=0)heptadHighlight=-1;
+  }
+  // ── O2: Audio update ──
+  if(audioEnabled&&audioOsc)updateAudioCPM(therD.sound||40);
+}
+// ── O2: Audio functions ──
+function initAudio(){
+  if(audioCtx)return;audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  audioOsc=audioCtx.createOscillator();audioGain=audioCtx.createGain();
+  audioOsc.type='sine';audioGain.gain.value=0;
+  const lfo=audioCtx.createOscillator(),lg=audioCtx.createGain();
+  lfo.type='sine';lfo.frequency.value=0.67;lg.gain.value=0.15;
+  lfo.connect(lg);lg.connect(audioGain.gain);lfo.start();
+  audioOsc.frequency.value=110;audioOsc.connect(audioGain);audioGain.connect(audioCtx.destination);audioOsc.start();
+  audioOsc._lfo=lfo;
+}
+function updateAudioCPM(cpm){
+  if(!audioCtx||!audioEnabled)return;
+  audioOsc._lfo.frequency.setTargetAtTime(Math.max(0.2,cpm/60),audioCtx.currentTime,0.3);
+  audioOsc.frequency.setTargetAtTime(80+(cpm/60)*50,audioCtx.currentTime,0.3);
+}
+function toggleAudio(){
+  if(!audioCtx)initAudio();audioEnabled=!audioEnabled;
+  if(audioEnabled){audioGain.gain.setTargetAtTime(0.08,audioCtx.currentTime,0.2);if(audioCtx.state==='suspended')audioCtx.resume();}
+  else audioGain.gain.setTargetAtTime(0,audioCtx.currentTime,0.2);
+  document.getElementById('btnAudio').classList.toggle('on',audioEnabled);
+}
+
+// ══════════════ ANIMATION ══════════════
+let tm=0,play=false,lt=null,spd=1;
+const FPS_CAP=30,FRAME_MIN=1000/FPS_CAP;let _lr=0;
+
+function tick(ts){
+  requestAnimationFrame(tick);
+  if(ts-_lr<FRAME_MIN)return;_lr=ts;
+  if(!lt)lt=ts;
+  if(play){tm+=((ts-lt)/1000)*spd;if(tm>=TT){tm=TT;play=false;ub();}}
+  lt=ts; draw(tm);
+}
+
+function ub(){const b=document.getElementById('bL');
+  b.textContent=play?'⏸':'▶';b.classList.toggle('on',play);}
+
+function tog(){if(tm>=TT)tm=0;play=!play;lt=null;ub();}
+function sN(){play=false;ub();for(const k of KF)if(k.t>tm+.1){tm=k.t;return;}tm=TT;}
+function sP(){play=false;ub();for(let i=KF.length-1;i>=0;i--)if(KF[i].t<tm-.5){tm=KF[i].t;return;}tm=0;}
+
+document.getElementById('bL').onclick=tog;
+document.getElementById('bN').onclick=sN;
+document.getElementById('bP').onclick=sP;
+document.getElementById('bR').onclick=()=>{play=false;tm=0;lt=null;ub();};
+document.getElementById('sp').onchange=e=>spd=parseFloat(e.target.value);
+
+document.addEventListener('keydown',e=>{
+  if(e.code==='Space'){e.preventDefault();tog();}
+  else if(e.code==='ArrowRight'){e.preventDefault();sN();}
+  else if(e.code==='ArrowLeft'){e.preventDefault();sP();}
+  else if(e.code==='KeyR'){e.preventDefault();document.getElementById('bR').click();}
+});
+
+requestAnimationFrame(tick);
+</script>
+</body>
+</html>

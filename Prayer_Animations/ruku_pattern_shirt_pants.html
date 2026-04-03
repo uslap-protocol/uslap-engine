@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>USLaP | Ruku-Derived Clothing Patterns — Shirt + Pants</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d1117;color:#e0dcd0;font-family:'Segoe UI',Tahoma,sans-serif;padding:20px;line-height:1.6}
+h1{color:#d4af37;font-size:1.4em;text-align:center;margin-bottom:4px}
+h2{color:#d4af37;font-size:1.1em;margin:24px 0 8px;border-bottom:1px solid #30363d;padding-bottom:4px}
+h3{color:#c9a84c;font-size:0.95em;margin:16px 0 6px}
+.bis{text-align:center;color:#d4af3799;font-family:'Traditional Arabic',serif;font-size:1.1em;margin-bottom:12px}
+.tabs{display:flex;gap:4px;margin:16px 0;flex-wrap:wrap}
+.tab{background:#21262d;border:1px solid #30363d;color:#8b949e;padding:6px 14px;cursor:pointer;border-radius:4px;font-size:0.82em}
+.tab.on{color:#d4af37;border-color:#d4af37;background:#d4af3715}
+.tab:hover{background:#30363d}
+.pattern-box{background:#161b22;border:1px solid #30363d;border-radius:6px;padding:12px;margin:12px 0;overflow-x:auto}
+svg text{font-family:'Segoe UI',sans-serif}
+table{border-collapse:collapse;width:100%;margin:12px 0;font-size:0.82em}
+th{background:#21262d;color:#d4af37;padding:6px 10px;text-align:left;border:1px solid #30363d}
+td{padding:6px 10px;border:1px solid #30363d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+.note{background:#d4af3712;border-left:3px solid #d4af37;padding:8px 12px;margin:8px 0;font-size:0.82em;border-radius:0 4px 4px 0}
+.warn{background:#f8514920;border-left:3px solid #f85149;padding:8px 12px;margin:8px 0;font-size:0.82em;border-radius:0 4px 4px 0}
+.step{display:flex;gap:12px;margin:8px 0;align-items:flex-start}
+.step-num{background:#d4af37;color:#0d1117;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.8em;flex-shrink:0}
+.step-text{font-size:0.85em}
+.dim{fill:#8b949e;font-size:11px}
+.dim-line{stroke:#8b949e;stroke-width:0.8;stroke-dasharray:3,2}
+.label{fill:#d4af37;font-size:10px;font-weight:600}
+.att{fill:#c9a84c;font-size:9px;font-style:italic}
+.cut-line{stroke:#e8e0d0;stroke-width:2;fill:none}
+.seam-allow{stroke:#484f58;stroke-width:0.8;fill:none;stroke-dasharray:4,3}
+.grain{stroke:#e040fb;stroke-width:1.5;fill:none}
+.grain-arr{fill:#e040fb}
+.standard{stroke:#f85149;stroke-width:1.2;fill:none;stroke-dasharray:6,3}
+.standard-fill{fill:#f8514910;stroke:none}
+.compare-label{fill:#f85149;font-size:9px}
+.section{max-width:1100px;margin:0 auto}
+@media print{body{background:#fff;color:#111}.pattern-box{border-color:#ccc}svg{max-width:100%}}
+</style>
+</head>
+<body>
+<div class="section">
+
+<div class="bis">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+<h1>Ruku-Derived Clothing Patterns</h1>
+<p style="text-align:center;color:#8b949e;font-size:0.8em;margin-bottom:16px">
+فَكَسَوْنَا الْعِظَامَ لَحْمًا — Q23:14 | Cut on living body in رُكُوع — not flat on table
+</p>
+
+<div class="tabs">
+  <div class="tab on" onclick="show('shirt')">Shirt Pattern</div>
+  <div class="tab" onclick="show('pants')">Pants Pattern</div>
+  <div class="tab" onclick="show('compare')">Comparison Tables</div>
+  <div class="tab" onclick="show('assembly')">Assembly Guide</div>
+  <div class="tab" onclick="show('measurements')">Measurements</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- SHIRT PATTERN -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div id="sec-shirt">
+<h2>SHIRT — Side Panel (cut 2, mirror one)</h2>
+<p style="font-size:0.82em;color:#8b949e;margin-bottom:8px">
+Each piece wraps from المِحْوَر الظَّهْرِي (back center) around one side to the front opening.
+Sleeve is CONTINUOUS with body — no armhole, no set-in sleeve.
+Shown at 1:5 scale. Medium (Bust 92cm). See Measurements tab to adjust.
+</p>
+
+<div class="note">
+<strong>GRAIN LINE →</strong> runs LEFT-TO-RIGHT (horizontal on pattern = along the ribs).
+Place pattern so selvedge/warp runs across the body, NOT top-to-bottom.
+<br><em>Derivation (analytical, not from lattice directly):</em> BA058 establishes that all body warps are vertical in رُكُوع.
+BA065 establishes that ribs are horizontal bows. Ribs vertical in ruku → cloth warp should follow ribs → grain horizontal on standing body. This principle is DERIVED from the lattice data, not stated in it.
+</div>
+
+<!-- ── HOW THE PIECE WRAPS (cross-section diagram) ── -->
+<div class="pattern-box" style="text-align:center;padding:16px">
+<svg viewBox="0 0 520 200" width="100%" style="max-width:520px">
+  <text x="260" y="16" fill="#d4af37" font-size="12" text-anchor="middle" font-weight="600">
+    How ONE piece wraps half the body (view from above)
+  </text>
+  <!-- Body cross-section (oval) -->
+  <ellipse cx="260" cy="115" rx="85" ry="55" fill="none" stroke="#484f58" stroke-width="1.5"/>
+  <text x="260" y="118" fill="#484f58" font-size="9" text-anchor="middle">body</text>
+  <!-- Back center mark -->
+  <circle cx="260" cy="170" r="4" fill="#d4af37"/>
+  <text x="260" y="190" fill="#d4af37" font-size="9" text-anchor="middle" font-weight="600">BACK CENTER (spine)</text>
+  <!-- Front center mark -->
+  <circle cx="260" cy="60" r="4" fill="#58a6ff"/>
+  <text x="260" y="50" fill="#58a6ff" font-size="9" text-anchor="middle" font-weight="600">FRONT CENTER (opening)</text>
+  <!-- RIGHT side piece wrapping -->
+  <path d="M 260,170 C 320,170 345,150 345,115 C 345,80 320,60 260,60"
+        fill="none" stroke="#e8e0d0" stroke-width="3"/>
+  <text x="365" y="118" fill="#e8e0d0" font-size="10" font-weight="600">RIGHT piece</text>
+  <!-- LEFT side piece wrapping -->
+  <path d="M 260,170 C 200,170 175,150 175,115 C 175,80 200,60 260,60"
+        fill="none" stroke="#e8e0d0" stroke-width="3" stroke-dasharray="6,3"/>
+  <text x="120" y="118" fill="#8b949e" font-size="10" text-anchor="end">LEFT piece</text>
+  <text x="120" y="132" fill="#8b949e" font-size="8" text-anchor="end">(mirror)</text>
+  <!-- Arrows showing wrap direction -->
+  <text x="355" y="145" fill="#c9a84c" font-size="8">wraps →</text>
+  <text x="355" y="90" fill="#c9a84c" font-size="8">→ this way</text>
+  <!-- Seam indicator at back -->
+  <line x1="248" y1="168" x2="248" y2="185" stroke="#d4af37" stroke-width="2"/>
+  <line x1="272" y1="168" x2="272" y2="185" stroke="#d4af37" stroke-width="2"/>
+  <text x="260" y="198" fill="#d4af37" font-size="7" text-anchor="middle">SEW HERE</text>
+</svg>
+<p style="font-size:0.78em;color:#8b949e;margin-top:6px">
+Each piece starts at the spine (BACK CENTER = left edge of flat pattern),
+wraps around one side of the body, and ends at the sternum (FRONT CENTER = right edge of flat pattern).
+The sleeve extends from the shoulder area — continuous with the body, not separate.
+</p>
+</div>
+
+<div class="pattern-box">
+<svg viewBox="-40 -50 1200 820" width="100%" style="max-width:1200px;max-height:800px">
+  <defs>
+    <pattern id="grid10" width="80" height="80" patternUnits="userSpaceOnUse">
+      <rect width="80" height="80" fill="none" stroke="#21262d" stroke-width="0.5"/>
+    </pattern>
+    <pattern id="grid5" width="40" height="40" patternUnits="userSpaceOnUse">
+      <rect width="40" height="40" fill="none" stroke="#1a1f27" stroke-width="0.3"/>
+    </pattern>
+    <marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" class="grain-arr"/>
+    </marker>
+    <marker id="arr-dim" markerWidth="6" markerHeight="4" refX="0" refY="2" orient="auto">
+      <path d="M0,0 L6,2 L0,4 Z" fill="#8b949e"/>
+    </marker>
+    <marker id="arr-dim-r" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
+      <path d="M6,0 L0,2 L6,4 Z" fill="#8b949e"/>
+    </marker>
+    <marker id="arr-red" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#f85149"/>
+    </marker>
+  </defs>
+  <rect x="-40" y="-50" width="1200" height="820" fill="#0f1318"/>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- LEFT SIDE: RUKU-DERIVED PATTERN                       -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <text x="310" y="-30" fill="#d4af37" font-size="14" text-anchor="middle" font-weight="700">
+    RUKU-DERIVED (body-aware)
+  </text>
+
+  <!-- Grid behind ruku pattern -->
+  <rect x="0" y="0" width="640" height="570" fill="url(#grid5)" opacity="0.5"/>
+
+  <!-- ── SEAM ALLOWANCE ── -->
+  <path d="M -12,18
+           C 20,-8 60,-10 82,-4
+           L 200,18 L 470,34 L 620,50 L 622,200
+           L 457,237 L 400,261 L 403,289
+           L 385,339 L 330,389 L 340,425
+           L 365,485 L 348,561 L -12,535 Z" class="seam-allow"/>
+
+  <!-- ══ MAIN PATTERN PIECE ══ -->
+  <path d="
+    M 0,30
+    C 15,8 45,2 72,6  L 80,6
+    C 110,6 150,18 200,30
+    C 280,38 380,44 460,48  L 608,64
+    L 608,188
+    C 560,206 500,222 445,232
+    C 420,240 400,252 392,266
+    C 396,286 398,300 393,316
+    C 380,342 360,368 324,396
+    C 332,416 340,436 348,460
+    C 358,490 358,508 340,548
+    L 0,522  Z
+  " class="cut-line" fill="#1e2530"/>
+
+  <!-- ── BACK/FRONT EDGE COLORS ── -->
+  <!-- BACK CENTER edge (gold dashed) -->
+  <line x1="0" y1="-10" x2="0" y2="550" stroke="#d4af37" stroke-width="2.5" stroke-dasharray="8,4"/>
+  <!-- FRONT CENTER edge (blue) — the right curved edge -->
+  <path d="M 392,266 C 396,286 398,300 393,316 C 380,342 360,368 324,396
+           C 332,416 340,436 348,460 C 358,490 358,508 340,548"
+        fill="none" stroke="#58a6ff" stroke-width="2.5" stroke-dasharray="6,3"/>
+
+  <!-- ── EDGE LABELS (prominent) ── -->
+  <text x="-8" y="220" fill="#d4af37" font-size="13" text-anchor="middle"
+        transform="rotate(-90,-8,220)" font-weight="700">
+    ← BACK CENTER (spine) — sew here
+  </text>
+  <text x="375" y="445" fill="#58a6ff" font-size="11"
+        transform="rotate(78,375,445)" font-weight="700">
+    FRONT (opening) →
+  </text>
+
+  <!-- Zone shading: back half vs front half of the body -->
+  <path d="M 0,30 C 15,8 45,2 72,6 L 80,6 C 110,6 150,18 200,30
+           L 200,522 L 0,522 Z" fill="#d4af3708"/>
+  <path d="M 200,30 C 280,38 380,44 460,48 L 608,64 L 608,188
+           C 560,206 500,222 445,232 C 420,240 400,252 392,266
+           C 396,286 398,300 393,316 C 380,342 360,368 324,396
+           C 332,416 340,436 348,460 C 358,490 358,508 340,548
+           L 200,522 L 200,30 Z" fill="#58a6ff06"/>
+
+  <!-- Zone labels -->
+  <text x="70" y="300" fill="#d4af37" font-size="12" text-anchor="middle" opacity="0.4"
+        transform="rotate(-90,70,300)">BACK half of body</text>
+  <text x="290" y="300" fill="#58a6ff" font-size="12" text-anchor="middle" opacity="0.3"
+        transform="rotate(-90,290,300)">wraps around SIDE → FRONT</text>
+
+  <!-- ── GRAIN LINE (ruku) ── -->
+  <line x1="60" y1="420" x2="300" y2="420" class="grain" stroke-width="2.5" marker-end="url(#arr)"/>
+  <text x="180" y="410" fill="#e040fb" font-size="12" text-anchor="middle" font-weight="700">
+    GRAIN →
+  </text>
+  <text x="180" y="438" fill="#e040fb" font-size="9" text-anchor="middle">
+    horizontal = along ribs
+  </text>
+
+  <!-- ── DIMENSION LABELS ── -->
+  <line x1="0" y1="-18" x2="200" y2="-18" class="dim-line" marker-end="url(#arr-dim)" marker-start="url(#arr-dim-r)"/>
+  <text x="100" y="-22" class="dim" text-anchor="middle">21cm (shoulder)</text>
+
+  <line x1="0" y1="285" x2="393" y2="285" class="dim-line" stroke-dasharray="2,3"/>
+  <text x="196" y="278" class="dim" text-anchor="middle">49cm (half circumference at bust)</text>
+
+  <line x1="0" y1="396" x2="324" y2="396" class="dim-line" stroke-dasharray="2,3"/>
+  <text x="162" y="388" class="dim" text-anchor="middle">39cm (waist)</text>
+
+  <line x1="200" y1="30" x2="608" y2="64" class="dim-line"/>
+  <text x="404" y="28" class="dim" text-anchor="middle">55cm (sleeve)</text>
+
+  <line x1="616" y1="64" x2="616" y2="188" class="dim-line"/>
+  <text x="635" y="130" class="dim" font-size="9">15cm</text>
+
+  <line x1="-24" y1="30" x2="-24" y2="522" class="dim-line"/>
+  <text x="-28" y="280" class="dim" text-anchor="middle" transform="rotate(-90,-28,280)">65cm (neck to hem)</text>
+
+  <!-- ── KEY POINTS ── -->
+  <circle cx="0" cy="30" r="4" fill="#d4af37"/>
+  <text x="12" y="46" class="label">Back Neck</text>
+  <circle cx="200" cy="30" r="4" fill="#d4af37"/>
+  <text x="208" y="22" class="label">Shoulder</text>
+  <circle cx="608" cy="64" r="4" fill="#c9a84c"/>
+  <circle cx="608" cy="188" r="4" fill="#c9a84c"/>
+  <text x="612" y="56" class="label">Wrist</text>
+  <circle cx="392" cy="266" r="5" fill="#e040fb"/>
+  <text x="405" y="258" class="label" fill="#e040fb">Underarm</text>
+  <text x="405" y="270" class="att">continuous — no armhole</text>
+  <text x="400" y="305" class="att">Bust fullness (no dart)</text>
+  <circle cx="324" cy="396" r="3" fill="#c9a84c"/>
+  <text x="260" y="408" class="label">Waist curve (no dart)</text>
+  <text x="170" y="542" class="label">Hem</text>
+
+  <!-- Front neckline note -->
+  <path d="M 0,30 C 0,85 50,100 72,100" stroke="#58a6ff" stroke-width="1" fill="none" stroke-dasharray="4,3"/>
+  <text x="78" y="92" fill="#58a6ff" font-size="9">Front neckline (cut after assembly)</text>
+
+  <!-- Notches -->
+  <line x1="392" y1="263" x2="398" y2="252" stroke="#d4af37" stroke-width="2"/>
+  <line x1="324" y1="393" x2="330" y2="383" stroke="#d4af37" stroke-width="2"/>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- RIGHT SIDE: STANDARD PATTERN — ROTATED 90°            -->
+  <!-- Grain runs TOP-TO-BOTTOM (vertical on standing body)  -->
+  <!-- So when placed on same fabric as ruku pattern, it     -->
+  <!-- must be rotated 90° — its "vertical" is our "right"   -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <g transform="translate(700, 0)">
+    <text x="220" y="-30" fill="#f85149" font-size="14" text-anchor="middle" font-weight="700">
+      STANDARD (rotated to show grain conflict)
+    </text>
+    <text x="220" y="-14" fill="#8b949e" font-size="9" text-anchor="middle">
+      Same fabric, same selvedge direction — pattern must rotate 90° because grain is vertical
+    </text>
+
+    <!-- Standard front bodice — ROTATED 90° CW -->
+    <!-- Original: ~30cm wide × 55cm tall. Rotated: ~55cm wide × 30cm tall -->
+    <g transform="rotate(90, 220, 280)">
+      <!-- Front bodice panel -->
+      <path d="M 140,40 L 140,500 L 350,500 L 350,420
+               L 370,300 L 340,200 L 330,140 L 300,80
+               L 240,45 L 180,40 Z" fill="#f8514912" stroke="#f85149" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <!-- Bust dart -->
+      <path d="M 370,300 L 290,320 L 340,370" fill="none" stroke="#f85149" stroke-width="1.5"/>
+      <text x="300" y="310" fill="#f85149" font-size="10">DART</text>
+      <!-- Armhole curve -->
+      <path d="M 300,80 C 340,80 365,120 370,200" fill="none" stroke="#f85149" stroke-width="2"/>
+      <text x="350" y="135" fill="#f85149" font-size="9" transform="rotate(60,350,135)">ARMHOLE</text>
+      <!-- Shoulder seam -->
+      <line x1="180" y1="40" x2="300" y2="80" stroke="#f85149" stroke-width="2"/>
+      <!-- Side seam -->
+      <line x1="370" y1="300" x2="350" y2="500" stroke="#f85149" stroke-width="1.5"/>
+      <!-- Standard grain line (vertical in original = NOW HORIZONTAL after our 90° rotation) -->
+      <!-- But we need to show it as it WAS: vertical on the body = perpendicular to ruku grain -->
+      <line x1="240" y1="100" x2="240" y2="400" stroke="#f85149" stroke-width="2" marker-end="url(#arr-red)"/>
+      <text x="250" y="250" fill="#f85149" font-size="11" font-weight="600">GRAIN ↓</text>
+    </g>
+
+    <!-- Separate sleeve (also rotated) -->
+    <g transform="rotate(90, 220, 280)">
+      <rect x="390" y="80" width="180" height="280" rx="8" fill="#f8514908" stroke="#f85149" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="480" y="220" fill="#f85149" font-size="10" text-anchor="middle">SEPARATE</text>
+      <text x="480" y="234" fill="#f85149" font-size="10" text-anchor="middle">SLEEVE</text>
+    </g>
+
+    <!-- Annotation: what the rotation shows -->
+    <text x="220" y="540" fill="#f85149" font-size="10" text-anchor="middle">
+      Standard grain ↓ is PERPENDICULAR to ruku grain →
+    </text>
+    <text x="220" y="556" fill="#8b949e" font-size="9" text-anchor="middle">
+      On the same bolt of fabric, these two patterns sit at 90° to each other
+    </text>
+  </g>
+
+  <!-- ── FABRIC SELVEDGE INDICATOR (spans both patterns) ── -->
+  <line x1="-30" y1="580" x2="1130" y2="580" stroke="#e040fb" stroke-width="1" stroke-dasharray="12,4"/>
+  <text x="550" y="598" fill="#e040fb" font-size="10" text-anchor="middle">
+    ← ── ── ── FABRIC SELVEDGE / WARP DIRECTION ── ── ── →
+  </text>
+
+  <!-- Legend -->
+  <g transform="translate(0,620)">
+    <text x="0" y="0" fill="#8b949e" font-size="10" font-weight="600">Legend:</text>
+    <line x1="0" y1="14" x2="30" y2="14" stroke="#e8e0d0" stroke-width="2"/>
+    <text x="35" y="18" fill="#8b949e" font-size="9">Ruku cut line</text>
+    <line x1="0" y1="30" x2="30" y2="30" stroke="#d4af37" stroke-width="2" stroke-dasharray="8,4"/>
+    <text x="35" y="34" fill="#8b949e" font-size="9">Back center (spine seam)</text>
+    <line x1="0" y1="46" x2="30" y2="46" stroke="#58a6ff" stroke-width="2" stroke-dasharray="6,3"/>
+    <text x="35" y="50" fill="#8b949e" font-size="9">Front center (opening)</text>
+    <line x1="0" y1="62" x2="30" y2="62" class="standard"/>
+    <text x="35" y="66" fill="#8b949e" font-size="9">Standard pattern (rotated 90°)</text>
+    <line x1="0" y1="78" x2="30" y2="78" class="grain" stroke-width="2"/>
+    <text x="35" y="82" fill="#8b949e" font-size="9">Ruku grain (horizontal = along ribs)</text>
+    <line x1="200" y1="14" x2="230" y2="14" stroke="#f85149" stroke-width="2"/>
+    <text x="235" y="18" fill="#8b949e" font-size="9">Standard grain (vertical = perpendicular)</text>
+    <line x1="200" y1="30" x2="230" y2="30" stroke="#e040fb" stroke-width="1" stroke-dasharray="12,4"/>
+    <text x="235" y="34" fill="#8b949e" font-size="9">Fabric selvedge direction</text>
+  </g>
+</svg>
+</div>
+
+<div class="note">
+<strong>KEY DIFFERENCES you can SEE:</strong><br>
+1. <strong>Left = back center (spine, gold)</strong>, right edge = <strong>front center (opening, blue)</strong> — one piece wraps HALF the body from spine around to sternum (see cross-section above)<br>
+2. <strong>Standard pattern is ROTATED 90°</strong> — on the same bolt of fabric, the two patterns sit perpendicular because their grains are perpendicular<br>
+3. NO dart anywhere — the curved right edge IS the bust/waist/hip shaping, built into the wrap<br>
+4. NO armhole — sleeve flows from shoulder continuously<br>
+5. Standard needs 6-8 pieces + separate sleeve. Ruku needs 1 piece per side
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- PANTS PATTERN -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div id="sec-pants" style="display:none">
+<h2>PANTS — Leg Wrap Panel (cut 2, mirror one)</h2>
+<p style="font-size:0.82em;color:#8b949e;margin-bottom:8px">
+Each piece wraps ONE LEG. Anchors at عَجْب الذَّنَب (coccyx), wraps following the 11 خُطُوط,
+seam on المِحْوَر الظَّهْرِي (down the back of the leg). Based on BA058-BA061.
+</p>
+
+<div class="note">
+<strong>GRAIN LINE →</strong> runs LEFT-TO-RIGHT (horizontal on pattern).
+In رُكُوع, this is VERTICAL on the body (perpendicular to floor).
+<br><em>Derivation (analytical):</em> BA060 establishes 11 vertebral warps wrapping from spine around the leg.
+BA058 establishes all warps vertical in ruku. Cloth warp following these lines → grain horizontal on flat pattern. Derived from lattice, not stated directly.
+</div>
+
+<div class="pattern-box">
+<svg viewBox="-40 -50 700 1050" width="100%" style="max-width:720px;max-height:1000px">
+  <defs>
+    <pattern id="grid10b" width="80" height="80" patternUnits="userSpaceOnUse">
+      <rect width="80" height="80" fill="none" stroke="#21262d" stroke-width="0.5"/>
+    </pattern>
+    <pattern id="grid5b" width="40" height="40" patternUnits="userSpaceOnUse">
+      <rect width="40" height="40" fill="none" stroke="#1a1f27" stroke-width="0.3"/>
+    </pattern>
+  </defs>
+  <rect x="-40" y="-50" width="700" height="1050" fill="#0f1318"/>
+  <rect x="0" y="0" width="640" height="960" fill="url(#grid5b)"/>
+  <rect x="0" y="0" width="640" height="960" fill="url(#grid10b)"/>
+  <text x="600" y="950" class="dim" text-anchor="end">Grid: 5cm squares</text>
+
+  <!-- ── STANDARD PANTS OVERLAY ── -->
+  <g id="std-pants-overlay" opacity="0.4">
+    <!-- Standard front leg panel -->
+    <path d="M 80,0 L 80,900 L 340,900 L 340,0 Z" class="standard-fill"/>
+    <path d="M 80,0 L 80,900 L 340,900 L 340,0 Z" class="standard"/>
+    <!-- Standard waistband -->
+    <rect x="40" y="-40" width="340" height="40" rx="2" class="standard-fill"/>
+    <rect x="40" y="-40" width="340" height="40" rx="2" class="standard"/>
+    <text x="210" y="-14" class="compare-label" text-anchor="middle">WAISTBAND</text>
+    <!-- Standard inseam -->
+    <line x1="80" y1="0" x2="80" y2="900" class="standard" stroke-width="2"/>
+    <text x="65" y="450" class="compare-label" transform="rotate(-90,65,450)" text-anchor="middle">INSEAM</text>
+    <!-- Standard outseam -->
+    <line x1="340" y1="0" x2="340" y2="900" class="standard" stroke-width="2"/>
+    <text x="355" y="450" class="compare-label" transform="rotate(90,355,450)" text-anchor="middle">OUTSEAM</text>
+    <!-- Crotch curve -->
+    <path d="M 80,0 C 20,0 0,60 40,120" class="standard" stroke-width="1.5"/>
+    <text x="15" y="55" class="compare-label">CROTCH</text>
+    <text x="15" y="67" class="compare-label">CURVE</text>
+    <!-- Front crease -->
+    <line x1="210" y1="0" x2="210" y2="900" stroke="#f85149" stroke-width="0.8" stroke-dasharray="3,6"/>
+    <text x="218" y="500" class="compare-label" font-size="8">CREASE</text>
+    <!-- Dart at waist -->
+    <path d="M 180,-40 L 200,50 L 220,-40" class="standard" stroke-width="1.2"/>
+    <text x="200" y="65" class="compare-label" font-size="8" text-anchor="middle">DART</text>
+  </g>
+
+  <!-- ══ MAIN PANTS PATTERN PIECE ══ -->
+  <!--
+    This wraps ONE leg: from المِحْوَر الظَّهْرِي (posterior seam)
+    around the leg to المِحْوَر الظَّهْرِي again.
+    Width = leg circumference at each height.
+    Top: crotch/pelvis. Bottom: ankle.
+    The seam (where the two edges meet) runs down the BACK of the leg.
+  -->
+  <path d="
+    M 0,0
+    C 20,-20 80,-30 140,-30
+    C 220,-30 320,0 380,30
+    C 430,50 460,80 480,120
+    C 490,150 490,180 486,200
+    C 478,240 466,260 450,290
+    C 430,330 420,360 410,400
+    C 400,440 396,480 394,520
+    C 392,560 388,600 384,640
+    C 380,700 370,760 362,800
+    C 356,840 348,880 340,910
+    L 0,910
+    Z
+  " class="cut-line" fill="#1e2530"/>
+
+  <!-- WAIST/PELVIS EXTENSION (above crotch — wraps pelvis bowl) -->
+  <path d="
+    M 0,0
+    C 20,-20 80,-30 140,-30
+    C 180,-30 220,-28 260,-20
+    C 310,-8 350,10 380,30
+  " fill="none" stroke="#c9a84c" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="190" y="-38" class="att">Pelvis wrap — curves over iliac crest</text>
+
+  <!-- ── SEAM LINE LABEL (posterior = المِحْوَر الظَّهْرِي) ── -->
+  <line x1="0" y1="-40" x2="0" y2="930" stroke="#d4af37" stroke-width="1.5" stroke-dasharray="8,4"/>
+  <text x="-10" y="450" fill="#d4af37" font-size="11" text-anchor="middle"
+        transform="rotate(-90,-10,450)" font-weight="600">
+    المِحْوَر الظَّهْرِي — POSTERIOR SEAM (the ONE seam per leg)
+  </text>
+
+  <!-- ── ANTERIOR EDGE LABEL ── -->
+  <text x="460" y="200" fill="#8b949e" font-size="10" transform="rotate(85,460,200)">
+    Anterior edge (front of leg — wrap meets here)
+  </text>
+
+  <!-- ── GRAIN LINE ── -->
+  <line x1="80" y1="650" x2="280" y2="650" class="grain" marker-end="url(#arr)"/>
+  <text x="180" y="640" fill="#e040fb" font-size="11" text-anchor="middle" font-weight="600">
+    GRAIN LINE →
+  </text>
+  <text x="180" y="668" fill="#e040fb" font-size="9" text-anchor="middle">
+    (along خُطُوط — vertical on body in رُكُوع)
+  </text>
+
+  <!-- ── DIMENSION LABELS ── -->
+  <!-- Width at thigh (widest) -->
+  <line x1="0" y1="130" x2="484" y2="130" class="dim-line"/>
+  <text x="242" y="122" class="dim" text-anchor="middle">60cm (thigh circumference)</text>
+
+  <!-- Width at knee -->
+  <line x1="0" y1="520" x2="394" y2="520" class="dim-line"/>
+  <text x="197" y="512" class="dim" text-anchor="middle">40cm (knee circumference)</text>
+
+  <!-- Width at ankle -->
+  <line x1="0" y1="900" x2="340" y2="900" class="dim-line"/>
+  <text x="170" y="892" class="dim" text-anchor="middle">24cm (ankle)</text>
+
+  <!-- Width at pelvis top -->
+  <line x1="0" y1="-30" x2="260" y2="-30" class="dim-line"/>
+  <text x="130" y="-36" class="dim" text-anchor="middle">Pelvis wrap (~50cm at waist)</text>
+
+  <!-- Length -->
+  <line x1="-25" y1="-30" x2="-25" y2="910" class="dim-line" marker-end="url(#arr-dim)" marker-start="url(#arr-dim-r)"/>
+  <text x="-30" y="440" class="dim" text-anchor="middle" transform="rotate(-90,-30,440)">
+    ~95cm (coccyx to ankle)
+  </text>
+
+  <!-- ── FORCE LINE ZONES ── -->
+  <!-- 11 horizontal lines showing where each vertebral warp meets the seam -->
+  <g opacity="0.5">
+    <line x1="0" y1="0" x2="60" y2="0" stroke="#c9a84c" stroke-width="1"/>
+    <text x="65" y="4" fill="#c9a84c" font-size="8">Co — عَجْب الذَّنَب</text>
+
+    <line x1="0" y1="82" x2="50" y2="82" stroke="#e8a84c" stroke-width="1"/>
+    <text x="55" y="86" fill="#e8a84c" font-size="8">S5</text>
+
+    <line x1="0" y1="164" x2="50" y2="164" stroke="#e8a84c" stroke-width="1"/>
+    <text x="55" y="168" fill="#e8a84c" font-size="8">S4</text>
+
+    <line x1="0" y1="246" x2="50" y2="246" stroke="#d4a0e0" stroke-width="1"/>
+    <text x="55" y="250" fill="#d4a0e0" font-size="8">S3</text>
+
+    <line x1="0" y1="328" x2="50" y2="328" stroke="#ce93d8" stroke-width="1"/>
+    <text x="55" y="332" fill="#ce93d8" font-size="8">S2</text>
+
+    <line x1="0" y1="410" x2="50" y2="410" stroke="#c080d0" stroke-width="1"/>
+    <text x="55" y="414" fill="#c080d0" font-size="8">S1 — SI joint</text>
+
+    <line x1="0" y1="492" x2="50" y2="492" stroke="#d050eb" stroke-width="1"/>
+    <text x="55" y="496" fill="#d050eb" font-size="8">L5 (sciatica line)</text>
+
+    <line x1="0" y1="574" x2="50" y2="574" stroke="#d840f0" stroke-width="1"/>
+    <text x="55" y="578" fill="#d840f0" font-size="8">L4</text>
+
+    <line x1="0" y1="656" x2="50" y2="656" stroke="#e040fb" stroke-width="1"/>
+    <text x="55" y="660" fill="#e040fb" font-size="8">L3 (anterior knee)</text>
+
+    <line x1="0" y1="738" x2="50" y2="738" stroke="#e040fb" stroke-width="1"/>
+    <text x="55" y="742" fill="#e040fb" font-size="8">L2</text>
+
+    <line x1="0" y1="820" x2="50" y2="820" stroke="#e040fb" stroke-width="1"/>
+    <text x="55" y="824" fill="#e040fb" font-size="8">L1 (groin/medial)</text>
+  </g>
+
+  <!-- ── KEY POINTS ── -->
+  <circle cx="0" cy="0" r="5" fill="#d4af37"/>
+  <text x="10" y="-6" class="label">عَجْب الذَّنَب (coccyx — anchor)</text>
+
+  <circle cx="486" cy="200" r="4" fill="#e040fb"/>
+  <text x="440" y="216" class="label" fill="#e040fb">Widest (upper thigh)</text>
+
+  <circle cx="340" cy="910" r="4" fill="#c9a84c"/>
+  <text x="310" y="935" class="label">Ankle</text>
+
+  <!-- ── NO WAISTBAND NOTE ── -->
+  <g transform="translate(200,50)">
+    <rect x="0" y="0" width="240" height="55" rx="4" fill="#f8514920" stroke="#f85149" stroke-width="0.8"/>
+    <text x="120" y="18" fill="#f85149" font-size="10" text-anchor="middle" font-weight="600">NO WAISTBAND</text>
+    <text x="120" y="32" fill="#f85149" font-size="8" text-anchor="middle">Suspend from above (shoulders) or</text>
+    <text x="120" y="44" fill="#f85149" font-size="8" text-anchor="middle">self-anchoring drawstring at iliac crest</text>
+  </g>
+
+  <!-- ── TITLE ── -->
+  <text x="200" y="380" fill="#e0dcd0" font-size="16" font-weight="700" opacity="0.12">PANTS — LEG WRAP</text>
+  <text x="200" y="400" fill="#e0dcd0" font-size="11" opacity="0.08">Cut 2 (mirror one for left leg)</text>
+
+  <!-- Legend -->
+  <g transform="translate(350,830)">
+    <text x="0" y="0" fill="#8b949e" font-size="10" font-weight="600">Legend:</text>
+    <line x1="0" y1="14" x2="30" y2="14" stroke="#e8e0d0" stroke-width="2"/>
+    <text x="35" y="18" fill="#8b949e" font-size="9">Cut line</text>
+    <line x1="0" y1="30" x2="30" y2="30" stroke="#d4af37" stroke-width="1.5" stroke-dasharray="8,4"/>
+    <text x="35" y="34" fill="#8b949e" font-size="9">Posterior seam line</text>
+    <line x1="0" y1="46" x2="30" y2="46" class="standard"/>
+    <text x="35" y="50" fill="#8b949e" font-size="9">Standard pattern (comparison)</text>
+    <line x1="0" y1="62" x2="30" y2="62" class="grain"/>
+    <text x="35" y="66" fill="#8b949e" font-size="9">Grain line</text>
+    <rect x="0" y="74" width="12" height="3" fill="#e040fb" opacity="0.5"/>
+    <text x="35" y="81" fill="#8b949e" font-size="9">11 خُطُوط meeting points on seam</text>
+  </g>
+</svg>
+</div>
+
+<div class="note">
+<strong>KEY DIFFERENCES from standard pants:</strong><br>
+1. ONE piece per leg (not front panel + back panel + waistband = 5 pieces)<br>
+2. ONE seam per leg down the BACK (not 4: inseam + outseam + center front + center back)<br>
+3. NO waistband compressing the sacral fan — drawstring or shoulder suspension<br>
+4. NO crotch curve — the piece wraps from posterior around to posterior, shaped on the living body<br>
+5. Width = FULL leg circumference (the piece wraps the entire leg, not half)<br>
+6. 11 خُطُوط force line zones visible — cloth aligned to vertebral architecture
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- COMPARISON TABLES -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div id="sec-compare" style="display:none">
+<h2>Comparison: Standard vs. Ruku-Derived</h2>
+
+<h3>SHIRT</h3>
+<table>
+<tr><th style="width:18%">Feature</th><th style="width:28%">Standard Women's Shirt</th><th style="width:28%">Ruku-Derived</th><th style="width:26%">Why</th></tr>
+<tr><td><strong>Pieces</strong></td>
+<td>6-8: front (×2), back, sleeves (×2), collar, cuffs, facings</td>
+<td>2: left side panel + right side panel (each includes body + sleeve)</td>
+<td>Body is one continuous surface. 8 pieces = destroy then rebuild topology</td></tr>
+
+<tr><td><strong>Seams</strong></td>
+<td>9-11: shoulder (×2), side (×2), armhole (×2), center front, collar, cuffs</td>
+<td>3: back center (المِحْوَر الظَّهْرِي) + sleeve seam (×2, wrist to underarm only)</td>
+<td>Each seam = stiffness line where cloth cannot flex like body. 9→3. Sleeve seams stop at underarm — body stays open below as wrap</td></tr>
+
+<tr><td><strong>Grain direction</strong></td>
+<td>Vertical (parallel to selvedge on standing body)</td>
+<td>Horizontal (across the body = along ribs = vertical in رُكُوع)</td>
+<td>BA058: all warps vertical in ruku. BA065: ribs are horizontal bows. DERIVED: cloth warp should follow ribs → grain horizontal on standing body. Analytical principle, not stated directly in lattice</td></tr>
+
+<tr><td><strong>Bust shaping</strong></td>
+<td>Bust DART: triangle cut out and stitched closed</td>
+<td>No dart. Front edge curves outward at bust — body topology built into the cut</td>
+<td>Dart = proof that flat method failed. Wrap follows the curve. Root ف-ص-ل: cut that CONNECTS</td></tr>
+
+<tr><td><strong>Shoulder</strong></td>
+<td>Horizontal seam joining front + back panels (high stress)</td>
+<td>No seam. Sleeve continuous with body. Cloth flows over shoulder</td>
+<td>Shoulder = الفَرَاغ / negative space (BA025). Seam ON movement zone fights every arm raise</td></tr>
+
+<tr><td><strong>Sleeve</strong></td>
+<td>Separate piece set into curved armhole (hardest seam in garment-making)</td>
+<td>Integrated with body panel. Dolman-style — extends from shoulder continuously</td>
+<td>الخَطّ البَطْنِي العُلْوِي (BA014-015) runs continuously shoulder→hip. Set-in sleeve severs it</td></tr>
+
+<tr><td><strong>Side seams</strong></td>
+<td>2 vertical seams (left + right sides)</td>
+<td>0 separate side seams (underarm seam continues into side)</td>
+<td>خَطّ جانِبِي / lateral line (BA019) runs head→foot. Side seam crosses it</td></tr>
+
+<tr><td><strong>Collar</strong></td>
+<td>Separate piece — cut, interfaced, stitched to neckline</td>
+<td>Continuous — cloth rises from T1 vertebra. Neckline = simple opening</td>
+<td>Cervical vertebrae = same stalk as thoracic. Separate collar creates junction in continuity</td></tr>
+
+<tr><td><strong>Fitting</strong></td>
+<td>Static on dress form (plastic mannequin) standing</td>
+<td>On living body in رُكُوع (maximum structural unity position)</td>
+<td>Mannequin = no muscle tone, no breathing, no rib expansion. Wrong shape</td></tr>
+
+<tr><td><strong>Fabric waste</strong></td>
+<td>15-25% (dart triangles, spaces between pieces)</td>
+<td>~5% (trim edges only)</td>
+<td>Rectangular panels forced into 3D = excess removed. Wrap = minimal waste</td></tr>
+
+<tr><td><strong>Ease allowance</strong></td>
+<td>5-10cm added per circumference (empirical guess)</td>
+<td>Not needed — wrap follows actual body in ruku, movement built into geometry</td>
+<td>"Ease" = guess. Ruku positions body at max unity — cloth shaped here moves everywhere</td></tr>
+</table>
+
+<h3>PANTS</h3>
+<table>
+<tr><th style="width:18%">Feature</th><th style="width:28%">Standard Women's Pants</th><th style="width:28%">Ruku-Derived</th><th style="width:26%">Why</th></tr>
+<tr><td><strong>Pieces</strong></td>
+<td>5: front leg (×2), back leg (×2), waistband</td>
+<td>2: left leg wrap + right leg wrap</td>
+<td>Each leg = one continuous wrap. No front/back division</td></tr>
+
+<tr><td><strong>Seams per leg</strong></td>
+<td>4: inseam, outseam, center front, center back</td>
+<td>1: posterior seam on المِحْوَر الظَّهْرِي (back of leg)</td>
+<td>BA061: stable conductor = the ONE seam line. 4 seams = 4 zones fighting body warp</td></tr>
+
+<tr><td><strong>Waistband</strong></td>
+<td>Horizontal band pressing across sacral fan at the keystone</td>
+<td>NO waistband. Drawstring at iliac crest or suspended from shoulders</td>
+<td>SI joint nutates (rocks forward). Waistband fights this motion every second of every day</td></tr>
+
+<tr><td><strong>Crotch curve</strong></td>
+<td>Complex curved seam joining front and back panels through perineum</td>
+<td>No crotch curve. Each leg wraps independently. At pelvis they connect via the upper wrap</td>
+<td>The body above the crotch is ONE shape that splits into two legs. Wrap follows this topology</td></tr>
+
+<tr><td><strong>Grain direction</strong></td>
+<td>Vertical (along leg length)</td>
+<td>Horizontal (around leg circumference = along خُطُوط = vertical in رُكُوع)</td>
+<td>BA060: 11 vertebral warps run from spine around the leg. Cloth follows these lines</td></tr>
+
+<tr><td><strong>Width per piece</strong></td>
+<td>Half the leg circumference (front + back = full circle)</td>
+<td>Full leg circumference (one piece wraps the entire leg)</td>
+<td>One wrap = one seam. Half-piece = two seams minimum. Full wrap eliminates inseam + outseam</td></tr>
+
+<tr><td><strong>Knee shaping</strong></td>
+<td>Straight or slight curve. Tight pants restrict knee bend</td>
+<td>Natural shaping from wrap on living body. Knee = الفَرَاغ (negative space, BA025) — cloth gives here</td>
+<td>Knee is a hinge (bow physics). Cloth shaped on bent knee (in ruku) allows full range when straight</td></tr>
+
+<tr><td><strong>Fit at hip</strong></td>
+<td>Waist dart (×2-4) to shape flat panel over curved hip</td>
+<td>No darts. Pelvis wrap follows iliac crest contour as one continuous shape</td>
+<td>Same as bust: dart = flat-panel failure. Wrap conforms without excision</td></tr>
+
+<tr><td><strong>Ankle</strong></td>
+<td>Hemmed straight across</td>
+<td>Tapers naturally — ankle is where المِحْوَر الظَّهْرِي meets L1 (lowest force line meeting point)</td>
+<td>BA060: 11 warps meet the seam at different heights, last one (L1) near ankle</td></tr>
+
+<tr><td><strong>Back pain risk</strong></td>
+<td>Waistband + belt compresses L4-L5 / SI joint area</td>
+<td>No horizontal compression at spine. Drawstring below iliac crest or no closure at all</td>
+<td>The ∩ warp (heel→coccyx→heel) cannot be compressed at its apex without cascading failure</td></tr>
+</table>
+
+<h3>WHAT DISAPPEARED ENTIRELY</h3>
+<table>
+<tr><th>Eliminated</th><th>Why it existed</th><th>Why it's gone</th></tr>
+<tr><td>Bust dart</td><td>Flat cloth can't curve</td><td>Wrapped cloth already curves</td></tr>
+<tr><td>Waist dart</td><td>Flat panel can't taper</td><td>Wrap follows body contour</td></tr>
+<tr><td>Shoulder seam</td><td>Two flat panels need joining</td><td>One piece wraps continuously</td></tr>
+<tr><td>Set-in sleeve</td><td>Tube forced into hole</td><td>Cloth extends onto arm naturally</td></tr>
+<tr><td>Side seam</td><td>Two panels need joining</td><td>Wrap goes around without break</td></tr>
+<tr><td>Inseam</td><td>Front + back leg panels need joining</td><td>One wrap per leg</td></tr>
+<tr><td>Outseam</td><td>Front + back panels need joining</td><td>One wrap per leg</td></tr>
+<tr><td>Waistband</td><td>Hold pants up + "finish" waist edge</td><td>Drawstring or suspension — no compression</td></tr>
+<tr><td>Crotch curve</td><td>Join front to back through perineum</td><td>Legs wrap independently</td></tr>
+<tr><td>Sizing chart</td><td>Mass production needs standardisation</td><td>Each garment shaped on its wearer</td></tr>
+<tr><td>Interfacing</td><td>Reinforce floppy areas near openings</td><td>Wrap overlap = natural double layer</td></tr>
+<tr><td>Pattern grading</td><td>Scale one size to make others</td><td>No sizes to scale — one wrap per body</td></tr>
+<tr><td>Fabric waste (15-25%)</td><td>Spaces between pieces + dart triangles</td><td>~5% trim waste. No darts. Continuous cloth</td></tr>
+</table>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- ASSEMBLY GUIDE -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div id="sec-assembly" style="display:none">
+<h2>Assembly Guide</h2>
+
+<h3>SHIRT — Assembly (3 seams: 1 back center + 2 sleeve)</h3>
+
+<div class="warn">
+<strong>PREPARATION:</strong> Place fabric with selvedge running LEFT-RIGHT (not top-bottom).
+This is the opposite of standard pattern layout. The warp/selvedge direction becomes the grain line shown on the pattern.
+</div>
+
+<div class="step"><div class="step-num">1</div><div class="step-text">
+<strong>Cut 2 side panels</strong> (mirror one). Each panel = body + integrated sleeve. Place pattern on fabric with grain line arrow matching the selvedge direction (horizontal). Cut with 1.5cm seam allowance all around.
+</div></div>
+
+<div class="step"><div class="step-num">2</div><div class="step-text">
+<strong>Sew back center seam (المِحْوَر الظَّهْرِي)</strong> — join the two panels at their straight left edges (back center). This is the ONE structural seam. Press open. This seam runs from back neckline to back hem.
+</div></div>
+
+<div class="step"><div class="step-num">3</div><div class="step-text">
+<strong>Fold at shoulder line</strong> — the garment folds so front hangs over back (or vice versa). The front and back panels are now stacked, with the sleeve extending from each side.
+</div></div>
+
+<div class="step"><div class="step-num">4</div><div class="step-text">
+<strong>Sew sleeve seams (×2)</strong> — from wrist, along the sleeve underside, to the underarm point. <strong>STOP at the underarm.</strong> Do NOT continue down the body side to the hem. Below the underarm, the front and back panels hang FREE — this is the wrap opening. Each sleeve becomes a tube; the body remains open at the front and sides below the underarm.
+</div></div>
+
+<div class="step"><div class="step-num">5</div><div class="step-text">
+<strong>Cut front neckline</strong> — the back neckline is already shaped (shallow curve, 2cm deep). For the front, cut a V-neck or round neck to desired depth (8-12cm below shoulder). Cut through one layer only (the front layer after folding).
+</div></div>
+
+<div class="step"><div class="step-num">6</div><div class="step-text">
+<strong>Finish edges</strong> — hem the bottom, finish the neckline (fold under, bias binding, or leave raw if fabric doesn't fray), finish the front opening edges, finish wrist openings. No interfacing needed — the wrap creates natural reinforcement where layers overlap.
+</div></div>
+
+<div class="note">
+<strong>FRONT CLOSURE:</strong> The body below the underarm is an open wrap — front panels and side panels hang free. Options:<br>
+— Overlap left over right (or right over left) and tie with a sash<br>
+— Add button/frog closures at 2-3 points along the front edge<br>
+— Leave as open wrap (layer over inner garment / قَمِيص)<br>
+— For partial closure: sew side seams from underarm to waist only, leaving lower front open<br>
+— For full-closed: extend side seams to hem AND sew front edges together (becomes a pullover — loses the wrap)
+</div>
+
+<h3>PANTS — Assembly (1 seam per leg)</h3>
+
+<div class="step"><div class="step-num">1</div><div class="step-text">
+<strong>Cut 2 leg wrap panels</strong> (mirror one). Each panel = full leg circumference width, tapers from pelvis to ankle. Grain line horizontal (selvedge runs side-to-side, not top-to-bottom).
+</div></div>
+
+<div class="step"><div class="step-num">2</div><div class="step-text">
+<strong>Wrap each panel around one leg</strong> — the person stands in a slight forward lean or, ideally, in modified رُكُوع. Start at the back of the leg (المِحْوَر الظَّهْرِي), wrap around, return to the back. Pin where the edges meet. This IS the seam line.
+</div></div>
+
+<div class="step"><div class="step-num">3</div><div class="step-text">
+<strong>Sew ONE seam per leg</strong> — down the posterior midline (the back of the leg). This is المِحْوَر الظَّهْرِي / al-miḥwar al-ẓahrī / the stable conductor. From coccyx/pelvis level to ankle.
+</div></div>
+
+<div class="step"><div class="step-num">4</div><div class="step-text">
+<strong>Join at pelvis</strong> — the two leg tubes connect at the top. The pelvis wrap portions of each panel overlap or are sewn together at the back center (continuation of المِحْوَر الظَّهْرِي up through the pelvis). At the front, the panels can overlap (wrap closure) or be sewn.
+</div></div>
+
+<div class="step"><div class="step-num">5</div><div class="step-text">
+<strong>Waist closure</strong> — NO horizontal waistband. Options:<br>
+— Drawstring channel at iliac crest level (below the sacral fan, not across it)<br>
+— Shoulder straps / suspenders (transfers weight to shoulders, zero sacral compression)<br>
+— Self-anchoring: upper edge rolls inward and grips (like a wrap skirt)<br>
+— Tie at the side (like a lungi/sarong)
+</div></div>
+
+<div class="step"><div class="step-num">6</div><div class="step-text">
+<strong>Finish ankle</strong> — hem or leave raw. The taper follows the body — no elastic cuff needed.
+</div></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- MEASUREMENTS -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div id="sec-measurements" style="display:none">
+<h2>Measurements — How to Adjust</h2>
+
+<div class="note">
+The patterns shown use Medium (UK 12 / US 8) measurements. To adjust: take YOUR measurements
+<strong>in رُكُوع position</strong> (or leaning forward 90° at the hip). The circumference measurements
+will differ from standing measurements because tissue redistributes.
+</div>
+
+<h3>Shirt Measurements Needed</h3>
+<table>
+<tr><th>Measurement</th><th>How to Take</th><th>Pattern shown (cm)</th><th>Where on pattern</th></tr>
+<tr><td>Half bust circumference</td><td>Around fullest part, in ruku. Divide by 2.</td><td>49</td><td>Width at bust level (widest point of front edge)</td></tr>
+<tr><td>Half waist circumference</td><td>At natural waist, in ruku. Divide by 2.</td><td>39</td><td>Width at waist notch</td></tr>
+<tr><td>Half hip circumference</td><td>At widest hip point, in ruku. Divide by 2.</td><td>43</td><td>Width at hip level</td></tr>
+<tr><td>Shoulder width</td><td>From back center (spine) to shoulder point</td><td>21</td><td>Top edge — back center to shoulder point</td></tr>
+<tr><td>Sleeve length</td><td>Shoulder point to wrist bone, arm hanging in ruku</td><td>55</td><td>From shoulder point to wrist edge</td></tr>
+<tr><td>Wrist circumference</td><td>Around wrist bone</td><td>15</td><td>Wrist opening width</td></tr>
+<tr><td>Back length</td><td>C7 vertebra (neck base) to waist, in ruku</td><td>40</td><td>Back center from neck to waist level</td></tr>
+<tr><td>Full length</td><td>C7 to desired hem length</td><td>65</td><td>Full back center length</td></tr>
+<tr><td>Neckline width</td><td>Side to side of neck base</td><td>8 (from center)</td><td>Neckline curve width</td></tr>
+</table>
+
+<h3>Pants Measurements Needed</h3>
+<table>
+<tr><th>Measurement</th><th>How to Take</th><th>Pattern shown (cm)</th><th>Where on pattern</th></tr>
+<tr><td>Upper thigh circumference</td><td>Around fullest part of thigh, in ruku</td><td>60</td><td>Widest width of pattern</td></tr>
+<tr><td>Knee circumference</td><td>Around knee, slightly bent (as in ruku)</td><td>40</td><td>Width at knee level</td></tr>
+<tr><td>Ankle circumference</td><td>Around ankle bone</td><td>24</td><td>Width at bottom of pattern</td></tr>
+<tr><td>Waist/pelvis circumference</td><td>Around iliac crest, in ruku</td><td>50</td><td>Top width (pelvis wrap)</td></tr>
+<tr><td>Coccyx to ankle</td><td>From عَجْب الذَّنَب to ankle bone, in ruku</td><td>95</td><td>Full length of pattern</td></tr>
+<tr><td>Coccyx to knee</td><td>From coccyx to knee center, in ruku</td><td>52</td><td>Knee position on pattern</td></tr>
+</table>
+
+<div class="warn">
+<strong>CRITICAL:</strong> Measure in رُكُوع (or 90° hip flexion), NOT standing.<br>
+Standing measurements are what standard patterns use — they produce garments that fight the body in every other position.
+Ruku measurements capture the body at maximum structural unity.<br><br>
+If measuring alone: lean forward on a table at 90° hip angle, arms hanging.
+</div>
+
+<h3>Scaling the Pattern</h3>
+<p style="font-size:0.82em">
+To adjust: change the WIDTH at each key height (bust, waist, hip, thigh, knee, ankle) to match
+your half-circumference. The HEIGHT (back length, sleeve length, coccyx-to-ankle) adjusts by
+lengthening or shortening the vertical dimension. The SHAPE (curves between key points) stays
+the same — the body topology is consistent across sizes.
+</p>
+</div>
+
+</div><!-- /section -->
+
+<script>
+function show(id){
+  ['shirt','pants','compare','assembly','measurements'].forEach(s=>{
+    const el=document.getElementById('sec-'+s);
+    if(el)el.style.display=s===id?'block':'none';
+  });
+  document.querySelectorAll('.tab').forEach((t,i)=>{
+    const ids=['shirt','pants','compare','assembly','measurements'];
+    t.classList.toggle('on',ids[i]===id);
+  });
+}
+</script>
+</body>
+</html>

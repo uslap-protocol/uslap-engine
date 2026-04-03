@@ -1,0 +1,45 @@
+newmtl body
+Kd 0.45 0.45 0.45
+
+newmtl lt_blue
+Kd 0.55 0.78 0.95
+
+newmtl blue_dot
+Kd 0.30 0.50 0.90
+
+newmtl red
+Kd 0.95 0.20 0.20
+
+newmtl red_dot
+Kd 0.90 0.35 0.35
+
+newmtl yellow
+Kd 0.95 0.88 0.25
+
+newmtl pink
+Kd 0.95 0.55 0.60
+
+newmtl vert_marker
+Kd 0.95 0.95 0.95
+
+newmtl l1_connect
+Kd 0.70 0.88 1.00
+
+newmtl l2_connect
+Kd 0.70 0.88 1.00
+
+newmtl l3_connect
+Kd 1.00 0.50 0.50
+
+newmtl l4_connect
+Kd 1.00 0.95 0.40
+
+newmtl l5_connect
+Kd 1.00 0.95 0.40
+
+newmtl s1_connect
+Kd 1.00 0.65 0.70
+
+newmtl s2_connect
+Kd 0.45 0.65 1.00
+

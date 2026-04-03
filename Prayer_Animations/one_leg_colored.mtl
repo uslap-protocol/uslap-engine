@@ -1,0 +1,24 @@
+newmtl mat_S2
+Kd 0.549 0.749 0.922
+
+newmtl mat_S1
+Kd 0.949 0.549 0.600
+
+newmtl mat_L5
+Kd 0.949 0.878 0.251
+
+newmtl mat_L4
+Kd 0.922 0.349 0.349
+
+newmtl mat_L3
+Kd 0.549 0.780 0.949
+
+newmtl mat_L2
+Kd 0.502 0.722 0.902
+
+newmtl mat_L1
+Kd 0.451 0.678 0.878
+
+newmtl mat_axial
+Kd 0.00 0.00 0.00
+

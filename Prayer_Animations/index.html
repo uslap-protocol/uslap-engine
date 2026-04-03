@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>USLaP Salah Animations</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background:#0d1117; color:#e8e0d0; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+  min-height:100vh; padding:30px 20px;
+}
+.header {
+  text-align:center; max-width:900px; margin:0 auto 30px;
+}
+.bis { color:#d4af3799; font-family:'Traditional Arabic','Scheherazade',serif; font-size:1.2em; margin-bottom:6px; }
+.header h1 { color:#d4af37; font-size:1.5em; letter-spacing:1px; margin-bottom:4px; }
+.header .sub { color:#8b949e; font-size:0.85em; }
+.grid {
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
+  gap:16px; max-width:960px; margin:0 auto;
+}
+.card {
+  background:#161b22; border:1px solid #30363d; border-radius:10px;
+  overflow:hidden; transition:all 0.25s; cursor:pointer; text-decoration:none; color:inherit;
+  display:flex; flex-direction:column;
+}
+.card:hover { border-color:#d4af37; transform:translateY(-3px); box-shadow:0 8px 24px #d4af3722; }
+.card-thumb {
+  width:100%; height:170px; position:relative; overflow:hidden;
+  background:#0a0e14;
+}
+.card-thumb svg { width:100%; height:100%; }
+.card-badge {
+  position:absolute; top:8px; right:8px; background:#d4af3733; color:#d4af37;
+  font-size:0.65em; font-weight:700; padding:3px 8px; border-radius:4px;
+  border:1px solid #d4af3744; backdrop-filter:blur(4px);
+}
+.card-body { padding:14px 16px; flex:1; }
+.card-body h2 { font-size:1em; color:#e8e0d0; margin-bottom:4px; }
+.card-body .ar { color:#d4af37; font-family:'Traditional Arabic',serif; font-size:0.95em; margin-bottom:6px; }
+.card-body .desc { color:#8b949e; font-size:0.8em; line-height:1.4; }
+.card-tags { padding:8px 16px 14px; display:flex; gap:4px; flex-wrap:wrap; }
+.tag {
+  font-size:0.65em; padding:2px 6px; border-radius:3px;
+  background:#21262d; color:#8b949e; border:1px solid #30363d;
+}
+.tag.new { background:#d4af3722; color:#d4af37; border-color:#d4af3744; }
+.footer {
+  text-align:center; max-width:900px; margin:30px auto 0;
+  font-size:0.75em; color:#484f58; border-top:1px solid #21262d; padding-top:16px;
+}
+.footer a { color:#4ecdc4; text-decoration:none; }
+@media (max-width:600px) {
+  body { padding:16px 10px; }
+  .header h1 { font-size:1.2em; }
+  .grid { gap:12px; }
+  .card-thumb { height:140px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="bis">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+  <h1>USLaP Salah Animations</h1>
+  <div class="sub">7 x 7 Body Lattice  |  Prayer Kinebiomechanics  |  DB-driven</div>
+</div>
+
+<div class="grid">
+
+  <!-- Card 1: PELVIS_3D -->
+  <a class="card" href="USLaP_PELVIS_3D.html">
+    <div class="card-thumb">
+      <svg viewBox="0 0 300 170" xmlns="http://www.w3.org/2000/svg">
+        <defs><radialGradient id="g1" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#111820"/><stop offset="100%" stop-color="#0a0e14"/></radialGradient></defs>
+        <rect fill="url(#g1)" width="300" height="170"/>
+        <!-- Pelvis silhouette -->
+        <path d="M110,95 Q130,60 150,55 Q170,60 190,95 L185,105 Q165,90 150,88 Q135,90 115,105 Z" fill="none" stroke="#e8e0d0" stroke-width="2" opacity="0.7"/>
+        <path d="M140,55 L160,55 L155,85 L145,85 Z" fill="none" stroke="#d4af37" stroke-width="1.5" opacity="0.5"/>
+        <circle cx="125" cy="100" r="5" fill="none" stroke="#ff6b6b" stroke-width="1.5" opacity="0.6"/>
+        <circle cx="175" cy="100" r="5" fill="none" stroke="#ff6b6b" stroke-width="1.5" opacity="0.6"/>
+        <line x1="125" y1="100" x2="125" y2="140" stroke="#e8e0d0" stroke-width="3" opacity="0.4"/>
+        <line x1="175" y1="100" x2="175" y2="140" stroke="#e8e0d0" stroke-width="3" opacity="0.4"/>
+        <!-- Force arrows -->
+        <line x1="150" y1="55" x2="150" y2="25" stroke="#90ee90" stroke-width="2" opacity="0.5"/>
+        <polygon points="150,20 146,28 154,28" fill="#90ee90" opacity="0.5"/>
+        <!-- Therapy tint indicator -->
+        <circle cx="40" cy="30" r="12" fill="#43a047" opacity="0.3"/>
+        <text x="40" y="34" text-anchor="middle" fill="#43a047" font-size="8" opacity="0.8">H2</text>
+      </svg>
+      <div class="card-badge">3D</div>
+    </div>
+    <div class="card-body">
+      <h2>3D Pelvis / Sacrum</h2>
+      <div class="ar">الحَوْض والعَجُز</div>
+      <div class="desc">Full LAHM tissue layers, SC02 bow-string-arrow model, force lines, muqarnas fascia mesh, 8 DB-sourced info panels</div>
+    </div>
+    <div class="card-tags">
+      <span class="tag">3D rotation</span>
+      <span class="tag">11 stages</span>
+      <span class="tag">7 tissue layers</span>
+      <span class="tag new">colour tint</span>
+      <span class="tag new">sound</span>
+      <span class="tag new">force vectors</span>
+    </div>
+  </a>
+
+  <!-- Card 2: FK -->
+  <a class="card" href="USLaP_FK_PROOF_OF_CONCEPT.html">
+    <div class="card-thumb">
+      <svg viewBox="0 0 300 170" xmlns="http://www.w3.org/2000/svg">
+        <rect fill="#0a0e14" width="300" height="170"/>
+        <line x1="20" y1="145" x2="280" y2="145" stroke="#21262d" stroke-width="1"/>
+        <rect x="30" y="143" width="240" height="6" fill="#1a2a1a" opacity="0.5"/>
+        <!-- Stick figure: qiyam -->
+        <line x1="150" y1="145" x2="150" y2="95" stroke="#e8e0d0" stroke-width="4" opacity="0.7"/>
+        <line x1="150" y1="95" x2="150" y2="55" stroke="#e8e0d0" stroke-width="4" opacity="0.7"/>
+        <circle cx="150" cy="42" r="13" fill="none" stroke="#e8e0d0" stroke-width="3" opacity="0.7"/>
+        <line x1="150" y1="75" x2="125" y2="110" stroke="#e8e0d0" stroke-width="3" opacity="0.5"/>
+        <line x1="125" y1="110" x2="118" y2="130" stroke="#e8e0d0" stroke-width="2.5" opacity="0.4"/>
+        <!-- Joints -->
+        <circle cx="150" cy="95" r="4" fill="#d4af37" opacity="0.7"/>
+        <circle cx="150" cy="145" r="4" fill="#d4af37" opacity="0.7"/>
+        <circle cx="150" cy="75" r="3" fill="#d4af37" opacity="0.5"/>
+        <!-- Gravity arrow -->
+        <line x1="165" y1="95" x2="165" y2="130" stroke="#90ee90" stroke-width="1.5" opacity="0.4"/>
+        <polygon points="165,134 162,128 168,128" fill="#90ee90" opacity="0.4"/>
+      </svg>
+      <div class="card-badge">FK</div>
+    </div>
+    <div class="card-body">
+      <h2>FK Proof of Concept</h2>
+      <div class="ar">حَرَكِيَّات أمَامِيَّة</div>
+      <div class="desc">Angle-driven forward kinematics with cascaded timing. DB-driven segment lengths and pose angles</div>
+    </div>
+    <div class="card-tags">
+      <span class="tag">10 stages</span>
+      <span class="tag">cascade delays</span>
+      <span class="tag">DB-driven</span>
+      <span class="tag new">colour tint</span>
+      <span class="tag new">sound</span>
+    </div>
+  </a>
+
+  <!-- Card 3: KINEBIOMECHANICS -->
+  <a class="card" href="USLaP_PRAYER_KINEBIOMECHANICS_ANIMATION.html">
+    <div class="card-thumb">
+      <svg viewBox="0 0 300 170" xmlns="http://www.w3.org/2000/svg">
+        <rect fill="#0a0e14" width="300" height="170"/>
+        <!-- Multi-view indicator -->
+        <rect x="10" y="10" width="170" height="110" rx="4" fill="none" stroke="#30363d" stroke-width="1"/>
+        <rect x="190" y="10" width="100" height="50" rx="3" fill="none" stroke="#30363d" stroke-width="1"/>
+        <rect x="190" y="65" width="100" height="55" rx="3" fill="none" stroke="#30363d" stroke-width="1"/>
+        <!-- Main skeleton -->
+        <line x1="95" y1="110" x2="95" y2="65" stroke="#e8e0d0" stroke-width="3" opacity="0.6"/>
+        <line x1="95" y1="65" x2="95" y2="35" stroke="#e8e0d0" stroke-width="3" opacity="0.6"/>
+        <circle cx="95" cy="25" r="10" fill="none" stroke="#e8e0d0" stroke-width="2" opacity="0.6"/>
+        <!-- Force lines -->
+        <line x1="80" y1="65" x2="80" y2="110" stroke="#f9a825" stroke-width="1" opacity="0.4"/>
+        <line x1="110" y1="65" x2="110" y2="110" stroke="#4ecdc4" stroke-width="1" opacity="0.4"/>
+        <!-- Bird's eye circle -->
+        <circle cx="240" cy="35" r="15" fill="none" stroke="#d4af37" stroke-width="1" opacity="0.4"/>
+        <circle cx="240" cy="35" r="3" fill="#d4af37" opacity="0.5"/>
+        <!-- Back view pelvis -->
+        <path d="M220,85 Q230,75 240,72 Q250,75 260,85" fill="none" stroke="#e8e0d0" stroke-width="1.5" opacity="0.4"/>
+        <!-- Labels -->
+        <text x="95" y="128" text-anchor="middle" fill="#8b949e" font-size="7" opacity="0.6">Side View</text>
+        <text x="240" y="56" text-anchor="middle" fill="#8b949e" font-size="6" opacity="0.6">Bird's Eye</text>
+        <text x="240" y="110" text-anchor="middle" fill="#8b949e" font-size="6" opacity="0.6">Pelvis</text>
+        <!-- Panel hints -->
+        <rect x="10" y="130" width="60" height="8" rx="2" fill="#d4af37" opacity="0.15"/>
+        <rect x="75" y="130" width="50" height="8" rx="2" fill="#4ecdc4" opacity="0.15"/>
+        <rect x="130" y="130" width="50" height="8" rx="2" fill="#ff6b6b" opacity="0.15"/>
+      </svg>
+      <div class="card-badge">FULL</div>
+    </div>
+    <div class="card-body">
+      <h2>Full Prayer Cycle</h2>
+      <div class="ar">دَوْرَة الصَّلَاة الكَامِلَة</div>
+      <div class="desc">Multi-view (side + bird's eye + pelvis + zoom), ligament circuits, eye tracking, 9 DB panels. Complete 11-stage rak'ah</div>
+    </div>
+    <div class="card-tags">
+      <span class="tag">4 views</span>
+      <span class="tag">11 stages</span>
+      <span class="tag">ligaments</span>
+      <span class="tag">eye tracking</span>
+      <span class="tag new">colour tint</span>
+      <span class="tag new">sound</span>
+      <span class="tag new">force vectors</span>
+    </div>
+  </a>
+
+</div>
+
+<div class="footer">
+  USLaP Unified Linguistic Lattice  |  Body/Health Division  |  <a href="https://github.com/uslap-protocol/salah_animations">GitHub</a>
+</div>
+
+</body>
+</html>

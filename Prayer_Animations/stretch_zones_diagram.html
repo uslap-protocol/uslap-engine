@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>USLaP | Stretch Zones — Qiyam vs Ruku (3D)</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d1117;color:#e0dcd0;font-family:'Segoe UI',sans-serif;overflow:hidden;height:100vh}
+canvas{display:block;cursor:grab}canvas:active{cursor:grabbing}
+.bis{position:fixed;top:6px;width:100%;text-align:center;color:#d4af3799;font-family:'Traditional Arabic',serif;font-size:0.95em;pointer-events:none;z-index:5}
+.title{position:fixed;top:24px;width:100%;text-align:center;color:#d4af37;font-size:0.85em;font-weight:700;pointer-events:none;z-index:5}
+.sub{position:fixed;top:42px;width:100%;text-align:center;color:#8b949e;font-size:0.7em;pointer-events:none;z-index:5}
+.info{position:fixed;bottom:8px;left:10px;font-size:0.65em;color:#484f58;z-index:10}
+.legend{position:fixed;bottom:8px;right:10px;font-size:0.7em;color:#8b949e;text-align:right;z-index:10;line-height:1.7}
+.ui{position:fixed;top:60px;left:10px;z-index:10;display:flex;flex-direction:column;gap:4px;width:180px}
+.btn{background:#21262d;border:1px solid #30363d;color:#e8e0d0;padding:3px 9px;border-radius:4px;cursor:pointer;font-size:0.72em;text-align:left}
+.btn:hover{background:#30363d}.btn.on{border-color:#d4af37;background:#d4af3722}
+</style>
+</head>
+<body>
+<div class="bis">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+<div class="title">Stretch &amp; Compression Zones — Qiyam vs Ruku</div>
+<div class="sub">Drag to rotate | Scroll to zoom | Concentric arcs = خُطُوط radiating from عَجْب الذَّنَب</div>
+<canvas id="c"></canvas>
+<div class="ui">
+  <button class="btn on" id="bRuku" onclick="toggleRuku()">ↄ Toggle Ruku / Qiyam</button>
+  <button class="btn on" id="bArcs" onclick="sh.arcs=!sh.arcs;this.classList.toggle('on')">◎ خُطُوط Arcs</button>
+  <button class="btn on" id="bArrows" onclick="sh.arrows=!sh.arrows;this.classList.toggle('on')">↗ Stretch Arrows</button>
+  <button class="btn on" id="bBody" onclick="sh.body=!sh.body;this.classList.toggle('on')">👤 Body</button>
+  <button class="btn on" id="bLabels" onclick="sh.labels=!sh.labels;this.classList.toggle('on')">Aⁿ Labels</button>
+  <button class="btn" id="bCompress" onclick="sh.compress=!sh.compress;this.classList.toggle('on')">◈ Compression</button>
+  <div style="height:1px;background:#30363d;margin:2px 0"></div>
+  <button class="btn" onclick="az=Math.PI*0.75;el=0.25;dist=650">↺ 3/4 Back</button>
+  <button class="btn" onclick="az=Math.PI*0.5;el=0.1;dist=650">↺ Side</button>
+  <button class="btn" onclick="az=Math.PI;el=0.15;dist=650">↺ Direct Back</button>
+  <button class="btn" onclick="az=Math.PI*0.6;el=0.8;dist=500">↺ Above</button>
+</div>
+<div class="info">Drag: rotate | Scroll: zoom</div>
+<div class="legend">
+  <div style="color:#e040fb">◎ concentric arcs — خُطُوط from عَجْب الذَّنَب</div>
+  <div style="color:#e040fb">↗ radial stretch arrows (BIAS/radial demand)</div>
+  <div style="color:#ff6b6b">↓ vertical stretch (weft demand)</div>
+  <div style="color:#58a6ff">↕ compression zone (softness demand)</div>
+  <div style="color:#d4af37">● عَجْب الذَّنَب — origin</div>
+</div>
+
+<script>
+const cv=document.getElementById('c'),cx=cv.getContext('2d');
+let W,H;function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight;}resize();onresize=resize;
+let az=Math.PI*0.72,el=0.28,dist=650;
+let drag=false,mx,my,a0,e0;
+cv.onmousedown=e=>{drag=true;mx=e.clientX;my=e.clientY;a0=az;e0=el;};
+onmousemove=e=>{if(!drag)return;az=a0+(e.clientX-mx)*0.005;el=Math.max(-1.2,Math.min(1.2,e0+(e.clientY-my)*0.005));};
+onmouseup=()=>drag=false;
+cv.ontouchstart=e=>{if(e.touches.length!==1)return;drag=true;mx=e.touches[0].clientX;my=e.touches[0].clientY;a0=az;e0=el;};
+ontouchmove=e=>{if(!drag||e.touches.length!==1)return;e.preventDefault();az=a0+(e.touches[0].clientX-mx)*0.005;el=Math.max(-1.2,Math.min(1.2,e0+(e.touches[0].clientY-my)*0.005));};
+ontouchend=()=>drag=false;
+cv.onwheel=e=>{dist=Math.max(200,Math.min(1200,dist+e.deltaY*0.5));e.preventDefault();};
+
+const sh={body:true,arcs:true,arrows:true,labels:true,compress:false};
+let rukuTarget=0,rukuT=0,ruku=false;
+function toggleRuku(){ruku=!ruku;rukuTarget=ruku?1:0;document.getElementById('bRuku').classList.toggle('on',ruku);}
+function sstep(t){t=Math.max(0,Math.min(1,t));return t*t*(3-2*t);}
+
+// 3D helpers
+function rY(p,a){const c=Math.cos(a),s=Math.sin(a);return{x:p.x*c+p.z*s,y:p.y,z:-p.x*s+p.z*c};}
+function rX(p,a){const c=Math.cos(a),s=Math.sin(a);return{x:p.x,y:p.y*c-p.z*s,z:p.y*s+p.z*c};}
+function pr(p){const r=rX(rY(p,az),el);const s=dist/(dist+r.z);return{x:W/2+r.x*s,y:H/2-r.y*s,z:r.z,s};}
+
+// Pose transform: hip flexion
+const HIP_Y=0, BLEND=60;
+function pose(p){
+  if(rukuT<0.001)return p;
+  const dy=p.y-HIP_Y;
+  let blend;
+  if(dy<=-BLEND)blend=0;
+  else if(dy>=BLEND)blend=1;
+  else blend=sstep((dy+BLEND)/(2*BLEND));
+  if(blend<0.001)return p;
+  const a=blend*rukuT*Math.PI/2;
+  const ca=Math.cos(a),sa=Math.sin(a);
+  const yr=p.y-HIP_Y,zr=p.z;
+  return{x:p.x, y:HIP_Y+yr*ca+zr*sa, z:-yr*sa+zr*ca};
+}
+
+// Drawing primitives
+function line3(pts,col,w,alpha){
+  if(pts.length<2)return;
+  const pp=pts.map(p=>pr(pose(p)));
+  cx.save();cx.strokeStyle=col;cx.lineWidth=w;cx.globalAlpha=alpha||1;
+  cx.lineCap='round';cx.lineJoin='round';cx.beginPath();
+  cx.moveTo(pp[0].x,pp[0].y);
+  for(let i=1;i<pp.length;i++)cx.lineTo(pp[i].x,pp[i].y);
+  cx.stroke();cx.restore();
+}
+function dot3(pt,col,r,alpha){
+  const p=pr(pose(pt));cx.save();cx.globalAlpha=alpha||1;cx.fillStyle=col;
+  cx.beginPath();cx.arc(p.x,p.y,r*p.s,0,Math.PI*2);cx.fill();cx.restore();
+}
+function txt3(pt,text,col,sz,align){
+  const p=pr(pose(pt));cx.save();cx.fillStyle=col;cx.font=(sz||10)+'px sans-serif';
+  cx.textAlign=align||'center';cx.fillText(text,p.x,p.y);cx.restore();
+}
+function arrow3(from,to,col,w,alpha){
+  const a=pr(pose(from)),b=pr(pose(to));
+  const dx=b.x-a.x,dy=b.y-a.y,len=Math.sqrt(dx*dx+dy*dy);
+  if(len<2)return;
+  const ux=dx/len,uy=dy/len;
+  cx.save();cx.strokeStyle=col;cx.fillStyle=col;cx.lineWidth=w;cx.globalAlpha=alpha||1;
+  cx.lineCap='round';cx.beginPath();cx.moveTo(a.x,a.y);cx.lineTo(b.x,b.y);cx.stroke();
+  // arrowhead
+  cx.beginPath();
+  cx.moveTo(b.x,b.y);
+  cx.lineTo(b.x-ux*10-uy*4, b.y-uy*10+ux*4);
+  cx.lineTo(b.x-ux*10+uy*4, b.y-uy*10-ux*4);
+  cx.closePath();cx.fill();cx.restore();
+}
+
+// Body: elliptical cross-sections at each height
+function bodyRing(y, rx, rz, col, w, alpha, segs){
+  segs=segs||32;
+  const pts=[];
+  for(let i=0;i<=segs;i++){
+    const a=i/segs*Math.PI*2;
+    pts.push({x:Math.cos(a)*rx, y:y, z:Math.sin(a)*rz});
+  }
+  line3(pts,col,w,alpha);
+}
+
+// Body profile
+const BODY=[
+  {y:260,rx:18,rz:14},  // head top
+  {y:230,rx:20,rz:16},  // head mid
+  {y:200,rx:12,rz:10},  // neck
+  {y:180,rx:36,rz:18},  // shoulders
+  {y:140,rx:32,rz:16},  // chest
+  {y:100,rx:30,rz:15},  // ribs
+  {y:60, rx:26,rz:14},  // waist
+  {y:30, rx:34,rz:18},  // hips
+  {y:10, rx:36,rz:20},  // pelvis widest
+  {y:0,  rx:34,rz:20},  // hip joint level
+  {y:-10,rx:30,rz:18},  // upper buttock
+];
+// Legs (separate)
+const LEG_R=[], LEG_L=[];
+for(let y=-20;y>=-350;y-=15){
+  const t=(-20-y)/330;
+  const r=22-t*12; // taper from thigh to ankle
+  const sep=30+t*5;
+  LEG_R.push({y,rx:r,rz:r*0.85,cx:sep});
+  LEG_L.push({y,rx:r,rz:r*0.85,cx:-sep});
+}
+
+// Coccyx position
+const COCCYX={x:0, y:-5, z:20}; // posterior, at hip level
+
+// ── CONCENTRIC ARCS from coccyx ──
+// Each arc: a semicircle in 3D fanning from coccyx
+// Inner arcs (S5-S3) are small, outer (L1) are large
+const ARC_DATA=[
+  {label:'S5', radius:15,  col:'#e8a84c', alpha:0.5},
+  {label:'S4', radius:25,  col:'#e8a84c', alpha:0.5},
+  {label:'S3', radius:38,  col:'#d4a0e0', alpha:0.55},
+  {label:'S2', radius:52,  col:'#ce93d8', alpha:0.6},
+  {label:'S1', radius:68,  col:'#c080d0', alpha:0.65},
+  {label:'L5', radius:88,  col:'#d050eb', alpha:0.7},
+  {label:'L4', radius:110, col:'#d840f0', alpha:0.7},
+  {label:'L3', radius:135, col:'#e040fb', alpha:0.7},
+  {label:'L2', radius:160, col:'#e040fb', alpha:0.5},
+  {label:'L1', radius:190, col:'#e040fb', alpha:0.4},
+];
+
+function drawArc(arc){
+  // Arc fans from coccyx outward as a 3D semicircle
+  // In qiyam: arcs go upward (spine) and downward (legs) — roughly vertical semicircle
+  // In ruku: same arcs, but the upper part rotates with the torso
+  const pts=[];
+  const segs=40;
+  for(let i=0;i<=segs;i++){
+    const t=i/segs;
+    // Angle from -PI/2 (down legs) through 0 (lateral) to +PI/2 (up spine)
+    // Actually fan from posterior-inferior to posterior-superior via lateral
+    const ang=-Math.PI*0.6 + t*Math.PI*1.2; // ~210° arc
+    const px=Math.sin(ang)*arc.radius; // lateral
+    const py=Math.cos(ang)*arc.radius; // vertical (up=spine, down=legs)
+    const pz=15; // slightly posterior (on the back surface)
+    pts.push({x:COCCYX.x+px, y:COCCYX.y+py, z:COCCYX.z+pz*Math.cos(ang)*0.3});
+  }
+  line3(pts,arc.col,1.8,arc.alpha);
+}
+
+// Stretch arrows from coccyx outward (radial)
+function drawRadialArrows(){
+  const dirs=[
+    {dx:0,  dy:1,  dz:0.1, len:160, col:'#e040fb', w:2.5, a:0.8, lbl:'into torso (horizontal in ruku)'},
+    {dx:0.5,dy:0.7,dz:0.1, len:130, col:'#e040fb', w:2, a:0.7},
+    {dx:-0.5,dy:0.7,dz:0.1,len:130, col:'#e040fb', w:2, a:0.7},
+    {dx:0,  dy:-1, dz:0.05,len:140, col:'#e040fb', w:2.5, a:0.8, lbl:'down legs (vertical in ruku)'},
+    {dx:0.4,dy:-0.8,dz:0.1,len:120, col:'#e040fb', w:2, a:0.6},
+    {dx:-0.4,dy:-0.8,dz:0.1,len:120,col:'#e040fb', w:2, a:0.6},
+    {dx:0.9,dy:0.1,dz:0.1, len:100, col:'#e040fb', w:1.5, a:0.5, lbl:'lateral R'},
+    {dx:-0.9,dy:0.1,dz:0.1,len:100, col:'#e040fb', w:1.5, a:0.5, lbl:'lateral L'},
+  ];
+  for(const d of dirs){
+    const mag=Math.sqrt(d.dx*d.dx+d.dy*d.dy+d.dz*d.dz);
+    const nx=d.dx/mag, ny=d.dy/mag, nz=d.dz/mag;
+    const from={x:COCCYX.x+nx*10, y:COCCYX.y+ny*10, z:COCCYX.z+nz*10};
+    const to={x:COCCYX.x+nx*d.len, y:COCCYX.y+ny*d.len, z:COCCYX.z+nz*d.len};
+    arrow3(from,to,d.col,d.w,d.a);
+  }
+}
+
+// Scapula zone arrows
+function drawScapularArrows(){
+  // Scapulae are on the upper back, lateral to spine at ~T3-T7 level
+  // In ruku they wing outward
+  const scapR={x:30, y:130, z:16};
+  const scapL={x:-30, y:130, z:16};
+  // Wing-out arrows
+  arrow3(scapR, {x:50,y:120,z:25}, '#e040fb', 2, 0.7);
+  arrow3(scapL, {x:-50,y:120,z:25}, '#e040fb', 2, 0.7);
+  // Stretch between them
+  arrow3({x:-20,y:135,z:18}, {x:20,y:135,z:18}, '#e040fb', 2, 0.6);
+  // Scapula outlines
+  const scapPtsR=[], scapPtsL=[];
+  for(let i=0;i<=12;i++){
+    const a=i/12*Math.PI*2;
+    scapPtsR.push({x:scapR.x+Math.cos(a)*14, y:scapR.y+Math.sin(a)*22, z:scapR.z+2});
+    scapPtsL.push({x:scapL.x+Math.cos(a)*14, y:scapL.y+Math.sin(a)*22, z:scapL.z+2});
+  }
+  line3(scapPtsR,'#e040fb',1.5,0.5);
+  line3(scapPtsL,'#e040fb',1.5,0.5);
+}
+
+// Chest/abdomen vertical stretch arrows
+function drawVerticalStretch(){
+  // Chest: gravity sag in ruku
+  for(let x=-15;x<=15;x+=15){
+    const from={x, y:120, z:-14};
+    const to={x, y:80, z:-18};
+    arrow3(from,to,'#ff6b6b',2,0.6);
+  }
+  // Posterior knee stretch
+  arrow3({x:30,y:-150,z:15},{x:30,y:-195,z:15},'#ff6b6b',2,0.6);
+  arrow3({x:-30,y:-150,z:15},{x:-30,y:-195,z:15},'#ff6b6b',2,0.6);
+}
+
+// Compression: anterior hip crease
+function drawCompression(){
+  // Blue arrows compressing into the crease at the front of the hip
+  arrow3({x:15,y:10,z:-20},{x:15,y:-5,z:-18},'#58a6ff',2.5,0.7);
+  arrow3({x:-15,y:10,z:-20},{x:-15,y:-5,z:-18},'#58a6ff',2.5,0.7);
+  arrow3({x:15,y:-20,z:-18},{x:15,y:-5,z:-18},'#58a6ff',2.5,0.7);
+  arrow3({x:-15,y:-20,z:-18},{x:-15,y:-5,z:-18},'#58a6ff',2.5,0.7);
+  // Crease line
+  line3([{x:-25,y:-5,z:-18},{x:25,y:-5,z:-18}],'#58a6ff',2,0.6);
+}
+
+function draw(){
+  rukuT+=(rukuTarget-rukuT)*0.04;
+  if(Math.abs(rukuT-rukuTarget)<0.001)rukuT=rukuTarget;
+
+  cx.clearRect(0,0,W,H);
+  const g=cx.createRadialGradient(W/2,H/2,50,W/2,H/2,500);
+  g.addColorStop(0,'#111820');g.addColorStop(1,'#0a0e14');cx.fillStyle=g;cx.fillRect(0,0,W,H);
+
+  // Floor
+  cx.save();cx.globalAlpha=0.04;cx.strokeStyle='#30363d';cx.lineWidth=0.5;
+  for(let x=-250;x<=250;x+=50){
+    const a=pr(pose({x,y:-355,z:-250})),b=pr(pose({x,y:-355,z:250}));
+    cx.beginPath();cx.moveTo(a.x,a.y);cx.lineTo(b.x,b.y);cx.stroke();
+  }
+  for(let z=-250;z<=250;z+=50){
+    const a=pr(pose({x:-250,y:-355,z})),b=pr(pose({x:250,y:-355,z}));
+    cx.beginPath();cx.moveTo(a.x,a.y);cx.lineTo(b.x,b.y);cx.stroke();
+  }
+  cx.restore();
+
+  // ── BODY ──
+  if(sh.body){
+    // Torso rings
+    for(const b of BODY){
+      bodyRing(b.y, b.rx, b.rz, '#484f58', 1.2, 0.5);
+    }
+    // Vertical body outline (connect rings front and back)
+    const frontPts=BODY.map(b=>({x:0,y:b.y,z:-b.rz}));
+    const backPts=BODY.map(b=>({x:0,y:b.y,z:b.rz}));
+    const leftPts=BODY.map(b=>({x:-b.rx,y:b.y,z:0}));
+    const rightPts=BODY.map(b=>({x:b.rx,y:b.y,z:0}));
+    line3(frontPts,'#484f58',1,0.3);
+    line3(backPts,'#484f58',1,0.3);
+    line3(leftPts,'#484f58',1,0.3);
+    line3(rightPts,'#484f58',1,0.3);
+
+    // Legs
+    for(const leg of [LEG_R, LEG_L]){
+      for(const l of leg){
+        const pts=[];
+        for(let i=0;i<=20;i++){
+          const a=i/20*Math.PI*2;
+          // Legs don't rotate with torso — they stay vertical
+          // So we DON'T use pose() for legs below hip
+          pts.push({x:l.cx+Math.cos(a)*l.rx, y:l.y, z:Math.sin(a)*l.rz});
+        }
+        // Draw directly (no pose transform — legs are below hip)
+        const pp=pts.map(p=>pr(p));
+        cx.save();cx.strokeStyle='#484f58';cx.lineWidth=1;cx.globalAlpha=0.4;
+        cx.beginPath();cx.moveTo(pp[0].x,pp[0].y);
+        for(let i=1;i<pp.length;i++)cx.lineTo(pp[i].x,pp[i].y);
+        cx.stroke();cx.restore();
+      }
+      // Leg outlines
+      const innerPts=leg.map(l=>({x:l.cx-l.rx,y:l.y,z:0}));
+      const outerPts=leg.map(l=>({x:l.cx+l.rx,y:l.y,z:0}));
+      const frontL=leg.map(l=>({x:l.cx,y:l.y,z:-l.rz}));
+      const backL=leg.map(l=>({x:l.cx,y:l.y,z:l.rz}));
+      // These are below hip — draw directly
+      const draw2=function(pts,col,w,a){
+        const pp=pts.map(p=>pr(p));
+        cx.save();cx.strokeStyle=col;cx.lineWidth=w;cx.globalAlpha=a;
+        cx.lineCap='round';cx.beginPath();cx.moveTo(pp[0].x,pp[0].y);
+        for(let i=1;i<pp.length;i++)cx.lineTo(pp[i].x,pp[i].y);
+        cx.stroke();cx.restore();
+      };
+      draw2(innerPts,'#484f58',1,0.3);
+      draw2(outerPts,'#484f58',1,0.3);
+      draw2(frontL,'#484f58',0.8,0.2);
+      draw2(backL,'#484f58',0.8,0.2);
+    }
+    // Feet
+    for(const side of [30,-30]){
+      const fp=pr({x:side,y:-350,z:0});
+      cx.save();cx.fillStyle='#484f58';cx.globalAlpha=0.4;
+      cx.beginPath();cx.ellipse(fp.x,fp.y+3*fp.s,12*fp.s,5*fp.s,0,0,Math.PI*2);cx.fill();cx.restore();
+    }
+    // Arms
+    const armPts=[];
+    for(let t=0;t<=1;t+=0.05){
+      const y=180-t*280; // shoulder to below knee
+      armPts.push({x:38,y,z:0});
+    }
+    line3(armPts,'#484f58',3,0.4);
+    const armPtsL=armPts.map(p=>({x:-p.x,y:p.y,z:p.z}));
+    line3(armPtsL,'#484f58',3,0.4);
+  }
+
+  // ── COCCYX ORIGIN ──
+  dot3(COCCYX,'#d4af37',6,0.9);
+  dot3(COCCYX,'#d4af37',12,0.15);
+
+  // ── CONCENTRIC ARCS ──
+  if(sh.arcs){
+    for(const arc of ARC_DATA){
+      drawArc(arc);
+    }
+  }
+
+  // ── RADIAL STRETCH ARROWS ──
+  if(sh.arrows){
+    drawRadialArrows();
+    drawScapularArrows();
+    drawVerticalStretch();
+  }
+
+  // ── COMPRESSION ──
+  if(sh.compress){
+    drawCompression();
+  }
+
+  // ── LABELS ──
+  if(sh.labels){
+    txt3({x:0,y:-5,z:28},'عَجْب الذَّنَب','#d4af37',12);
+    txt3({x:0,y:-20,z:30},'(origin)','#d4af3799',9);
+
+    // Hip junction label
+    txt3({x:55,y:40,z:30},'#1 HIP JUNCTION','#e040fb',12);
+    txt3({x:55,y:25,z:30},'RADIAL from عَجْب الذَّنَب','#e040fb',9);
+    txt3({x:55,y:12,z:30},'inner arcs: minimal stretch','#8b949e',8);
+    txt3({x:55,y:0,z:30},'outer arcs (L1-L3): MAXIMUM','#e040fb',8);
+
+    // Scapular label
+    txt3({x:50,y:145,z:28},'#2 SCAPULAR','#e040fb',11);
+    txt3({x:50,y:132,z:28},'scapulae wing out','#e040fb',8);
+
+    // Chest
+    txt3({x:0,y:90,z:-25},'#4 chest ↓','#ff6b6b',9);
+
+    // Posterior knee
+    txt3({x:50,y:-175,z:20},'#3 knee ↕','#ff6b6b',9);
+
+    // Arc labels (on the arcs themselves)
+    for(let i=0;i<ARC_DATA.length;i++){
+      const arc=ARC_DATA[i];
+      const labelPt={x:arc.radius*0.75, y:COCCYX.y, z:COCCYX.z+5};
+      txt3(labelPt, arc.label, arc.col, 8);
+    }
+
+    // Pose label
+    const poseLabel=rukuT>0.5?'رُكُوع / RUKU':'قِيَام / QIYAM';
+    cx.save();cx.fillStyle='#d4af37';cx.font='bold 14px sans-serif';cx.textAlign='center';
+    cx.fillText(poseLabel,W/2,H-40);cx.restore();
+  }
+
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>

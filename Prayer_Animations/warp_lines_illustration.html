@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>USLaP | Body Warp Lines — Side Views</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0d1117; color:#e8e0d0; font-family:'Segoe UI',sans-serif; padding:20px; }
+h1 { color:#d4af37; text-align:center; font-size:1.3em; margin-bottom:4px; }
+.bis { text-align:center; color:#d4af3799; font-family:'Traditional Arabic',serif; font-size:1.1em; margin-bottom:16px; }
+.views { display:flex; gap:20px; justify-content:center; flex-wrap:wrap; }
+.view-card { background:#161b22; border:1px solid #30363d; border-radius:10px; padding:16px; }
+.view-card h2 { color:#d4af37; font-size:0.95em; text-align:center; margin-bottom:8px; }
+.view-card h2 span { color:#8b949e; font-size:0.85em; font-weight:400; }
+svg { display:block; margin:0 auto; }
+.legend { margin-top:16px; max-width:900px; margin-left:auto; margin-right:auto; }
+.legend h3 { color:#d4af37; font-size:0.85em; margin-bottom:8px; border-bottom:1px solid #30363d; padding-bottom:4px; }
+.leg-item { display:flex; align-items:center; gap:8px; margin-bottom:4px; font-size:0.8em; }
+.leg-line { width:30px; height:4px; border-radius:2px; flex-shrink:0; }
+.leg-ar { color:#d4af37; font-family:'Traditional Arabic',serif; font-size:1em; }
+</style>
+</head>
+<body>
+
+<div class="bis">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+<h1>Body Warp Lines — Three Views</h1>
+
+<div class="views">
+
+<!-- VIEW 1: OUTER SIDE -->
+<div class="view-card">
+<h2>OUTER SIDE VIEW <span>(lateral)</span></h2>
+<svg width="280" height="680" viewBox="0 0 280 680">
+  <!-- Background body silhouette -->
+  <path d="M140,45 C155,45 165,55 165,70 C165,85 155,95 145,98
+           L155,100 C170,105 175,115 175,130
+           C180,130 195,135 200,140 C210,145 215,150 210,155 C205,158 195,155 185,150
+           L175,145 L175,160
+           C180,175 185,195 185,215 C185,235 183,255 180,275
+           L180,290 C185,295 190,300 190,310
+           L175,310
+           C170,320 165,340 160,360
+           C155,390 155,420 155,450
+           L158,490 L160,530 C162,545 160,555 155,565
+           L160,580 L170,600 L185,620 L185,640 L150,645
+           L148,625 L145,600 L140,580
+           L135,600 L132,625 L130,645
+           L95,640 L95,620 L110,600 L120,580
+           L125,565 C120,555 118,545 120,530
+           L122,490 L125,450
+           C125,420 125,390 120,360
+           C115,340 110,320 105,310
+           L90,310 C90,300 95,295 100,290
+           L100,275 C97,255 95,235 95,215
+           C95,195 100,175 105,160
+           L105,145 L95,150 C85,155 75,158 70,155
+           C65,150 70,145 80,140 C85,135 100,130 105,130
+           C105,115 110,105 125,100
+           L115,98 C125,95 115,85 115,70
+           C115,55 125,45 140,45 Z"
+        fill="#0d1117" stroke="#30363d" stroke-width="1" opacity="0.5"/>
+
+  <!-- DORSAL WARP (back line) — gold, thick -->
+  <text x="55" y="30" fill="#c9a84c" font-size="9" font-weight="700">DORSAL</text>
+  <text x="55" y="40" fill="#c9a84c99" font-size="7">المِحْوَر الظَّهْرِي</text>
+  <!-- occiput down spine -->
+  <path d="M118,65 L115,98 L110,130 L108,160 L107,200 L108,240 L110,275 L112,290 L115,310"
+        fill="none" stroke="#c9a84c" stroke-width="3" opacity="0.9"/>
+  <!-- sacrum/coccyx -->
+  <circle cx="115" cy="310" r="5" fill="#c9a84c" opacity="0.8"/>
+  <text x="75" y="315" fill="#c9a84c" font-size="8">عَجْب الذَّنَب</text>
+  <!-- down back of leg to heel -->
+  <path d="M115,310 L118,330 L125,360 L130,400 L133,440 L135,480 L138,520 L140,560 L142,580 L145,600 L148,625 L148,640"
+        fill="none" stroke="#c9a84c" stroke-width="3" opacity="0.9"/>
+  <circle cx="148" cy="640" r="4" fill="#c9a84c" opacity="0.8"/>
+  <text x="155" y="645" fill="#c9a84c" font-size="8">عَقِب / heel</text>
+
+  <!-- VENTRAL WARP (front line) — cyan -->
+  <text x="175" y="30" fill="#4ecdc4" font-size="9" font-weight="700">VENTRAL</text>
+  <text x="175" y="40" fill="#4ecdc499" font-size="7">الخَطّ البَطْنِي</text>
+  <!-- chin down front -->
+  <path d="M155,90 L160,100 L165,120 L170,150 L175,200 L178,240 L180,275 L180,290"
+        fill="none" stroke="#4ecdc4" stroke-width="2.5" opacity="0.8"/>
+  <!-- wraps around pelvis from coccyx -->
+  <path d="M115,310 C120,320 140,330 160,325 C175,320 182,310 180,290"
+        fill="none" stroke="#4ecdc4" stroke-width="2" opacity="0.5" stroke-dasharray="4,3"/>
+  <text x="165" y="340" fill="#4ecdc4" font-size="7" opacity="0.7">wraps from coccyx</text>
+  <!-- down front of leg -->
+  <path d="M160,325 L158,360 L155,400 L153,440 L150,480 L148,520 L145,555 L140,580 L135,600 L132,625 L130,640"
+        fill="none" stroke="#4ecdc4" stroke-width="2.5" opacity="0.8"/>
+  <circle cx="130" cy="640" r="3" fill="#4ecdc4" opacity="0.8"/>
+  <text x="90" y="648" fill="#4ecdc4" font-size="7">toes</text>
+
+  <!-- LATERAL LINE — yellow -->
+  <text x="200" y="85" fill="#f9a825" font-size="8" font-weight="700">LATERAL</text>
+  <text x="200" y="95" fill="#f9a82599" font-size="7">خَطّ جانِبِي</text>
+  <path d="M160,70 L175,140 L185,240 L180,310 L165,400 L160,500 L155,570 L155,600"
+        fill="none" stroke="#f9a825" stroke-width="2" opacity="0.6" stroke-dasharray="6,4"/>
+
+  <!-- RIBS connecting dorsal to ventral -->
+  <line x1="110" y1="140" x2="170" y2="145" stroke="#90ee90" stroke-width="1.5" opacity="0.4"/>
+  <line x1="109" y1="155" x2="172" y2="158" stroke="#90ee90" stroke-width="1.5" opacity="0.4"/>
+  <line x1="108" y1="170" x2="174" y2="172" stroke="#90ee90" stroke-width="1.5" opacity="0.4"/>
+  <line x1="107" y1="185" x2="175" y2="186" stroke="#90ee90" stroke-width="1.5" opacity="0.4"/>
+  <line x1="107" y1="200" x2="176" y2="200" stroke="#90ee90" stroke-width="1.5" opacity="0.4"/>
+  <line x1="108" y1="215" x2="177" y2="214" stroke="#90ee90" stroke-width="1.5" opacity="0.4"/>
+  <line x1="108" y1="230" x2="178" y2="228" stroke="#90ee90" stroke-width="1.5" opacity="0.4"/>
+  <line x1="109" y1="245" x2="179" y2="242" stroke="#90ee90" stroke-width="1.5" opacity="0.4"/>
+  <line x1="109" y1="255" x2="179" y2="252" stroke="#90ee90" stroke-width="1.5" opacity="0.4"/>
+  <line x1="110" y1="265" x2="179" y2="262" stroke="#90ee90" stroke-width="1.5" opacity="0.4"/>
+  <line x1="110" y1="273" x2="180" y2="270" stroke="#90ee90" stroke-width="1.5" opacity="0.4"/>
+  <line x1="110" y1="280" x2="180" y2="278" stroke="#90ee90" stroke-width="1.5" opacity="0.4"/>
+  <text x="185" y="210" fill="#90ee90" font-size="7" opacity="0.5">ribs (rungs)</text>
+
+  <!-- Joint markers — negative space -->
+  <circle cx="140" cy="98" r="6" fill="none" stroke="#ffffff33" stroke-width="1.5"/>
+  <circle cx="175" cy="310" r="8" fill="none" stroke="#ffffff33" stroke-width="1.5"/>
+  <text x="195" y="308" fill="#ffffff44" font-size="7">مَفْصِل الوَرِك</text>
+  <circle cx="153" cy="480" r="6" fill="none" stroke="#ffffff33" stroke-width="1.5"/>
+  <text x="170" y="483" fill="#ffffff44" font-size="7">رُكْبَة</text>
+  <circle cx="148" cy="575" r="5" fill="none" stroke="#ffffff33" stroke-width="1.5"/>
+  <text x="165" y="578" fill="#ffffff44" font-size="7">كَاحِل</text>
+
+  <!-- Floor -->
+  <line x1="80" y1="650" x2="200" y2="650" stroke="#30363d" stroke-width="2"/>
+</svg>
+</div>
+
+<!-- VIEW 2: INNER SIDE OF LEG -->
+<div class="view-card">
+<h2>INNER LEG VIEW <span>(medial — between the legs)</span></h2>
+<svg width="280" height="680" viewBox="0 0 280 680">
+  <!-- Simplified body silhouette - inner view -->
+  <path d="M140,45 C155,45 165,55 165,70 C165,85 155,95 145,98
+           L155,100 C165,105 170,115 170,130
+           L170,160 L172,200 L174,240 L176,275 L178,290 L176,310
+           L170,325
+           L168,360 L165,400 L162,440 L160,480 L158,520 L155,560
+           L152,580 L148,600 L145,625 L145,640 L150,660
+           L120,660 L120,640 L118,625 L115,600 L112,580
+           L108,560 L105,520 L102,480 L100,440 L98,400 L96,360
+           L94,325
+           L88,310 L86,290 L88,275 L90,240 L92,200 L94,160
+           L94,130 C94,115 99,105 109,100
+           L115,98 C125,95 115,85 115,70
+           C115,55 125,45 140,45 Z"
+        fill="#0d1117" stroke="#30363d" stroke-width="1" opacity="0.5"/>
+
+  <!-- ════════════════════════════════════════════════ -->
+  <!-- WRAPPING WARP LINES — each vertebra sends a    -->
+  <!-- line OUT, AROUND the body, and back to MEET     -->
+  <!-- the stable conductor. All run PARALLEL.         -->
+  <!-- ════════════════════════════════════════════════ -->
+
+  <!-- Vertebra origin dots on spine (back of body, left side of this view) -->
+  <text x="20" y="225" fill="#e040fb" font-size="8" font-weight="700">L1</text>
+  <text x="20" y="240" fill="#e040fb" font-size="8" font-weight="700">L2</text>
+  <text x="20" y="255" fill="#e040fb" font-size="8" font-weight="700">L3</text>
+  <text x="20" y="270" fill="#e040fb" font-size="8" font-weight="700">L4</text>
+  <text x="20" y="285" fill="#e040fb" font-size="8" font-weight="700">L5</text>
+  <circle cx="108" cy="222" r="2.5" fill="#e040fb" opacity="0.7"/>
+  <circle cx="107" cy="237" r="2.5" fill="#e040fb" opacity="0.7"/>
+  <circle cx="106" cy="252" r="2.5" fill="#e040fb" opacity="0.8"/>
+  <circle cx="104" cy="267" r="2.5" fill="#e040fb" opacity="0.8"/>
+  <circle cx="102" cy="282" r="2.5" fill="#e040fb" opacity="0.7"/>
+
+  <!-- S1 origin (SI joint → iliac wing) -->
+  <text x="20" y="300" fill="#ce93d8" font-size="8" font-weight="700">S1</text>
+  <circle cx="95" cy="297" r="3" fill="#ce93d8" opacity="0.8"/>
+
+  <!-- Each line: starts at vertebra → goes RIGHT (forward/around body) →  -->
+  <!-- curves around the pelvis bowl (off-screen right = front of body) → -->
+  <!-- comes back from the RIGHT → converges onto the gold axle below     -->
+
+  <!-- L1 wraps widest arc (highest origin, longest wrap) -->
+  <path d="M108,222 C135,225 190,240 210,270 C230,300 220,340 190,365 C160,385 120,390 98,395"
+        fill="none" stroke="#e040fb" stroke-width="1.5" opacity="0.45"/>
+  <!-- L2 -->
+  <path d="M107,237 C133,240 185,253 205,280 C222,305 215,342 185,370 C158,392 122,398 99,402"
+        fill="none" stroke="#e040fb" stroke-width="1.5" opacity="0.5"/>
+  <!-- L3 -->
+  <path d="M106,252 C130,255 180,266 200,292 C216,314 210,348 182,378 C156,400 124,406 100,410"
+        fill="none" stroke="#e040fb" stroke-width="2" opacity="0.7"/>
+  <!-- L4 -->
+  <path d="M104,267 C128,270 175,280 195,305 C212,326 206,356 178,385 C154,408 126,414 101,417"
+        fill="none" stroke="#e040fb" stroke-width="2" opacity="0.7"/>
+  <!-- L5 -->
+  <path d="M102,282 C125,285 170,294 190,318 C208,338 202,365 175,392 C152,414 128,420 102,424"
+        fill="none" stroke="#e040fb" stroke-width="1.5" opacity="0.5"/>
+  <!-- S1 (iliacus from iliac wing — same wrapping pattern) -->
+  <path d="M95,297 C120,300 165,310 185,332 C204,352 198,375 172,400 C150,420 130,426 103,430"
+        fill="none" stroke="#ce93d8" stroke-width="1.5" opacity="0.5"/>
+
+  <!-- Labels -->
+  <text x="200" y="260" fill="#e040fb" font-size="7" opacity="0.6">each vertebra</text>
+  <text x="200" y="270" fill="#e040fb" font-size="7" opacity="0.6">sends line OUT →</text>
+  <text x="200" y="280" fill="#e040fb" font-size="7" opacity="0.6">AROUND the body →</text>
+  <text x="200" y="290" fill="#e040fb" font-size="7" opacity="0.6">back to the AXLE</text>
+  <text x="200" y="305" fill="#e040fb99" font-size="6">all run PARALLEL</text>
+  <text x="200" y="315" fill="#e040fb99" font-size="6">like warp threads</text>
+
+  <!-- Arrow showing the wrap direction -->
+  <path d="M215,295 C235,310 240,340 230,360" fill="none" stroke="#e040fb44" stroke-width="1" marker-end="url(#arrowPurple)"/>
+  <text x="235" y="340" fill="#e040fb44" font-size="6">→ front</text>
+  <text x="235" y="350" fill="#e040fb44" font-size="6">→ back to axle</text>
+
+  <!-- CONVERGENCE ZONE — where all wrapping lines meet the stable conductor -->
+  <rect x="88" y="392" width="24" height="42" rx="5" fill="#e040fb08" stroke="#e040fb44" stroke-width="1"/>
+  <rect x="92" y="395" width="16" height="36" rx="3" fill="#c9a84c11" stroke="#c9a84c44" stroke-width="1"/>
+  <text x="118" y="405" fill="#e040fb" font-size="8" font-weight="700">ALL MEET</text>
+  <text x="118" y="417" fill="#c9a84c" font-size="7" font-weight="700">المِحْوَر الظَّهْرِي</text>
+  <text x="118" y="429" fill="#c9a84c99" font-size="7">on the فَخِذ / femur</text>
+  <text x="118" y="441" fill="#8b949e" font-size="6">6 parallel wraps</text>
+  <text x="118" y="451" fill="#8b949e" font-size="6">converge onto axle</text>
+
+  <!-- SACRUM / COCCYX -->
+  <circle cx="90" cy="310" r="6" fill="#c9a84c" opacity="0.8"/>
+  <text x="40" y="305" fill="#c9a84c" font-size="8" font-weight="700">عَجْب الذَّنَب</text>
+  <text x="55" y="318" fill="#c9a84c99" font-size="7">coccyx</text>
+
+  <!-- STABLE CONDUCTOR — thick gold line straight down -->
+  <path d="M118,65 L115,98 L110,130 L108,160 L107,200 L108,240 L100,275 L92,290 L90,310"
+        fill="none" stroke="#c9a84c" stroke-width="3.5" opacity="0.9"/>
+  <!-- Straight down from coccyx to heel — THE AXLE -->
+  <path d="M90,310 L95,340 L98,370 L100,400 L102,440 L103,480 L105,520 L108,560 L112,580 L115,600 L118,625 L120,640"
+        fill="none" stroke="#c9a84c" stroke-width="4" opacity="1"/>
+
+  <!-- Glow effect on stable conductor below coccyx -->
+  <path d="M90,310 L95,340 L98,370 L100,400 L102,440 L103,480 L105,520 L108,560 L112,580 L115,600 L118,625 L120,640"
+        fill="none" stroke="#c9a84c" stroke-width="10" opacity="0.15"/>
+
+  <text x="30" y="425" fill="#c9a84c" font-size="9" font-weight="700" transform="rotate(-85,30,425)">المِحْوَر الظَّهْرِي — STABLE CONDUCTOR</text>
+
+  <!-- Heel -->
+  <circle cx="120" cy="640" r="5" fill="#c9a84c" opacity="0.9"/>
+  <text x="130" y="645" fill="#c9a84c" font-size="8" font-weight="700">عَقِب</text>
+  <text x="130" y="656" fill="#c9a84c99" font-size="7">heel</text>
+
+  <!-- Femoral nerve alongside psoas — also converges toward axle -->
+  <path d="M95,265 C108,280 118,300 110,325 C105,340 100,355 98,370 L100,410 L102,450"
+        fill="none" stroke="#00e5ff" stroke-width="1.5" opacity="0.4" stroke-dasharray="3,3"/>
+  <text x="115" y="430" fill="#00e5ff" font-size="7" opacity="0.5">femoral nerve</text>
+  <text x="115" y="440" fill="#00e5ff" font-size="7" opacity="0.5">(L2-L3-L4)</text>
+
+  <!-- Hip joint marker — ON the stable conductor -->
+  <circle cx="95" cy="340" r="10" fill="none" stroke="#ffffff33" stroke-width="1.5"/>
+  <text x="110" y="340" fill="#ffffff44" font-size="7">مَفْصِل الوَرِك</text>
+
+  <!-- Knee marker -->
+  <circle cx="108" cy="500" r="7" fill="none" stroke="#ffffff33" stroke-width="1.5"/>
+  <text x="30" y="503" fill="#ffffff44" font-size="7">رُكْبَة</text>
+
+  <!-- Ankle marker -->
+  <circle cx="112" cy="590" r="5" fill="none" stroke="#ffffff33" stroke-width="1.5"/>
+  <text x="30" y="593" fill="#ffffff44" font-size="7">كَاحِل</text>
+
+  <!-- Floor -->
+  <line x1="70" y1="660" x2="200" y2="660" stroke="#30363d" stroke-width="2"/>
+
+  <!-- Annotation arrow showing psoas meets stable conductor at femur -->
+  <path d="M158,355 C145,365 120,375 105,390"
+        fill="none" stroke="#ffffff44" stroke-width="1" stroke-dasharray="2,2"/>
+  <text x="115" y="385" fill="#ffffff55" font-size="6">psoas meets axle</text>
+  <text x="115" y="393" fill="#ffffff55" font-size="6">at فَخِذ / femur</text>
+</svg>
+</div>
+
+<!-- VIEW 3: CROSS-SECTION at mid-thigh -->
+<div class="view-card">
+<h2>CROSS-SECTION <span>(mid-thigh, looking down)</span></h2>
+<svg width="280" height="340" viewBox="0 0 280 340">
+  <!-- Thigh cross section -->
+  <ellipse cx="140" cy="150" rx="80" ry="70" fill="#0d1117" stroke="#30363d" stroke-width="1.5"/>
+
+  <!-- Femur bone in center-back -->
+  <circle cx="140" cy="130" r="14" fill="#161b22" stroke="#e8e0d0" stroke-width="2" opacity="0.6"/>
+  <text x="132" y="134" fill="#e8e0d0" font-size="8" opacity="0.6">فَخِذ</text>
+
+  <!-- STABLE CONDUCTOR — dead center back -->
+  <circle cx="140" cy="85" r="6" fill="#c9a84c" opacity="0.9"/>
+  <text x="148" y="82" fill="#c9a84c" font-size="8" font-weight="700">المِحْوَر</text>
+  <text x="148" y="93" fill="#c9a84c" font-size="8" font-weight="700">الظَّهْرِي</text>
+  <line x1="140" y1="85" x2="140" y2="78" stroke="#c9a84c" stroke-width="3" opacity="0.8"/>
+  <circle cx="140" cy="75" r="2" fill="#c9a84c"/>
+
+  <!-- Nearest neighbours — straight down, don't wrap -->
+  <circle cx="125" cy="88" r="4" fill="#c9a84c" opacity="0.6"/>
+  <circle cx="155" cy="88" r="4" fill="#c9a84c" opacity="0.6"/>
+  <text x="95" y="78" fill="#c9a84c99" font-size="6">nearest neighbours</text>
+  <text x="95" y="86" fill="#c9a84c99" font-size="6">(straight ↓ don't wrap)</text>
+
+  <!-- Hamstrings — posterior, near conductor -->
+  <circle cx="110" cy="95" r="3.5" fill="#c9a84c" opacity="0.5"/>
+  <circle cx="170" cy="95" r="3.5" fill="#c9a84c" opacity="0.5"/>
+
+  <!-- Lines progressively wrapping around -->
+  <!-- Lateral -->
+  <circle cx="218" cy="145" r="4" fill="#f9a825" opacity="0.7"/>
+  <text x="225" y="148" fill="#f9a825" font-size="7">BA019</text>
+  <text x="225" y="158" fill="#f9a82599" font-size="6">lateral</text>
+
+  <circle cx="62" cy="145" r="4" fill="#f9a825" opacity="0.7"/>
+  <text x="25" y="148" fill="#f9a825" font-size="7">lateral</text>
+
+  <!-- Anterior (ventral) — arrived from behind, maximum wrap -->
+  <circle cx="140" cy="218" r="5" fill="#4ecdc4" opacity="0.8"/>
+  <text x="148" y="222" fill="#4ecdc4" font-size="8" font-weight="700">VENTRAL</text>
+  <text x="148" y="233" fill="#4ecdc499" font-size="6">arrived from behind</text>
+  <text x="148" y="243" fill="#4ecdc499" font-size="6">(maximum wrap)</text>
+
+  <!-- Psoas / lesser trochanter — inner anterior -->
+  <circle cx="105" cy="200" r="4" fill="#e040fb" opacity="0.8"/>
+  <text x="40" y="203" fill="#e040fb" font-size="7">psoas</text>
+  <text x="40" y="213" fill="#e040fb99" font-size="6">(from L3-L4)</text>
+
+  <!-- Wrap direction arrows -->
+  <path d="M125,88 C95,95 68,120 62,145" fill="none" stroke="#c9a84c44" stroke-width="1" marker-end="url(#arr)"/>
+  <path d="M62,145 C58,170 70,200 105,200" fill="none" stroke="#e040fb44" stroke-width="1"/>
+  <path d="M105,200 C120,210 130,218 140,218" fill="none" stroke="#4ecdc444" stroke-width="1"/>
+
+  <path d="M155,88 C185,95 212,120 218,145" fill="none" stroke="#c9a84c44" stroke-width="1"/>
+  <path d="M218,145 C222,170 210,200 175,200" fill="none" stroke="#4ecdc444" stroke-width="1"/>
+  <path d="M175,200 C160,210 150,218 140,218" fill="none" stroke="#4ecdc444" stroke-width="1"/>
+
+  <!-- Direction labels -->
+  <text x="115" y="55" fill="#8b949e" font-size="9">BACK (posterior)</text>
+  <text x="108" y="265" fill="#8b949e" font-size="9">FRONT (anterior)</text>
+  <text x="5" y="145" fill="#8b949e" font-size="8" transform="rotate(-90,10,145)">INNER (medial)</text>
+  <text x="270" y="145" fill="#8b949e" font-size="8" transform="rotate(90,265,145)">OUTER (lateral)</text>
+
+  <!-- Legend -->
+  <text x="20" y="290" fill="#c9a84c" font-size="8">● Gold = straight ↓ (nearest to axle)</text>
+  <text x="20" y="305" fill="#f9a825" font-size="8">● Yellow = lateral (wraps to side)</text>
+  <text x="20" y="320" fill="#e040fb" font-size="8">● Purple = psoas (L3-L4, wraps inner)</text>
+  <text x="20" y="335" fill="#4ecdc4" font-size="8">● Cyan = ventral (maximum wrap, front)</text>
+</svg>
+</div>
+
+</div>
+
+<div class="legend">
+<h3>WARP LINE KEY — ATT Format</h3>
+<div class="leg-item"><div class="leg-line" style="background:#c9a84c"></div><span class="leg-ar">المِحْوَر الظَّهْرِي</span> / al-miḥwar al-ẓahrī / STABLE CONDUCTOR (BA013) — coccyx → straight down → heel</div>
+<div class="leg-item"><div class="leg-line" style="background:#4ecdc4"></div><span class="leg-ar">الخَطّ البَطْنِي السُّفْلِي</span> / al-khaṭṭ al-baṭnī al-suflī / VENTRAL LOWER (BA016-017) — wraps from coccyx around pelvis → front of leg → toes</div>
+<div class="leg-item"><div class="leg-line" style="background:#f9a825"></div><span class="leg-ar">خَطّ جانِبِي</span> / khaṭṭ jānibī / LATERAL LINE (BA019) — mastoid → lateral rib → lateral knee → lateral ankle</div>
+<div class="leg-item"><div class="leg-line" style="background:#e040fb"></div> Psoas from L3-L4 — wraps forward through pelvis → meets stable conductor at فَخِذ / fakhidh / femur → merges with iliacus (from S1)</div>
+<div class="leg-item"><div class="leg-line" style="background:#90ee90"></div> Ribs / أَضْلَاع / aḍlāʿ — horizontal rungs connecting dorsal rail to ventral rail (thorax only)</div>
+<div class="leg-item"><div class="leg-line" style="background:#ffffff33"></div> Negative space — مَفْصِل / mafṣil / joints — where warp rotates to allow movement</div>
+</div>
+
+</body>
+</html>

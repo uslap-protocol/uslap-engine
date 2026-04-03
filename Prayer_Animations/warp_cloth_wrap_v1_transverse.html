@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>USLaP | Cloth Wrap — Seam on المِحْوَر الظَّهْرِي</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d1117;color:#e8e0d0;font-family:'Segoe UI',sans-serif;overflow:hidden;height:100vh}
+canvas{display:block;cursor:grab}canvas:active{cursor:grabbing}
+.bis{position:fixed;top:6px;width:100%;text-align:center;color:#d4af3799;font-family:'Traditional Arabic',serif;font-size:0.95em;pointer-events:none;z-index:5}
+.title{position:fixed;top:24px;width:100%;text-align:center;color:#d4af37;font-size:0.85em;font-weight:700;pointer-events:none;z-index:5}
+.sub{position:fixed;top:42px;width:100%;text-align:center;color:#8b949e;font-size:0.7em;pointer-events:none;z-index:5}
+.ui{position:fixed;top:65px;left:10px;z-index:10;display:flex;flex-direction:column;gap:5px;width:240px}
+.btn{background:#21262d;border:1px solid #30363d;color:#e8e0d0;padding:3px 9px;border-radius:4px;cursor:pointer;font-size:0.72em;text-align:left}
+.btn:hover{background:#30363d}.btn.on{border-color:#d4af37;background:#d4af3722}
+.info{position:fixed;bottom:8px;left:10px;font-size:0.65em;color:#484f58;z-index:10}
+.legend{position:fixed;bottom:8px;right:10px;font-size:0.68em;color:#8b949e;text-align:right;z-index:10;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="bis">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+<div class="title">Cloth Wrap — Seam on المِحْوَر الظَّهْرِي</div>
+<div class="sub">Body in رُكُوع | One continuous soft form | Seam = stable conductor</div>
+<canvas id="c"></canvas>
+<div class="ui">
+  <button class="btn on" id="bBody" onclick="t('body')">👤 Body contour</button>
+  <button class="btn on" id="bWarp" onclick="t('warp')">│ Warps ALL</button>
+  <div id="warpList" style="display:flex;flex-wrap:wrap;gap:2px;max-width:240px"></div>
+  <button class="btn on" id="bSeam" onclick="t('seam')">✂ Seam (المِحْوَر)</button>
+  <button class="btn on" id="bMeet" onclick="t('meet')">● Meeting points</button>
+  <button class="btn" id="bLabel" onclick="t('label')">Aⁿ Labels</button>
+  <button class="btn" id="bXsec" onclick="t('xsec')">◎ Cross-section</button>
+  <div style="height:1px;background:#30363d;margin:2px 0"></div>
+  <button class="btn" onclick="az=Math.PI;el=0.15;dist=700">↺ Back</button>
+  <button class="btn" onclick="az=0;el=0.15;dist=700">↺ Front</button>
+  <button class="btn" onclick="az=Math.PI/2;el=0.15;dist=700">↺ Side</button>
+  <button class="btn" onclick="az=Math.PI;el=1.2;dist=550">↺ Top</button>
+  <div style="height:1px;background:#30363d;margin:2px 0"></div>
+  <button class="btn" id="bRuku" onclick="toggleRuku()">ↄ Ruku pose</button>
+</div>
+<div class="info">Drag: rotate | Scroll: zoom</div>
+<div class="legend">
+  <div style="color:#c9a84c">━ المِحْوَر الظَّهْرِي — THE SEAM</div>
+  <div style="color:#e040fb">│ warp ribbons (vertebra → seam)</div>
+  <div style="color:#ff6b6b">● meeting points along seam</div>
+</div>
+
+<script>
+const cv=document.getElementById('c'),cx=cv.getContext('2d');
+let W,H;function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight;}resize();onresize=resize;
+let az=Math.PI*0.8,el=0.3,dist=700;
+let drag=false,mx,my,a0,e0;
+cv.onmousedown=e=>{drag=true;mx=e.clientX;my=e.clientY;a0=az;e0=el;};
+onmousemove=e=>{if(!drag)return;az=a0+(e.clientX-mx)*0.005;el=Math.max(-1.2,Math.min(1.2,e0+(e.clientY-my)*0.005));};
+onmouseup=()=>drag=false;
+cv.ontouchstart=e=>{if(e.touches.length!==1)return;drag=true;mx=e.touches[0].clientX;my=e.touches[0].clientY;a0=az;e0=el;};
+ontouchmove=e=>{if(!drag||e.touches.length!==1)return;e.preventDefault();az=a0+(e.touches[0].clientX-mx)*0.005;el=Math.max(-1.2,Math.min(1.2,e0+(e.touches[0].clientY-my)*0.005));};
+ontouchend=()=>drag=false;
+cv.onwheel=e=>{dist=Math.max(150,Math.min(1000,dist+e.deltaY*0.4));e.preventDefault();};
+const sh={body:true,warp:true,seam:true,meet:true,label:false,xsec:false};
+// Per-vertebra visibility (all ON by default)
+const warpOn=new Array(11).fill(true);
+function t(k){sh[k]=!sh[k];const el2=document.getElementById('b'+k.charAt(0).toUpperCase()+k.slice(1));if(el2)el2.classList.toggle('on');}
+function tw(i){warpOn[i]=!warpOn[i];const el2=document.getElementById('bW'+i);if(el2)el2.classList.toggle('on');}
+function allWarps(on){for(let i=0;i<11;i++){warpOn[i]=on;const el2=document.getElementById('bW'+i);if(el2)el2.classList.toggle('on',on);}}
+function rY(p,a){const c=Math.cos(a),s=Math.sin(a);return{x:p.x*c+p.z*s,y:p.y,z:-p.x*s+p.z*c};}
+function rX(p,a){const c=Math.cos(a),s=Math.sin(a);return{x:p.x,y:p.y*c-p.z*s,z:p.y*s+p.z*c};}
+function pr(p){const tp=poseT(p);const r=rX(rY(tp,az),el);const s=dist/(dist+r.z);return{x:W/2+r.x*s,y:H/2-r.y*s,z:r.z,s};}
+function line3(pts,col,w,a){if(pts.length<2)return;const pp=pts.map(p=>pr(p));cx.save();cx.strokeStyle=col;cx.lineWidth=w;cx.globalAlpha=a;cx.lineCap='round';cx.lineJoin='round';cx.beginPath();cx.moveTo(pp[0].x,pp[0].y);for(let i=1;i<pp.length;i++)cx.lineTo(pp[i].x,pp[i].y);cx.stroke();cx.restore();}
+function dot3(pt,col,r,a){const p=pr(pt);cx.save();cx.globalAlpha=a;cx.fillStyle=col;cx.beginPath();cx.arc(p.x,p.y,r*p.s,0,Math.PI*2);cx.fill();cx.restore();}
+function txt3(pt,text,col,sz){const p=pr(pt);cx.save();cx.fillStyle=col;cx.font=sz+'px sans-serif';cx.textAlign='center';cx.fillText(text,p.x,p.y-8);cx.restore();}
+function fill3(pts,col,a){if(pts.length<3)return;const pp=pts.map(p=>pr(p));cx.save();cx.fillStyle=col;cx.globalAlpha=a;cx.beginPath();cx.moveTo(pp[0].x,pp[0].y);for(let i=1;i<pp.length;i++)cx.lineTo(pp[i].x,pp[i].y);cx.closePath();cx.fill();cx.restore();}
+
+// Two-sided ribbon: outer face = outerCol, inner face (against skin) = innerCol
+// Determines facing per-segment using body surface normal vs camera direction.
+function ribbon2s(pts,outerCol,innerCol,w,a){
+  if(pts.length<2)return;
+  // Batch segments by color to reduce draw calls
+  let curCol=null, batch=[];
+  for(let i=0;i<pts.length;i++){
+    const p=pts[i];
+    // Surface normal: direction from lobe center to this point
+    const prof=profAt(p.y);
+    const hs=prof.sep/2;
+    const lobeCx=(p.x>=0)?hs:-hs; // which lobe
+    const nx=p.x-lobeCx, nz=p.z;
+    // Rotate normal by camera
+    const rn=rX(rY({x:nx,y:0,z:nz},az),el);
+    // z<0 means normal faces viewer → outer
+    const col=rn.z<0?outerCol:innerCol;
+    const pp=pr(p);
+    if(col!==curCol && batch.length>0){
+      // flush previous batch
+      cx.save();cx.strokeStyle=curCol;cx.lineWidth=w;cx.globalAlpha=a;cx.lineCap='round';cx.lineJoin='round';
+      cx.beginPath();cx.moveTo(batch[0].x,batch[0].y);
+      for(let j=1;j<batch.length;j++)cx.lineTo(batch[j].x,batch[j].y);
+      cx.stroke();cx.restore();
+      batch=[batch[batch.length-1]]; // keep last point for continuity
+    }
+    if(col!==curCol) curCol=col;
+    batch.push(pp);
+  }
+  // flush final batch
+  if(batch.length>1){
+    cx.save();cx.strokeStyle=curCol;cx.lineWidth=w;cx.globalAlpha=a;cx.lineCap='round';cx.lineJoin='round';
+    cx.beginPath();cx.moveTo(batch[0].x,batch[0].y);
+    for(let j=1;j<batch.length;j++)cx.lineTo(batch[j].x,batch[j].y);
+    cx.stroke();cx.restore();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// UNIFIED BI-LOBE BODY — ONE shape that pinches and splits
+// NO side parameter above crotch. Living body, not cadaver.
+//
+// Cross-section at each height is defined by TWO circles:
+//   R-lobe center at (+sep, 0) with radius r
+//   L-lobe center at (-sep, 0) with radius r
+//
+// Above crotch: sep=0 or sep<r → circles overlap → ONE merged form
+// At crotch: sep≈r → figure-8 pinch
+// Below crotch: sep>r → two separate circles
+//
+// The merged boundary is traced using implicit-surface (metaball) math:
+//   f(x,z) = r²/(dx_R²+dz²) + r²/(dx_L²+dz²)
+//   surface where f = 1 (when sep=0 this is a single circle of radius r√2)
+// ═══════════════════════════════════════════════════════════
+
+const WAIST_Y=200, HEEL_Y=-285;
+const SACRUM_Y=160, COCCYX_Y=140;
+const CROTCH_Y=135;
+const HIP_PIVOT_Y=165; // hip crease level for ruku indicator
+
+// ── RUKU MODE ──
+// Planes are SHAPE ONLY — never transformed.
+// Ruku is shown as a schematic overlay drawn separately from the ring geometry.
+let ruku=false;
+function poseT(p){ return p; } // identity — no geometry transformation
+function toggleRuku(){
+  ruku=!ruku;
+  const btn=document.getElementById('bRuku');
+  btn.classList.toggle('on',ruku);
+  document.querySelector('.sub').textContent=
+    ruku ? 'رُكُوع | Legs vertical = unchanged | Warp ribbons ⊥ floor'
+         : 'Body in رُكُوع | One continuous soft form | Seam = stable conductor';
+  if(ruku){az=Math.PI*0.52;el=0.18;dist=820;}
+  else    {az=Math.PI*0.8; el=0.3; dist=700;}
+}
+
+// Draw the ruku schematic: a horizontal spine extending posteriorly from hip crease,
+// plus a floor-reference line. Drawn independently from the ring geometry.
+function drawRukuOverlay(){
+  if(!ruku) return;
+  // Hip crease dots — where the bend happens
+  const hipR = legPt(Math.PI*0.05, HIP_PIVOT_Y,'R'); // slightly anterior to seam
+  const hipL = legPt(Math.PI*0.05, HIP_PIVOT_Y,'L');
+
+  // Horizontal "spine" — extends from the hip crease posteriorly then up (ruku back)
+  // Arc from hip crease upward and backward in ~90° curve
+  const arcPts=[];
+  for(let i=0;i<=20;i++){
+    const t=i/20; // 0=hip crease, 1=top of ruku back
+    const a=t*(Math.PI/2); // 0→90°
+    arcPts.push({
+      x:0,
+      y: HIP_PIVOT_Y + 70*Math.sin(a),    // rises to y≈HIP_PIVOT+70
+      z: legPt(0,HIP_PIVOT_Y,'R').z + 70*(1-Math.cos(a))  // moves posteriorly
+    });
+  }
+  line3(arcPts,'#d4af37',2.5,0.55);   // spine arc — golden
+
+  // Arrow at the top of the spine arc indicating "back faces ceiling"
+  const tip = arcPts[arcPts.length-1];
+  dot3(tip,'#d4af37',5,0.7);
+
+  // Floor reference line
+  const floorY = HEEL_Y - 20;
+  const fl1={x:-160, y:floorY, z:0}, fl2={x:160, y:floorY, z:0};
+  line3([fl1,fl2],'#30363d',1.5,0.5);
+
+  // Vertical direction arrows on warp ribbons (a few)
+  for(let y=50;y>=-200;y-=80){
+    const base=legPt(0,y,'R');
+    const tip2={x:base.x,y:base.y-25,z:base.z};
+    line3([base,tip2],'#e040fb',1.5,0.4);
+    // arrowhead
+    const a2={x:base.x-6,y:base.y-14,z:base.z};
+    const a3={x:base.x+6,y:base.y-14,z:base.z};
+    line3([a2,tip2,a3],'#e040fb',1.5,0.4);
+  }
+}
+
+// ── BODY PROFILE TABLE ──
+// Each row: y, radius (of each lobe), separation (center-to-center),
+//           depthScale (front-to-back squash, 1.0=circle)
+// sep=0 means lobes fully merged. sep > 2*r means fully separated.
+const PROFILE = [
+  {y:200, r:80,  sep:0,   dz:0.85},  // waist — one oval
+  {y:195, r:84,  sep:0,   dz:0.88},
+  {y:188, r:92,  sep:0,   dz:0.90},  // hip flare
+  {y:180, r:100, sep:8,   dz:0.92},  // iliac crest — hint of lobes
+  {y:172, r:104, sep:16,  dz:0.95},  // trochanter — widest
+  {y:165, r:100, sep:24,  dz:0.93},  // greater trochanter
+  {y:158, r:96,  sep:36,  dz:0.90},  // sacrum level — lobes emerging
+  {y:150, r:90,  sep:52,  dz:0.88},  // buttock
+  {y:142, r:84,  sep:68,  dz:0.85},  // coccyx — peanut shape
+  {y:135, r:76,  sep:84,  dz:0.82},  // crotch — figure-8 pinch
+  {y:128, r:70,  sep:104, dz:0.80},  // legs separating
+  {y:118, r:66,  sep:116, dz:0.78},  // upper thigh
+  {y:105, r:62,  sep:120, dz:0.76},
+  {y:90,  r:58,  sep:120, dz:0.74},  // mid thigh
+  {y:70,  r:54,  sep:120, dz:0.72},
+  {y:50,  r:50,  sep:120, dz:0.70},
+  {y:30,  r:48,  sep:120, dz:0.68},  // above knee
+  {y:10,  r:46,  sep:120, dz:0.66},
+  {y:0,   r:46,  sep:120, dz:0.65},  // knee
+  {y:-15, r:42,  sep:120, dz:0.64},
+  {y:-35, r:44,  sep:116, dz:0.66},  // calf bulge
+  {y:-60, r:40,  sep:112, dz:0.64},
+  {y:-90, r:34,  sep:108, dz:0.62},  // mid shin
+  {y:-120,r:28,  sep:100, dz:0.60},
+  {y:-160,r:24,  sep:92,  dz:0.58},
+  {y:-200,r:22,  sep:84,  dz:0.56},
+  {y:-240,r:20,  sep:76,  dz:0.54},  // ankle
+  {y:-270,r:18,  sep:72,  dz:0.52},
+  {y:-285,r:16,  sep:68,  dz:0.50},  // heel
+];
+
+// Interpolate profile at any Y
+function profAt(y){
+  if(y>=PROFILE[0].y) return {...PROFILE[0]};
+  if(y<=PROFILE[PROFILE.length-1].y) return {...PROFILE[PROFILE.length-1]};
+  for(let i=0;i<PROFILE.length-1;i++){
+    if(y<=PROFILE[i].y && y>=PROFILE[i+1].y){
+      const t=(PROFILE[i].y-y)/(PROFILE[i].y-PROFILE[i+1].y);
+      const a=PROFILE[i], b=PROFILE[i+1];
+      return {
+        y:y,
+        r:a.r+(b.r-a.r)*t,
+        sep:a.sep+(b.sep-a.sep)*t,
+        dz:a.dz+(b.dz-a.dz)*t,
+      };
+    }
+  }
+  return {...PROFILE[0]};
+}
+
+// ── UNIFIED BODY SURFACE ──
+// Traces the outer boundary of two merged circles (metaball).
+// angle: 0=back-center, PI=front-center (continuous around the whole form)
+// Returns a 3D point on the body surface at height y.
+// When lobes are merged (sep < r), this is one continuous oval.
+// When lobes are separated (sep > 2*r), this traces two separate circles
+// connected by the angle convention: 0..PI = right half, PI..2PI = left half.
+function bodyPt(angle, y){
+  const p = profAt(y);
+  const halfSep = p.sep / 2;
+  const r = p.r;
+
+  // Normalize angle to [0, 2PI)
+  let a = ((angle % (Math.PI*2)) + Math.PI*2) % (Math.PI*2);
+
+  // Determine if lobes are merged or separate
+  const merged = halfSep < r * 0.95; // lobes overlap
+
+  let x, z;
+
+  if(merged){
+    // ── METABALL BOUNDARY ──
+    // Two circles at (±halfSep, 0) with radius r.
+    // We trace the outer envelope using angle-based sampling.
+    // At each angle, find the point on the combined boundary.
+    //
+    // Simple approach: for each angle, compute the farthest point
+    // that is on either circle's boundary, taking the maximum radius.
+    const cosA = Math.cos(a);
+    const sinA = Math.sin(a);
+
+    // Direction vector from origin
+    // For the right lobe (center at +halfSep, 0):
+    //   point on circle: (halfSep + r*cos(t), r*sin(t)*dz)
+    // For the left lobe (center at -halfSep, 0):
+    //   point on circle: (-halfSep + r*cos(t), r*sin(t)*dz)
+    //
+    // We want the outermost point in direction (sinA, cosA) from origin.
+    // Project: for right lobe, max projection = halfSep*sinA + r
+    //          for left lobe, max projection = -halfSep*sinA + r
+    //
+    // Better approach: trace using smooth blend.
+    // Use the "sum of radii" implicit surface approach:
+    // At angle a, cast a ray from origin. Find where it hits the boundary.
+
+    // Even simpler and visually correct: parametric soft-union.
+    // Right lobe center shifted by halfSep along x.
+    // At the back (a=0) and front (a=PI), the merged shape has
+    // depth = r*dz (the lobe radius in z).
+    // At the sides (a=PI/2, 3PI/2), width = halfSep + r.
+
+    // Use superellipse blend for smooth union:
+    // The outline is an egg/peanut shape parameterized by angle.
+    // Width at angle a: we trace both lobes and take the outermost.
+
+    // Compute point on right lobe boundary closest to direction a
+    const rxR = halfSep + r * sinA;
+    const rzR = r * p.dz * cosA;
+    const distR = Math.sqrt(rxR*rxR + rzR*rzR);
+
+    // Compute point on left lobe boundary closest to direction a
+    const rxL = -halfSep + r * sinA;
+    const rzL = r * p.dz * cosA;
+    const distL = Math.sqrt(rxL*rxL + rzL*rzL);
+
+    // Pick the lobe that gives the outermost point in this direction
+    if(distR >= distL){
+      x = rxR; z = rzR;
+    } else {
+      x = rxL; z = rzL;
+    }
+
+    // But this creates a hard switch. Smooth it with soft-max:
+    const k = 8; // blending sharpness
+    const wR = Math.exp(k * distR);
+    const wL = Math.exp(k * distL);
+    const wSum = wR + wL;
+    x = (rxR * wR + rxL * wL) / wSum;
+    z = (rzR * wR + rzL * wL) / wSum;
+
+  } else {
+    // ── SEPARATED LOBES ──
+    // Right half: angle 0..PI traces the right leg
+    // Left half: angle PI..2PI traces the left leg
+    let lobeAngle, lobeCx;
+    if(a <= Math.PI){
+      // Right leg
+      lobeAngle = a; // 0=back of right leg, PI=front
+      lobeCx = halfSep;
+    } else {
+      // Left leg
+      lobeAngle = (2*Math.PI - a); // mirror: 0=back of left leg, PI=front
+      lobeCx = -halfSep;
+    }
+    x = lobeCx + r * Math.sin(lobeAngle);
+    z = r * p.dz * Math.cos(lobeAngle);
+  }
+
+  return {x: x, y: y, z: z};
+}
+
+// ── CONVENIENCE: point on a specific leg's surface ──
+// side='R' or 'L', lobeAngle: 0=back(seam), PI=front of that leg
+// This is what warp ribbons and seam use — they know which leg they're on.
+function legPt(lobeAngle, y, side){
+  const p = profAt(y);
+  const halfSep = p.sep / 2;
+  const cx2 = (side==='R' ? 1 : -1) * halfSep;
+  return {
+    x: cx2 + p.r * Math.sin(lobeAngle),
+    y: y,
+    z: p.r * p.dz * Math.cos(lobeAngle)
+  };
+}
+
+// ═══ WARPS ═══
+// Anatomical order: L1 (highest, near waist) → Co (lowest, tailbone)
+// Each entry: {label, y, col}
+const VERT = [
+  {label:'L1',      y:198, col:'#e040fb'},  // waist level
+  {label:'L2',      y:193, col:'#e040fb'},
+  {label:'L3',      y:188, col:'#e040fb'},
+  {label:'L4',      y:183, col:'#d840f0'},
+  {label:'L5',      y:178, col:'#d050eb'},
+  {label:'S1',      y:170, col:'#c080d0'},  // sacrum begins — wider gap
+  {label:'S2',      y:165, col:'#ce93d8'},
+  {label:'S3',      y:160, col:'#d4a0e0'},  // SACRUM_Y
+  {label:'S4',      y:155, col:'#e8a84c'},
+  {label:'S5',      y:150, col:'#e8a84c'},
+  {label:'Co/عَجْب', y:142, col:'#c9a84c'},  // coccyx — tailbone
+];
+const WARPS=VERT.length;
+const WARP_LABELS=VERT.map(v=>v.label);
+const WARP_COLS=VERT.map(v=>v.col);
+
+// Build per-vertebra toggle buttons
+(function(){
+  const list=document.getElementById('warpList');
+  if(!list)return;
+  VERT.forEach((v,i)=>{
+    const b=document.createElement('button');
+    b.className='btn on';
+    b.id='bW'+i;
+    b.style.cssText='padding:2px 5px;font-size:0.62em;color:'+v.col;
+    b.textContent=v.label;
+    b.onclick=()=>tw(i);
+    list.appendChild(b);
+  });
+})();
+
+// Each warp meets the seam at a DIFFERENT height on the leg
+// L1 (w=0, highest origin) wraps furthest → meets lowest on seam
+// Co (w=10, lowest origin) wraps least → meets near its origin
+// L1 (w=0) wraps most → meets lowest. Co (w=10) wraps least → meets near origin.
+function meetY(idx){ return 110 - (WARPS-1-idx)*(110-HEEL_Y)/(WARPS-1); }
+
+// Catmull-Rom smooth
+function smooth(pts,segs){
+  if(pts.length<3) return pts;
+  const out=[];
+  for(let i=0;i<pts.length-1;i++){
+    const p0=pts[Math.max(0,i-1)],p1=pts[i],p2=pts[i+1],p3=pts[Math.min(pts.length-1,i+2)];
+    for(let s=0;s<segs;s++){
+      const t=s/segs,t2=t*t,t3=t2*t;
+      out.push({
+        x:0.5*((-p0.x+3*p1.x-3*p2.x+p3.x)*t3+(2*p0.x-5*p1.x+4*p2.x-p3.x)*t2+(-p0.x+p2.x)*t+2*p1.x),
+        y:0.5*((-p0.y+3*p1.y-3*p2.y+p3.y)*t3+(2*p0.y-5*p1.y+4*p2.y-p3.y)*t2+(-p0.y+p2.y)*t+2*p1.y),
+        z:0.5*((-p0.z+3*p1.z-3*p2.z+p3.z)*t3+(2*p0.z-5*p1.z+4*p2.z-p3.z)*t2+(-p0.z+p2.z)*t+2*p1.z),
+      });
+    }
+  }
+  out.push(pts[pts.length-1]);
+  return out;
+}
+
+// Build one warp ribbon: vertebra → fan → wrap on body surface → end at seam
+// dir mirrors the wrap direction: R wraps rightward (lateral), L wraps leftward (lateral)
+function buildRibbon(w, side){
+  // All ribbons wrap at least PI (180° = to the front). L1 wraps most (324°).
+  const minWrap=Math.PI, maxWrap=Math.PI*1.8;
+  const wrapAngle = minWrap + ((WARPS-1-w)/(WARPS-1)) * (maxWrap - minWrap);
+  const dir = side==='R' ? 1 : -1;             // R: +angle (rightward), L: −angle (leftward)
+  const my = meetY(w);
+
+  const key=[];
+
+  // 1. Origin: vertebra on posterior midline (spine) — from VERT table
+  const originY = VERT[w].y;
+  const origProf = profAt(originY);
+  key.push({x:0, y:originY, z: origProf.r * origProf.dz + 2});
+
+  // 2. Fan: leave spine, go lateral along pelvis surface
+  const fanSteps = 4;
+  for(let f=1; f<=fanSteps; f++){
+    const t = f/fanSteps;
+    const fanAngle = dir * t * Math.min(wrapAngle, Math.PI*0.25);
+    const fanY = originY - t*12;
+    key.push(legPt(fanAngle, fanY, side));
+  }
+
+  // 3. Wrap: follow body surface, increasing angle, descending toward meeting point
+  const wrapSteps = 14;
+  const fanEndY = originY - 12;
+  for(let ws=1; ws<=wrapSteps; ws++){
+    const t = ws/wrapSteps;
+    const curAngle = dir * wrapAngle * (0.2 + t*0.8);
+    const curY = fanEndY - t*(fanEndY - my);
+    key.push(legPt(curAngle, curY, side));
+  }
+
+  // 4. End: arrive at seam (angle=0) at meeting height
+  key.push(legPt(dir * 0.02, my, side));
+  key.push(legPt(0, my, side));
+
+  const meetPt = legPt(0, my, side);
+  return {pts:smooth(key,4), col:WARP_COLS[w], meetPt, originPt:key[0], my};
+}
+
+// ═══ DRAW ═══
+function draw(){
+  cx.clearRect(0,0,W,H);
+  const g=cx.createRadialGradient(W/2,H/2,50,W/2,H/2,500);
+  g.addColorStop(0,'#111820');g.addColorStop(1,'#0a0e14');cx.fillStyle=g;cx.fillRect(0,0,W,H);
+
+  // Floor grid
+  cx.save();cx.globalAlpha=0.05;cx.strokeStyle='#30363d';cx.lineWidth=0.5;
+  for(let x=-200;x<=200;x+=40){const a=pr({x,y:HEEL_Y-15,z:-200}),b=pr({x,y:HEEL_Y-15,z:200});cx.beginPath();cx.moveTo(a.x,a.y);cx.lineTo(b.x,b.y);cx.stroke();}
+  for(let z=-200;z<=200;z+=40){const a=pr({x:-200,y:HEEL_Y-15,z}),b=pr({x:200,y:HEEL_Y-15,z});cx.beginPath();cx.moveTo(a.x,a.y);cx.lineTo(b.x,b.y);cx.stroke();}
+  cx.restore();
+
+  // ── SOLID BODY FILL — band strips between ring pairs, fully opaque ──
+  if(sh.body){
+    const bStep=4;
+    for(let y=WAIST_Y; y>HEEL_Y; y-=bStep){
+      const y2=Math.max(HEEL_Y, y-bStep);
+      for(const sd of ['R','L']){
+        const top=[],bot=[];
+        for(let a=0;a<=Math.PI*2;a+=0.1){
+          top.push(legPt(a,y,sd));
+          bot.push(legPt(a,y2,sd));
+        }
+        fill3([...top,...bot.reverse()],'#2a2535',1.0);
+      }
+    }
+  }
+
+  // ── BODY CONTOUR — wireframe rings on top of solid fill ──
+  if(sh.body){
+    for(let y=WAIST_Y; y>=HEEL_Y; y-=7){
+      for(const sd of ['R','L']){
+        const pts=[];
+        for(let a=0; a<=Math.PI*2; a+=0.1) pts.push(legPt(a, y, sd));
+        line3(pts,'#8b949e',1,0.5);
+      }
+    }
+    // Vertical meridians
+    for(let a=0; a<Math.PI*2; a+=Math.PI/4){
+      for(const sd of ['R','L']){
+        const vpts=[];
+        for(let y=WAIST_Y; y>=HEEL_Y; y-=4) vpts.push(legPt(a, y, sd));
+        line3(vpts,'#8b949e',0.7,0.35);
+      }
+    }
+  }
+
+  // ── SEAM LINE — المِحْوَر الظَّهْرِي running down the back of each leg ──
+  if(sh.seam){
+    for(const sd of ['R','L']){
+      const seamPts=[];
+      for(let y=SACRUM_Y; y>=HEEL_Y; y-=3){
+        seamPts.push(legPt(0, y, sd)); // angle 0 = posterior = seam
+      }
+      line3(seamPts,'#c9a84c',3.5,0.95);
+      line3(seamPts,'#c9a84c',10,0.08); // glow
+    }
+    // Key dots
+    dot3(legPt(0,SACRUM_Y,'R'),'#c9a84c',7,0.7);
+    dot3(legPt(0,COCCYX_Y,'R'),'#c9a84c',5,0.6);
+    dot3(legPt(0,HEEL_Y,'R'),'#c9a84c',5,0.7);
+    dot3(legPt(0,HEEL_Y,'L'),'#c9a84c',5,0.7);
+  }
+
+  // ── WARP RIBBONS ──
+  if(sh.warp){
+    for(const sd of ['R','L']){
+      for(let w=0; w<WARPS; w++){
+        if(!warpOn[w]) continue; // per-vertebra toggle
+        const r=buildRibbon(w, sd);
+        ribbon2s(r.pts, r.col, '#111111', 2, 0.85);
+        dot3(r.originPt, r.col, 4.5, 0.9);
+        dot3(r.meetPt, r.col, 3.5, 0.9);
+      }
+    }
+  }
+
+  // ── TRANSVERSE PLANES — waist down to heel, drawn AFTER warps ──
+  // Two lobe rings at every level — naturally merge at top, separate below.
+  if(sh.body){
+    for(let y=WAIST_Y; y>=HEEL_Y; y-=10){
+      for(const sd of ['R','L']){
+        const pts=[];
+        for(let a=0; a<=Math.PI*2; a+=0.08) pts.push(legPt(a, y, sd));
+        line3(pts,'#6e7681',1.5,0.6);
+      }
+    }
+  }
+
+  // ── MEETING POINTS on seam ──
+  if(sh.meet){
+    for(const sd of ['R','L']){
+      for(let w=0; w<WARPS; w++){
+        if(!warpOn[w]) continue;
+        const my_val=meetY(w);
+        dot3(legPt(0, my_val, sd), WARP_COLS[w], 4, 0.85);
+      }
+    }
+  }
+
+  // ── LABELS ──
+  if(sh.label){
+    txt3(bodyPt(0,WAIST_Y),'─ WAISTLINE ─','#8b949e',9);
+    txt3(legPt(0,SACRUM_Y,'R'),'عَجْب الذَّنَب / sacrum','#c9a84c',9);
+    txt3(legPt(0,HEEL_Y,'R'),'عَقِب R','#c9a84c',8);
+    txt3(legPt(0,HEEL_Y,'L'),'عَقِب L','#c9a84c',8);
+    txt3(legPt(0.3,-80,'R'),'المِحْوَر الظَّهْرِي = SEAM','#c9a84c',8);
+    for(let w=0;w<WARPS;w++){
+      txt3(legPt(0.5,meetY(w),'R'),WARP_LABELS[w],WARP_COLS[w],7);
+    }
+    txt3(legPt(0,-150,'R'),'✂ cut + stitch','#ff6b6b',8);
+  }
+
+  // ── CROSS-SECTION OVERLAY ──
+  if(sh.xsec){
+    // Draw a horizontal slice at crotch to show the pinch
+    const sliceY = CROTCH_Y;
+    const pts=[];
+    const p = profAt(sliceY);
+    const merged = (p.sep/2) < p.r * 0.95;
+    if(merged){
+      for(let a=0;a<=Math.PI*2;a+=0.05) pts.push(bodyPt(a,sliceY));
+    } else {
+      for(const sd of ['R','L']){
+        for(let a=0;a<=Math.PI*2;a+=0.05) pts.push(legPt(a,sliceY,sd));
+      }
+    }
+    line3(pts,'#ff6b6b',2.5,0.6);
+  }
+
+  // ── RUKU OVERLAY — schematic only, no plane transformation ──
+  drawRukuOverlay();
+
+  requestAnimationFrame(draw);
+}
+requestAnimationFrame(draw);
+</script>
+</body>
+</html>

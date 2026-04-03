@@ -1,0 +1,54 @@
+newmtl terr_posterior
+Kd 0.30 0.30 0.80
+
+newmtl terr_S2
+Kd 0.30 0.30 0.80
+
+newmtl terr_S1
+Kd 0.90 0.45 0.55
+
+newmtl terr_L5
+Kd 0.90 0.85 0.20
+
+newmtl terr_L4
+Kd 0.85 0.80 0.15
+
+newmtl terr_L3
+Kd 0.85 0.35 0.35
+
+newmtl terr_L2
+Kd 0.45 0.70 0.90
+
+newmtl terr_L1
+Kd 0.55 0.78 0.95
+
+newmtl terr_anterior
+Kd 0.55 0.85 0.55
+
+newmtl line_S2
+Kd 0.20 0.20 0.70
+
+newmtl line_S1
+Kd 0.80 0.35 0.45
+
+newmtl line_L5
+Kd 0.00 0.90 0.00
+
+newmtl line_L4
+Kd 0.85 0.80 0.10
+
+newmtl line_L3
+Kd 0.75 0.25 0.25
+
+newmtl line_L2
+Kd 0.35 0.60 0.80
+
+newmtl line_L1
+Kd 0.45 0.68 0.85
+
+newmtl line_seam
+Kd 0.90 0.10 0.10
+
+newmtl line_warp
+Kd 0.00 1.00 0.00
+

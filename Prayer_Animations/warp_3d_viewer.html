@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>USLaP | 3D Warp Line Viewer</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d1117;color:#e8e0d0;font-family:'Segoe UI',sans-serif;overflow:hidden;height:100vh}
+canvas{display:block;cursor:grab}
+canvas:active{cursor:grabbing}
+.ui{position:fixed;top:10px;left:10px;z-index:10;display:flex;flex-direction:column;gap:6px}
+.bis{position:fixed;top:8px;width:100%;text-align:center;color:#d4af3799;font-family:'Traditional Arabic',serif;font-size:1em;pointer-events:none;z-index:5}
+.title{position:fixed;top:28px;width:100%;text-align:center;color:#d4af37;font-size:0.9em;font-weight:700;pointer-events:none;z-index:5}
+.btn{background:#21262d;border:1px solid #30363d;color:#e8e0d0;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:0.75em;text-align:left}
+.btn:hover{background:#30363d}
+.btn.on{border-color:#d4af37;background:#d4af3722}
+.sep{height:1px;background:#30363d;margin:2px 0}
+.info{position:fixed;bottom:10px;left:10px;font-size:0.7em;color:#484f58;z-index:10}
+.legend{position:fixed;bottom:10px;right:10px;font-size:0.72em;color:#8b949e;text-align:right;z-index:10}
+.legend div{margin-bottom:2px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
+</style>
+</head>
+<body>
+<div class="bis">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+<div class="title">3D Warp Lines — المِحْوَر الظَّهْرِي + Wrapping Warps</div>
+<canvas id="c"></canvas>
+
+<div class="ui">
+  <div style="font-size:0.7em;color:#d4af37;font-weight:700;margin-bottom:2px">WARP LINES</div>
+  <button class="btn on" id="tAxle" onclick="tog('axle')">● المِحْوَر الظَّهْرِي — Stable Conductor</button>
+  <button class="btn on" id="tNeighbour" onclick="tog('neighbour')">● Nearest Neighbours (straight ↓)</button>
+  <div class="sep"></div>
+  <button class="btn on" id="tL1" onclick="tog('L1')">● L1 wrap</button>
+  <button class="btn on" id="tL2" onclick="tog('L2')">● L2 wrap</button>
+  <button class="btn on" id="tL3" onclick="tog('L3')">● L3 wrap</button>
+  <button class="btn on" id="tL4" onclick="tog('L4')">● L4 wrap</button>
+  <button class="btn on" id="tL5" onclick="tog('L5')">● L5 wrap</button>
+  <button class="btn on" id="tS1" onclick="tog('S1')">● S1 wrap (iliacus)</button>
+  <div class="sep"></div>
+  <button class="btn on" id="tRibs" onclick="tog('ribs')">● Ribs (thoracic leaves)</button>
+  <button class="btn on" id="tPelvis" onclick="tog('pelvis')">● Pelvis bowl</button>
+  <button class="btn on" id="tSkeleton" onclick="tog('skeleton')">○ Skeleton (reference)</button>
+  <div class="sep"></div>
+  <button class="btn" id="tLabels" onclick="tog('labels')">Aⁿ Labels</button>
+  <button class="btn" onclick="resetCam()">↺ Reset view</button>
+</div>
+
+<div class="info">Drag: rotate | Scroll: zoom | Buttons: toggle layers</div>
+<div class="legend">
+  <div><span class="dot" style="background:#c9a84c"></span>المِحْوَر الظَّهْرِي (axle)</div>
+  <div><span class="dot" style="background:#e8a84c"></span>Nearest neighbours</div>
+  <div><span class="dot" style="background:#e040fb"></span>L1-L5 wrapping warps</div>
+  <div><span class="dot" style="background:#ce93d8"></span>S1 iliacus wrap</div>
+  <div><span class="dot" style="background:#90ee90"></span>Ribs / أَضْلَاع</div>
+  <div><span class="dot" style="background:#30363d"></span>Pelvis bowl</div>
+</div>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+let W, H;
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+resize(); window.onresize = resize;
+
+// Camera
+let camAz = Math.PI * 0.75, camEl = 0.25, camDist = 600;
+let dragging = false, dx0, dy0, az0, el0;
+canvas.onmousedown = e => { dragging=true; dx0=e.clientX; dy0=e.clientY; az0=camAz; el0=camEl; };
+window.onmousemove = e => { if(!dragging)return; camAz=az0+(e.clientX-dx0)*0.005; camEl=Math.max(-1.2,Math.min(1.2,el0+(e.clientY-dy0)*0.005)); };
+window.onmouseup = () => dragging=false;
+canvas.ontouchstart = e => { if(e.touches.length!==1)return; dragging=true; dx0=e.touches[0].clientX; dy0=e.touches[0].clientY; az0=camAz; el0=camEl; };
+window.ontouchmove = e => { if(!dragging||e.touches.length!==1)return; e.preventDefault(); camAz=az0+(e.touches[0].clientX-dx0)*0.005; camEl=Math.max(-1.2,Math.min(1.2,el0+(e.touches[0].clientY-dy0)*0.005)); };
+window.ontouchend = () => dragging=false;
+canvas.onwheel = e => { camDist = Math.max(200, Math.min(1200, camDist + e.deltaY * 0.5)); e.preventDefault(); };
+function resetCam() { camAz=Math.PI*0.75; camEl=0.25; camDist=600; }
+
+// Toggle state
+const show = {axle:true,neighbour:true,L1:true,L2:true,L3:true,L4:true,L5:true,S1:true,ribs:true,pelvis:true,skeleton:true,labels:false};
+function tog(k) { show[k]=!show[k]; document.getElementById('t'+k.charAt(0).toUpperCase()+k.slice(1)).classList.toggle('on'); }
+// Fix button IDs for uppercase keys
+function tog(k) { show[k]=!show[k]; const el=document.getElementById('t'+k); if(el)el.classList.toggle('on'); }
+
+// 3D helpers
+function rotY(p,a){const c=Math.cos(a),s=Math.sin(a);return{x:p.x*c+p.z*s,y:p.y,z:-p.x*s+p.z*c};}
+function rotX(p,a){const c=Math.cos(a),s=Math.sin(a);return{x:p.x,y:p.y*c-p.z*s,z:p.y*s+p.z*c};}
+function proj(p){const r=rotX(rotY(p,camAz),camEl);const sc=camDist/(camDist+r.z);return{x:W/2+r.x*sc,y:H/2-r.y*sc,z:r.z,sc};}
+
+// ═══════════════════════════════════════════
+// BODY GEOMETRY — simplified skeleton points
+// Y = up, X = right, Z = forward (toward viewer)
+// ═══════════════════════════════════════════
+
+// Spine (back, Y-axis)
+const spine = [];
+// Coccyx at Y=0 (origin of everything)
+const COCCYX = {x:0, y:0, z:-15};
+// Sacrum S5→S1
+for(let i=0;i<5;i++) spine.push({x:0, y:i*12+5, z:-14+i*0.5, label:i<4?'S'+(5-i):'S1'});
+// Lumbar L5→L1
+for(let i=0;i<5;i++) spine.push({x:0, y:65+i*18, z:-12+i*1, label:'L'+(5-i)});
+// Thoracic T12→T1
+for(let i=0;i<12;i++) spine.push({x:0, y:155+i*16, z:-8+i*0.5, label:'T'+(12-i)});
+// Cervical C7→C1
+for(let i=0;i<7;i++) spine.push({x:0, y:350+i*10, z:-4+i*1, label:'C'+(7-i)});
+// Head
+const HEAD = {x:0, y:430, z:5};
+
+// Pelvis bowl points
+const pelvisR = [], pelvisL = [];
+for(let a=0;a<Math.PI;a+=0.15){
+  const r=55, y=20+Math.sin(a)*30;
+  pelvisR.push({x:Math.cos(a)*r, y:y, z:Math.sin(a)*r*0.4-15});
+  pelvisL.push({x:-Math.cos(a)*r, y:y, z:Math.sin(a)*r*0.4-15});
+}
+
+// Ribs (12 pairs, from T12 to T1)
+const ribs = [];
+for(let i=0;i<12;i++){
+  const spIdx = 9+i; // T12 is spine index 9
+  const sp = spine[spIdx];
+  const ribLen = 35 + (i<6 ? i*8 : (11-i)*8); // longer in middle
+  const droop = 8 + i*1.5; // ribs droop forward
+  const pts = [];
+  const steps = 12;
+  for(let s=0;s<=steps;s++){
+    const t = s/steps;
+    const angle = t * Math.PI; // 0 to PI = back to front
+    pts.push({
+      x: Math.sin(angle) * ribLen,
+      y: sp.y - t*droop,
+      z: sp.z + Math.cos(angle)*ribLen*0.35 + t*15
+    });
+  }
+  ribs.push({pts, side:'R'});
+  // Mirror for left
+  ribs.push({pts:pts.map(p=>({x:-p.x,y:p.y,z:p.z})), side:'L'});
+}
+
+// Leg bones (simple: hip→knee→ankle→heel→toe)
+const hipR={x:45,y:25,z:0}, hipL={x:-45,y:25,z:0};
+const kneeR={x:42,y:-160,z:5}, kneeL={x:-42,y:-160,z:5};
+const ankleR={x:40,y:-340,z:0}, ankleL={x:-40,y:-340,z:0};
+const heelR={x:40,y:-355,z:-12}, heelL={x:-40,y:-355,z:-12};
+const toeR={x:42,y:-360,z:25}, toeL={x:-42,y:-360,z:25};
+
+// Arm bones
+const shldrR={x:55,y:345,z:0}, shldrL={x:-55,y:345,z:0};
+const elbowR={x:58,y:240,z:0}, elbowL={x:-58,y:240,z:0};
+const wristR={x:55,y:140,z:5}, wristL={x:-55,y:140,z:5};
+
+// ═══════════════════════════════════════════
+// STABLE CONDUCTOR (المِحْوَر الظَّهْرِي)
+// Occiput → spine → coccyx → straight down → heel
+// ═══════════════════════════════════════════
+function getAxleLine(side){
+  const heel = side==='R' ? heelR : heelL;
+  const hip = side==='R' ? hipR : hipL;
+  const knee = side==='R' ? kneeR : kneeL;
+  const ankle = side==='R' ? ankleR : ankleL;
+  // The axle: head → spine → coccyx → ischium → hamstring line → heel
+  const pts = [HEAD];
+  for(let i=spine.length-1;i>=0;i--) pts.push(spine[i]);
+  pts.push(COCCYX);
+  // Ischium (just outside coccyx, toward the hip side)
+  const isch = {x:side==='R'?20:-20, y:-10, z:-18};
+  pts.push(isch);
+  // Straight down the back of leg
+  pts.push({x:side==='R'?38:-38, y:-80, z:-10});
+  pts.push({x:side==='R'?40:-40, y:-160, z:-5});
+  pts.push({x:side==='R'?40:-40, y:-250, z:-5});
+  pts.push({x:side==='R'?40:-40, y:-340, z:-8});
+  pts.push(heel);
+  return pts;
+}
+
+// Nearest neighbours (parallel to axle, on either side of midline posterior)
+function getNeighbourLines(side){
+  const s = side==='R'?1:-1;
+  const lines = [];
+  // Medial hamstring line
+  lines.push([
+    {x:s*12, y:-5, z:-20},
+    {x:s*30, y:-80, z:-8},
+    {x:s*35, y:-160, z:-3},
+    {x:s*36, y:-250, z:-2},
+    {x:s*38, y:-340, z:-5},
+    side==='R'?heelR:heelL
+  ]);
+  // Lateral hamstring line
+  lines.push([
+    {x:s*25, y:-8, z:-16},
+    {x:s*48, y:-80, z:-6},
+    {x:s*50, y:-160, z:0},
+    {x:s*48, y:-250, z:0},
+    {x:s*44, y:-340, z:-3},
+    side==='R'?heelR:heelL
+  ]);
+  return lines;
+}
+
+// ═══════════════════════════════════════════
+// WRAPPING WARPS — L1-L5, S1
+// Each originates at vertebra, wraps AROUND pelvis bowl, meets axle at femur
+// ═══════════════════════════════════════════
+// ═══════════════════════════════════════════
+// LEG WARP DISTRIBUTION — evenly around the leg cylinder
+// The leg surface ÷ number of warps = even parallel spacing
+// ═══════════════════════════════════════════
+const TOTAL_WARPS = 11; // per leg — one per lower-spine vertebral level (Co + S5-S1 + L5-L1)
+// Leg radii at key levels (tapers from thigh to ankle)
+const LEG_R = {hip:35, midThigh:32, knee:22, midShin:18, ankle:12, heel:8};
+// Leg center X offset (leg is offset from midline)
+function legCenter(side){ return side==='R'?40:-40; }
+
+// ═══════════════════════════════════════════
+// Each of the 11 warps meets the stable conductor at a DIFFERENT height
+// Evenly spaced along the axle from hip (Y=25) to heel (Y=-355)
+// After meeting, continues parallel down to foot
+// ═══════════════════════════════════════════
+const MEET_Y_TOP = 10;    // near hip (where S5 meets)
+const MEET_Y_BOT = -340;  // near ankle (where L1 meets)
+
+// Smooth interpolation helper — catmull-rom style
+function smoothPts(keyPts, segments){
+  if(keyPts.length < 2) return keyPts;
+  const out = [];
+  for(let i=0; i<keyPts.length-1; i++){
+    const p0 = keyPts[Math.max(0,i-1)];
+    const p1 = keyPts[i];
+    const p2 = keyPts[i+1];
+    const p3 = keyPts[Math.min(keyPts.length-1,i+2)];
+    for(let s=0; s<segments; s++){
+      const t = s/segments;
+      const t2=t*t, t3=t2*t;
+      out.push({
+        x: 0.5*((-p0.x+3*p1.x-3*p2.x+p3.x)*t3 + (2*p0.x-5*p1.x+4*p2.x-p3.x)*t2 + (-p0.x+p2.x)*t + 2*p1.x),
+        y: 0.5*((-p0.y+3*p1.y-3*p2.y+p3.y)*t3 + (2*p0.y-5*p1.y+4*p2.y-p3.y)*t2 + (-p0.y+p2.y)*t + 2*p1.y),
+        z: 0.5*((-p0.z+3*p1.z-3*p2.z+p3.z)*t3 + (2*p0.z-5*p1.z+4*p2.z-p3.z)*t2 + (-p0.z+p2.z)*t + 2*p1.z),
+      });
+    }
+  }
+  out.push(keyPts[keyPts.length-1]);
+  return out;
+}
+
+function getLegWarps(side){
+  const s = side==='R'?1:-1;
+  const cx = legCenter(side);
+  const warps = [];
+
+  for(let i=0; i<TOTAL_WARPS; i++){
+    // Angular position around the leg — evenly spaced
+    const angle = (i / TOTAL_WARPS) * Math.PI * 2;
+    const normA = ((angle + Math.PI) % (Math.PI*2)) - Math.PI;
+    const origin = getWarpOrigin(normA);
+
+    // WHERE this warp meets the axle — evenly spaced along the conductor
+    // idx 0 (coccyx) meets at top, idx 10 (L1) meets near ankle
+    const meetIdx = origin.idx;
+    const meetY = MEET_Y_TOP - (meetIdx / 10) * (MEET_Y_TOP - MEET_Y_BOT);
+
+    // Radius at meeting height (leg tapers)
+    function radAt(y){
+      if(y > 0) return LEG_R.hip;
+      if(y > -100) return LEG_R.hip + (LEG_R.midThigh-LEG_R.hip)*(-y/100);
+      if(y > -160) return LEG_R.midThigh + (LEG_R.knee-LEG_R.midThigh)*((-y-100)/60);
+      if(y > -300) return LEG_R.knee + (LEG_R.midShin-LEG_R.knee)*((-y-160)/140);
+      if(y > -340) return LEG_R.midShin + (LEG_R.ankle-LEG_R.midShin)*((-y-300)/40);
+      return LEG_R.heel;
+    }
+
+    // Build the leg portion: from meeting point, parallel down to foot
+    const legKeyPts = [];
+    const startY = meetY;
+    const endY = -360;
+    const steps = 10;
+    for(let j=0; j<=steps; j++){
+      const t = j/steps;
+      const y = startY + t*(endY - startY);
+      const r = radAt(y);
+      legKeyPts.push({
+        x: cx + Math.sin(angle) * r * s,
+        y: y,
+        z: Math.cos(angle) * r
+      });
+    }
+    // Smooth the leg portion
+    const legPts = smoothPts(legKeyPts, 3);
+
+    warps.push({legPts, angle, normA, meetY, meetIdx});
+  }
+  return warps;
+}
+
+// ═══════════════════════════════════════════
+// 11 WARPS — exact vertebral assignment per angular position
+// Index 0 = back centre (coccyx/axle), wrapping clockwise to front
+// Surface ÷ 11 = ~33° per warp
+// ═══════════════════════════════════════════
+const WARP_MAP = [
+  // idx, angle°, vertebra,   src key,      colour,      label
+  {idx:0,  vert:'Co',  src:'axle',      col:'#c9a84c', label:'عَجْب الذَّنَب / Coccyx'},
+  {idx:1,  vert:'S5',  src:'neighbour', col:'#e8a84c', label:'S5'},
+  {idx:2,  vert:'S4',  src:'neighbour', col:'#e8a84c', label:'S4'},
+  {idx:3,  vert:'S3',  src:'S1',        col:'#d4a0e0', label:'S3 (piriformis)'},
+  {idx:4,  vert:'S2',  src:'S1',        col:'#ce93d8', label:'S2 (sciatic)'},
+  {idx:5,  vert:'S1',  src:'S1',        col:'#c080d0', label:'S1 (SI joint)'},
+  {idx:6,  vert:'L5',  src:'L5',        col:'#d050eb', label:'L5'},
+  {idx:7,  vert:'L4',  src:'L4',        col:'#d840f0', label:'L4'},
+  {idx:8,  vert:'L3',  src:'L3',        col:'#e040fb', label:'L3'},
+  {idx:9,  vert:'L2',  src:'L2',        col:'#e040fb', label:'L2'},
+  {idx:10, vert:'L1',  src:'L1',        col:'#e040fb', label:'L1 (furthest wrap)'},
+];
+
+function getWarpOrigin(normA){
+  // Map normalised angle to the nearest warp index
+  // 11 warps distributed over the half-circle (0 to PI) — back to front
+  // normA 0 = back centre, normA ±PI = front centre
+  const a = Math.abs(normA);
+  const idx = Math.min(10, Math.round(a / Math.PI * 10));
+  return WARP_MAP[idx];
+}
+
+// Get the SMOOTH wrapping portion: from vertebra → around pelvis → meets axle at meetY
+function getWrapPath(normA, meetPt, meetY, side){
+  const origin = getWarpOrigin(normA);
+  const s = side==='R'?1:-1;
+  const a = Math.abs(normA);
+  const keyPts = [];
+
+  // Axle point at meeting height (where this warp joins the conductor)
+  const cx = legCenter(side);
+  const axlePt = {x:cx, y:meetY, z:-12}; // back of leg, on the axle
+
+  if(origin.src === 'axle'){
+    // Coccyx IS the axle — just a smooth drop
+    keyPts.push(COCCYX);
+    keyPts.push({x:cx*0.3, y:0, z:-13});
+    keyPts.push(axlePt);
+  } else if(origin.src === 'neighbour'){
+    // S4-S5: short smooth arc from sacrum
+    const sacPt = spine.find(sp => sp.label === origin.vert) || {x:0, y:15, z:-15};
+    keyPts.push({x:sacPt.x, y:sacPt.y, z:sacPt.z});
+    keyPts.push({x:s*15, y:sacPt.y*0.5, z:-17});
+    keyPts.push({x:s*25, y:meetY+20, z:-15});
+    keyPts.push(axlePt);
+  } else {
+    // S1-S3, L1-L5: smooth wrap around pelvis bowl
+    const vert = spine.find(sp => sp.label === origin.vert);
+    if(vert){
+      keyPts.push({x:vert.x, y:vert.y, z:vert.z});
+      // Smooth arc: out → lateral → forward → back → axle
+      const wR = 52;
+      const steps = 5;
+      for(let w=1; w<=steps; w++){
+        const t = w/steps;
+        const wAngle = t * a;
+        const r = wR * (1-t*0.2);
+        const yDrop = vert.y - t*(vert.y - meetY);
+        keyPts.push({
+          x: s * Math.sin(wAngle) * r,
+          y: yDrop,
+          z: vert.z + Math.cos(wAngle) * 28 + t*16
+        });
+      }
+      keyPts.push(axlePt);
+    }
+  }
+  keyPts.push(meetPt); // connect to the leg surface at meeting point
+  // Smooth everything
+  const pts = smoothPts(keyPts, 4);
+  return {pts, origin};
+}
+
+// Build ALL leg warp data (cached)
+let _legWarpsR = null, _legWarpsL = null;
+function buildLegWarps(side){
+  const warps = getLegWarps(side);
+  return warps.map(w => {
+    const origin = getWarpOrigin(w.normA);
+    const wrapPath = getWrapPath(w.normA, w.legPts[0], w.meetY, side);
+    return { legPts:w.legPts, wrapPts:wrapPath.pts, origin:wrapPath.origin, angle:w.angle, normA:w.normA, meetY:w.meetY };
+  });
+}
+
+
+// ═══════════════════════════════════════════
+// DRAWING
+// ═══════════════════════════════════════════
+function drawLine3D(pts, color, width, alpha){
+  if(pts.length<2) return;
+  const pp = pts.map(p => proj(p));
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = width;
+  ctx.globalAlpha = alpha;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.beginPath();
+  ctx.moveTo(pp[0].x, pp[0].y);
+  for(let i=1;i<pp.length;i++) ctx.lineTo(pp[i].x, pp[i].y);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawDot3D(pt, color, r, alpha){
+  const p = proj(pt);
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, r*p.sc, 0, Math.PI*2);
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawLabel3D(pt, text, color, size){
+  const p = proj(pt);
+  ctx.save();
+  ctx.fillStyle = color;
+  ctx.font = `${size}px sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillText(text, p.x, p.y - 8);
+  ctx.restore();
+}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  // BG
+  const g = ctx.createRadialGradient(W/2,H/2,50,W/2,H/2,500);
+  g.addColorStop(0,'#111820'); g.addColorStop(1,'#0a0e14');
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+
+  // Grid floor
+  ctx.save(); ctx.globalAlpha=0.08; ctx.strokeStyle='#30363d'; ctx.lineWidth=0.5;
+  const gy=-360;
+  for(let x=-200;x<=200;x+=40){const a=proj({x,y:gy,z:-200}),b=proj({x,y:gy,z:200});ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}
+  for(let z=-200;z<=200;z+=40){const a=proj({x:-200,y:gy,z}),b=proj({x:200,y:gy,z});ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}
+  ctx.restore();
+
+  // ── SKELETON (reference) ──
+  if(show.skeleton){
+    // Spine
+    const spAll = [HEAD, ...spine.slice().reverse(), COCCYX];
+    drawLine3D(spAll, '#e8e0d0', 2, 0.15);
+    // Legs
+    drawLine3D([hipR,kneeR,ankleR,heelR], '#e8e0d0', 2.5, 0.12);
+    drawLine3D([hipL,kneeL,ankleL,heelL], '#e8e0d0', 2.5, 0.12);
+    drawLine3D([ankleR,toeR], '#e8e0d0', 1.5, 0.1);
+    drawLine3D([ankleL,toeL], '#e8e0d0', 1.5, 0.1);
+    // Arms
+    drawLine3D([shldrR,elbowR,wristR], '#e8e0d0', 2, 0.1);
+    drawLine3D([shldrL,elbowL,wristL], '#e8e0d0', 2, 0.1);
+    // Head
+    drawDot3D(HEAD, '#e8e0d0', 12, 0.1);
+    // Joints
+    [hipR,hipL,kneeR,kneeL,ankleR,ankleL,shldrR,shldrL,elbowR,elbowL].forEach(j=>drawDot3D(j,'#e8e0d0',4,0.1));
+  }
+
+  // ── PELVIS BOWL ──
+  if(show.pelvis){
+    drawLine3D(pelvisR, '#8b949e', 1.5, 0.2);
+    drawLine3D(pelvisL, '#8b949e', 1.5, 0.2);
+    // Connect front and back
+    if(pelvisR.length>0 && pelvisL.length>0){
+      drawLine3D([pelvisR[0], pelvisL[0]], '#8b949e', 1, 0.15);
+      drawLine3D([pelvisR[pelvisR.length-1], pelvisL[pelvisL.length-1]], '#8b949e', 1, 0.15);
+    }
+  }
+
+  // ── RIBS ──
+  if(show.ribs){
+    for(const rib of ribs) drawLine3D(rib.pts, '#90ee90', 1.2, 0.25);
+  }
+
+  // ── BUILD LEG WARPS (once, then cached) ──
+  if(!_legWarpsR) _legWarpsR = buildLegWarps('R');
+  if(!_legWarpsL) _legWarpsL = buildLegWarps('L');
+
+  // ── DRAW ALL LEG WARPS — evenly distributed around leg surface ──
+  for(const side of [_legWarpsR, _legWarpsL]){
+    for(const w of side){
+      const src = w.origin.src;
+      const vert = w.origin.vert;
+      // Check toggle visibility
+      let visible = false;
+      if(src==='axle' && show.axle) visible=true;
+      if(src==='neighbour' && show.neighbour) visible=true;
+      if(vert==='S3'||vert==='S2'||vert==='S1') if(show.S1) visible=true;
+      if(vert==='L5') if(show.L5) visible=true;
+      if(vert==='L4') if(show.L4) visible=true;
+      if(vert==='L3') if(show.L3) visible=true;
+      if(vert==='L2') if(show.L2) visible=true;
+      if(vert==='L1') if(show.L1) visible=true;
+      if(!visible) continue;
+
+      const isAxle = src==='axle';
+      const lineW = isAxle ? 3 : 1.8;
+      const lineA = isAxle ? 0.9 : 0.6;
+
+      // Draw the leg portion (parallel lines down the leg)
+      drawLine3D(w.legPts, w.origin.col, lineW, lineA);
+
+      // Draw the wrapping portion (from vertebra to leg surface)
+      if(w.wrapPts.length > 1){
+        drawLine3D(w.wrapPts, w.origin.col, lineW * 0.7, lineA * 0.6);
+      }
+    }
+  }
+
+  // Coccyx glow + heel markers + meeting point dots
+  if(show.axle){
+    drawDot3D(COCCYX, '#c9a84c', 8, 0.6);
+    drawDot3D(heelR, '#c9a84c', 6, 0.7);
+    drawDot3D(heelL, '#c9a84c', 6, 0.7);
+    drawDot3D(HEAD, '#c9a84c', 6, 0.4);
+    // Spine portion of stable conductor (above pelvis)
+    drawLine3D(getAxleLine('R').slice(0,getAxleLine('R').length-6), '#c9a84c', 3, 0.8);
+    // Meeting point dots along the axle — where each warp joins
+    for(const w of (_legWarpsR||[])){
+      const cx = legCenter('R');
+      drawDot3D({x:cx, y:w.meetY, z:-12}, w.origin.col, 3, 0.6);
+    }
+    for(const w of (_legWarpsL||[])){
+      const cx = legCenter('L');
+      drawDot3D({x:cx, y:w.meetY, z:-12}, w.origin.col, 3, 0.6);
+    }
+  }
+
+  // Vertebra origin dots
+  const vertDots = [
+    {key:'L1',col:'#e040fb'},{key:'L2',col:'#e040fb'},{key:'L3',col:'#e040fb'},
+    {key:'L4',col:'#e040fb'},{key:'L5',col:'#e040fb'},{key:'S1',col:'#ce93d8'}
+  ];
+  for(const vd of vertDots){
+    if(!show[vd.key]) continue;
+    const vert = spine.find(s=>s.label===vd.key);
+    if(vert) drawDot3D(vert, vd.col, 3, 0.7);
+  }
+
+  // ── LABELS ──
+  if(show.labels){
+    drawLabel3D(COCCYX, 'عَجْب الذَّنَب / coccyx', '#c9a84c', 10);
+    drawLabel3D(HEAD, 'رَأْس / head', '#c9a84c', 9);
+    drawLabel3D(heelR, 'عَقِب R', '#c9a84c', 8);
+    drawLabel3D(heelL, 'عَقِب L', '#c9a84c', 8);
+    drawLabel3D(hipR, 'مَفْصِل الوَرِك R', '#ffffff88', 7);
+    drawLabel3D(hipL, 'مَفْصِل الوَرِك L', '#ffffff88', 7);
+    drawLabel3D(kneeR, 'رُكْبَة R', '#ffffff66', 7);
+    drawLabel3D(kneeL, 'رُكْبَة L', '#ffffff66', 7);
+    drawLabel3D(ankleR, 'كَاحِل R', '#ffffff66', 7);
+    drawLabel3D(ankleL, 'كَاحِل L', '#ffffff66', 7);
+    // Vertebra labels
+    for(const sp of spine){
+      if(sp.label.startsWith('L') || sp.label==='S1')
+        drawLabel3D({x:sp.x-15,y:sp.y,z:sp.z}, sp.label, '#e040fb88', 7);
+    }
+  }
+
+  requestAnimationFrame(draw);
+}
+
+requestAnimationFrame(draw);
+</script>
+</body>
+</html>

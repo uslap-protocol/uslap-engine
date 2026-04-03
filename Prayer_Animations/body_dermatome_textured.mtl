@@ -1,0 +1,5 @@
+newmtl dermatome_map
+Ka 0.2 0.2 0.2
+Kd 1.0 1.0 1.0
+map_Kd dermatome_atlas.png
+

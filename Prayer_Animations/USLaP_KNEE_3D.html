@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>USLaP | 3D Knee Joint Animation</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #0d1117;
+  color: #e8e0d0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+.header {
+  text-align: center;
+  padding: 14px 20px 10px;
+  background: linear-gradient(180deg, #161b22 0%, #0d1117 100%);
+  border-bottom: 1px solid #d4af3744;
+}
+.header h1 { font-size: 1.3em; color: #d4af37; letter-spacing: 1px; }
+.header .bismillah {
+  font-size: 1.05em; color: #d4af3799;
+  font-family: 'Traditional Arabic', 'Scheherazade', serif; margin-bottom: 2px;
+}
+.header .subtitle { font-size: 0.78em; color: #8b949e; margin-top: 3px; }
+.main-layout {
+  display: flex; max-width: 1400px; margin: 0 auto; padding: 12px; gap: 12px;
+}
+.canvas-col { flex: 1; min-width: 0; }
+.canvas-wrap {
+  position: relative; background: #0a0e14;
+  border: 1px solid #30363d; border-radius: 8px; overflow: hidden;
+}
+canvas#knee3d { display: block; width: 100%; height: auto; cursor: grab; }
+canvas#knee3d:active { cursor: grabbing; }
+.controls {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; background: #161b22;
+  border: 1px solid #30363d; border-radius: 8px; margin-top: 8px;
+}
+.controls button {
+  background: #21262d; color: #e8e0d0; border: 1px solid #30363d;
+  border-radius: 4px; padding: 4px 10px; cursor: pointer; font-size: 0.9em;
+}
+.controls button:hover { background: #30363d; }
+.controls button.active { background: #d4af3744; border-color: #d4af37; }
+.controls input[type=range] { flex: 1; accent-color: #d4af37; }
+.controls .time-label { font-size: 0.75em; color: #8b949e; min-width: 45px; text-align: center; }
+.controls .speed-label { font-size: 0.7em; color: #8b949e; }
+.cam-presets { display: flex; gap: 4px; margin-left: auto; }
+.cam-presets button { font-size: 0.72em; padding: 3px 7px; }
+.cam-presets button.cam-active { background: #d4af3744; border-color: #d4af37; color: #d4af37; }
+.info-col { width: 280px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; }
+.info-panel {
+  background: #161b22; border: 1px solid #30363d; border-radius: 8px;
+  padding: 10px 12px;
+}
+.info-panel h3 {
+  font-size: 0.82em; color: #d4af37; margin-bottom: 6px;
+  border-bottom: 1px solid #d4af3733; padding-bottom: 4px;
+}
+.stage-info .arabic { font-size: 1.4em; color: #d4af37; font-family: 'Traditional Arabic', serif; }
+.stage-info .translit { font-size: 0.9em; color: #e8e0d0; }
+.stage-info .english { font-size: 0.78em; color: #8b949e; }
+.angle-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 3px 0; font-size: 0.8em;
+}
+.angle-label { color: #8b949e; }
+.angle-val { color: #e8e0d0; font-weight: bold; }
+.angle-val.high { color: #ff6b6b; }
+.angle-val.med { color: #f9a825; }
+.angle-val.low { color: #4ecdc4; }
+.sitting-badge {
+  display: inline-block; padding: 3px 8px; border-radius: 4px;
+  font-size: 0.75em; font-weight: bold; margin-top: 4px;
+}
+.sitting-badge.sym { background: #4ecdc422; color: #4ecdc4; border: 1px solid #4ecdc444; }
+.sitting-badge.asym { background: #f9a82522; color: #f9a825; border: 1px solid #f9a82544; }
+.legend-item { display: flex; align-items: center; gap: 6px; padding: 2px 0; font-size: 0.78em; }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.instructions { font-size: 0.72em; color: #8b949e; line-height: 1.4; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+  <h1>3D Knee Joint — مَفْصِل الرُّكْبَة</h1>
+  <div class="subtitle">Interactive 3D Visualization of Knee Flexion During Prayer</div>
+</div>
+
+<div class="main-layout">
+  <div class="canvas-col">
+    <div class="canvas-wrap">
+      <canvas id="knee3d" width="900" height="680"></canvas>
+    </div>
+    <div class="controls">
+      <button id="btnPlay" onclick="togglePlay()">&#9654;</button>
+      <button onclick="stepPrev()">&#9664;&#9664;</button>
+      <button onclick="stepNext()">&#9654;&#9654;</button>
+      <input type="range" id="timeline" min="0" max="41" step="0.1" value="3" oninput="scrub(this.value)">
+      <span class="time-label" id="timeLabel">3.0s</span>
+      <span class="speed-label">Speed:</span>
+      <button onclick="setSpeed(0.25)">¼</button>
+      <button onclick="setSpeed(0.5)">½</button>
+      <button onclick="setSpeed(1)" class="active" id="speed1">1×</button>
+      <div class="cam-presets">
+        <button onclick="setCam('latR')" class="cam-active" id="camLatR">Lat R</button>
+        <button onclick="setCam('latL')" id="camLatL">Lat L</button>
+        <button onclick="setCam('ant')" id="camAnt">Anterior</button>
+        <button onclick="setCam('post')" id="camPost">Posterior</button>
+        <button onclick="setCam('sup')" id="camSup">Superior</button>
+      </div>
+    </div>
+  </div>
+  <div class="info-col">
+    <div class="info-panel stage-info" id="stagePanel">
+      <h3>CURRENT STAGE</h3>
+      <div class="arabic" id="stgAr">قِيَام</div>
+      <div class="translit" id="stgTr">Qiyam</div>
+      <div class="english" id="stgEn">Standing</div>
+    </div>
+    <div class="info-panel" id="anglesPanel">
+      <h3>KNEE ANGLES</h3>
+      <div class="angle-row"><span class="angle-label">L Knee Flexion</span><span class="angle-val" id="angKneeL">2°</span></div>
+      <div class="angle-row"><span class="angle-label">R Knee Flexion</span><span class="angle-val" id="angKneeR">2°</span></div>
+      <div id="sittingBadge"></div>
+    </div>
+    <div class="info-panel">
+      <h3>KNEE LANDMARKS</h3>
+      <div class="legend-item"><span class="legend-dot" style="background:#e8e0d0"></span>Femur shaft (fixed)</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#e8e0d0"></span>Femoral condyles (Med / Lat)</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#f9a825"></span>Patella (kneecap)</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#4ecdc4"></span>Tibial plateau (Med / Lat)</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#4ecdc488"></span>Tibial eminence</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#d4af37"></span>Tibial tuberosity</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#e8e0d088"></span>Fibular head</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#ff6b6b88"></span>Ligaments (MCL, LCL, Patellar)</div>
+      <h3 style="margin-top:8px">REFERENCE FRAME</h3>
+      <div class="legend-item"><span class="legend-dot" style="background:#ffffff30"></span>Origin + plumb line (fixed)</div>
+      <div class="legend-item" style="font-size:0.72em;color:#8b949e;padding-left:14px">┄┄ Dashed ghost = anatomical neutral</div>
+    </div>
+    <div class="info-panel">
+      <h3>CONTROLS</h3>
+      <div class="instructions">
+        <b>Rotate:</b> Click + drag on the 3D view<br>
+        <b>Zoom:</b> Scroll wheel<br>
+        <b>Presets:</b> Lat R, Lat L, Anterior, Posterior, Superior<br>
+        <b>Play:</b> Space bar or ▶ button<br>
+        <b>Step:</b> Arrow keys or ◀◀ / ▶▶ buttons
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CANVAS SETUP
+// ============================================================
+const canvas = document.getElementById('knee3d');
+const ctx = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+
+// ============================================================
+// 3D MATH UTILITIES
+// ============================================================
+function rotX(p, a) {
+  const c = Math.cos(a), s = Math.sin(a);
+  return { x: p.x, y: p.y * c - p.z * s, z: p.y * s + p.z * c };
+}
+function rotY(p, a) {
+  const c = Math.cos(a), s = Math.sin(a);
+  return { x: p.x * c + p.z * s, y: p.y, z: -p.x * s + p.z * c };
+}
+function rotZ(p, a) {
+  const c = Math.cos(a), s = Math.sin(a);
+  return { x: p.x * c - p.y * s, y: p.x * s + p.y * c, z: p.z };
+}
+function addV(a, b) { return { x: a.x+b.x, y: a.y+b.y, z: a.z+b.z }; }
+function subV(a, b) { return { x: a.x-b.x, y: a.y-b.y, z: a.z-b.z }; }
+function scaleV(p, s) { return { x: p.x*s, y: p.y*s, z: p.z*s }; }
+function lerpV(a, b, t) { return { x:a.x+(b.x-a.x)*t, y:a.y+(b.y-a.y)*t, z:a.z+(b.z-a.z)*t }; }
+function cross(a, b) { return { x:a.y*b.z-a.z*b.y, y:a.z*b.x-a.x*b.z, z:a.x*b.y-a.y*b.x }; }
+function norm(v) { const l=Math.sqrt(v.x*v.x+v.y*v.y+v.z*v.z); return l>0?scaleV(v,1/l):v; }
+function deg(r) { return r * Math.PI / 180; }
+
+// Camera — lateral right default
+let camAz = Math.PI / 2;
+let camEl = 0.05;
+let camDist = 350;
+const CAM_NEAR = 100, CAM_FAR = 700;
+
+function project(p3) {
+  let pt = rotY(p3, camAz);
+  pt = rotX(pt, camEl);
+  const fov = 600;
+  const z = pt.z + camDist;
+  const scale = fov / Math.max(z, 1);
+  return { sx: W/2 + pt.x * scale, sy: H/2 - pt.y * scale, z: z, scale: scale };
+}
+
+// ============================================================
+// KNEE MESH — NEUTRAL POSITION (0° flexion, leg straight)
+// ============================================================
+// Origin = knee joint center (intercondylar point)
+// Y = up (toward femur), Z = anterior (toward patella), X = medial/lateral
+// Right knee: X positive = lateral. Left knee: mirror X.
+
+// --- DISTAL FEMUR (FIXED — extends upward from knee center) ---
+const FEMUR_SHAFT_TOP = { x: 0, y: 80, z: 0 };
+const FEMUR_SHAFT_MID = { x: 0, y: 40, z: 0 };
+
+// Femoral condyles (large rounded ends of femur, straddle the knee center)
+// Medial condyle = medial (toward midline), Lateral condyle = lateral
+const CONDYLE_MED = [
+  { x: -16, y:  8,  z: -10 },  // 0: post-sup
+  { x: -18, y: -4,  z: -12 },  // 1: post-inf
+  { x: -18, y: -8,  z:  0 },   // 2: inferior
+  { x: -16, y: -4,  z:  10 },  // 3: ant-inf
+  { x: -14, y:  8,  z:  8 },   // 4: ant-sup
+  { x: -14, y:  12, z:  0 },   // 5: superior
+];
+const CONDYLE_LAT = [
+  { x:  16, y:  8,  z: -10 },  // 0: post-sup
+  { x:  18, y: -4,  z: -12 },  // 1: post-inf
+  { x:  18, y: -8,  z:  0 },   // 2: inferior
+  { x:  16, y: -4,  z:  10 },  // 3: ant-inf
+  { x:  14, y:  8,  z:  8 },   // 4: ant-sup
+  { x:  14, y:  12, z:  0 },   // 5: superior
+];
+
+// Intercondylar notch (groove between condyles posteriorly)
+const NOTCH = [
+  { x: -6, y: 0, z: -10 },
+  { x:  6, y: 0, z: -10 },
+  { x:  6, y: 0, z: -4 },
+  { x: -6, y: 0, z: -4 },
+];
+
+// Patellar groove / trochlea (anterior groove where patella slides)
+const TROCHLEA = [
+  { x: -10, y: 12, z: 10 },
+  { x:   0, y: 10, z: 14 },  // deepest point of groove
+  { x:  10, y: 12, z: 10 },
+  { x:  10, y: -2, z: 12 },
+  { x:   0, y: -4, z: 16 },
+  { x: -10, y: -2, z: 12 },
+];
+
+// Femoral shaft flare (distal femur widens toward condyles)
+const FEMUR_FLARE = [
+  { x: -8,  y: 40, z: -4 },
+  { x:  8,  y: 40, z: -4 },
+  { x:  8,  y: 40, z:  4 },
+  { x: -8,  y: 40, z:  4 },
+  { x: -14, y: 14, z: -6 },
+  { x:  14, y: 14, z: -6 },
+  { x:  14, y: 14, z:  8 },
+  { x: -14, y: 14, z:  8 },
+];
+
+// --- PATELLA (sesamoid bone, anterior to femur) ---
+// In neutral: sits anterior-superior. Moves with flexion.
+const PATELLA_NEUTRAL = {
+  base:  { x: 0, y: 8,  z: 18 },   // superior edge
+  apex:  { x: 0, y: -6, z: 16 },   // inferior tip
+  medR:  { x: -8, y: 2, z: 15 },   // medial ridge
+  latR:  { x:  8, y: 2, z: 15 },   // lateral ridge
+  post:  { x: 0, y: 2,  z: 12 },   // posterior (articulates with trochlea)
+};
+
+// --- PROXIMAL TIBIA (ROTATES with knee flexion) ---
+// In neutral: extends straight down from knee center
+const TIBIA_PLATEAU_MED = { x: -14, y: -12, z: 0 };
+const TIBIA_PLATEAU_LAT = { x:  14, y: -12, z: 0 };
+const TIBIA_EMINENCE_MED = { x: -4, y: -10, z: 0 };
+const TIBIA_EMINENCE_LAT = { x:  4, y: -10, z: 0 };
+const TIBIA_EMINENCE_PEAK = { x: 0, y: -8, z: 0 };
+const TIBIA_TUBEROSITY = { x: 0, y: -20, z: 12 };
+const TIBIA_SHAFT_END = { x: 0, y: -75, z: 0 };
+
+// Tibial cross-section (proximal)
+const TIBIA_PROX = [
+  { x: -14, y: -12, z: -6 },   // post-med
+  { x:  14, y: -12, z: -6 },   // post-lat
+  { x:  16, y: -14, z:  6 },   // ant-lat
+  { x: -14, y: -14, z:  6 },   // ant-med
+];
+
+// --- PROXIMAL FIBULA ---
+const FIBULA_HEAD = { x: 20, y: -14, z: -4 };
+const FIBULA_NECK = { x: 18, y: -22, z: -3 };
+const FIBULA_SHAFT_END = { x: 14, y: -70, z: -2 };
+
+// --- LIGAMENT ATTACHMENT POINTS ---
+const MCL_FEM = { x: -16, y: 4, z: -2 };   // medial epicondyle
+const MCL_TIB = { x: -14, y: -28, z: 0 };  // medial tibia shaft
+const LCL_FEM = { x: 16, y: 4, z: -2 };    // lateral epicondyle
+
+// ============================================================
+// KNEE POSES — Flexion angles per prayer position
+// ============================================================
+const KNEE_POSES = {
+  qiyam:      { L: 2,   R: 2 },
+  ruku:       { L: 5,   R: 5 },
+  goingDown:  { L: 75,  R: 75 },
+  sujud:      { L: 95,  R: 95 },
+  iftirash:   { L: 135, R: 110 },
+  tawarruk:   { L: 145, R: 110 },
+  tasleem_r:  { L: 145, R: 110 },
+  tasleem_l:  { L: 145, R: 110 },
+};
+
+const NEUTRAL_KNEE = { L: 0, R: 0 };
+
+// ============================================================
+// STAGE / TIMELINE (identical to other files)
+// ============================================================
+const STAGE_INFO = {
+  qiyam:       { ar: 'قِيَام',    tr: 'Qiyam',     en: 'Standing' },
+  qiyam_return:{ ar: 'قِيَام',    tr: 'Qiyam',     en: 'Return to Standing' },
+  ruku:        { ar: 'رُكُوع',    tr: 'Ruku',       en: 'Bowing' },
+  trans_sujud: { ar: 'اِنْتِقَال', tr: 'Intiqal',   en: 'Transition' },
+  sujud_1:     { ar: 'سُجُود',    tr: 'Sujud',      en: 'Prostration (1st)' },
+  sujud_2:     { ar: 'سُجُود',    tr: 'Sujud',      en: 'Prostration (2nd)' },
+  juloos_1:    { ar: 'جُلُوس',    tr: 'Juloos',     en: 'Sitting (Iftirash)' },
+  tashahhud:   { ar: 'تَشَهُّد',   tr: 'Tashahhud',  en: 'Testimony (Tawarruk)' },
+  tasleem_r:   { ar: 'تَسْلِيم',   tr: 'Tasleem',    en: 'Peace Greeting (Right)' },
+  tasleem_mid: { ar: 'تَسْلِيم',   tr: 'Tasleem',    en: 'Peace (Center)' },
+  tasleem_l:   { ar: 'تَسْلِيم',   tr: 'Tasleem',    en: 'Peace Greeting (Left)' },
+};
+
+const KEYFRAMES = [
+  { t: 0,    stage: 'qiyam' },
+  { t: 3,    stage: 'qiyam' },
+  { t: 5,    stage: 'ruku' },
+  { t: 8,    stage: 'ruku' },
+  { t: 10,   stage: 'qiyam_return' },
+  { t: 12,   stage: 'qiyam_return' },
+  { t: 13.5, stage: 'trans_sujud' },
+  { t: 15,   stage: 'sujud_1' },
+  { t: 18,   stage: 'sujud_1' },
+  { t: 20,   stage: 'juloos_1' },
+  { t: 23,   stage: 'juloos_1' },
+  { t: 24.5, stage: 'trans_sujud' },
+  { t: 26,   stage: 'sujud_2' },
+  { t: 29,   stage: 'sujud_2' },
+  { t: 31,   stage: 'tashahhud' },
+  { t: 34,   stage: 'tashahhud' },
+  { t: 35.5, stage: 'tasleem_r' },
+  { t: 37,   stage: 'tasleem_r' },
+  { t: 38,   stage: 'tasleem_mid' },
+  { t: 39,   stage: 'tasleem_l' },
+  { t: 41,   stage: 'tasleem_l' },
+];
+const TOTAL_TIME = 41;
+
+function getStage(time) {
+  let stage = 'qiyam';
+  for (const kf of KEYFRAMES) { if (time >= kf.t) stage = kf.stage; }
+  return stage;
+}
+function getPoseKey(stage) {
+  const map = {
+    'qiyam': 'qiyam', 'qiyam_return': 'qiyam', 'ruku': 'ruku',
+    'trans_sujud': 'goingDown', 'sujud_1': 'sujud', 'sujud_2': 'sujud',
+    'juloos_1': 'iftirash', 'tashahhud': 'tawarruk',
+    'tasleem_r': 'tasleem_r', 'tasleem_mid': 'tawarruk', 'tasleem_l': 'tasleem_l',
+  };
+  return map[stage] || 'qiyam';
+}
+
+// ============================================================
+// ANIMATION STATE
+// ============================================================
+let currentTime = 3;
+let isPlaying = false;
+let lastFrameTime = null;
+let speed = 1;
+const LERP = 0.08;
+let currentFlexL = null;
+let currentFlexR = null;
+
+function lerpVal(cur, tgt) {
+  if (cur === null) return tgt;
+  return cur + (tgt - cur) * LERP;
+}
+
+// ============================================================
+// KNEE TRANSFORMATION PIPELINE
+// ============================================================
+function transformKneeMesh(flexAngle, side) {
+  const s = side === 'L' ? -1 : 1;
+  const xOff = side === 'L' ? -70 : 70;
+
+  const flexRad = deg(flexAngle);
+
+  // Mirror + offset helper (for FIXED femoral parts)
+  function mir(pt) { return { x: pt.x * s + xOff, y: pt.y, z: pt.z }; }
+
+  // Rotate around knee center (for tibia parts) — flexion rotates tibia posteriorly
+  // Positive flexAngle = tibia goes backward (posterior)
+  function applyFlex(pt) {
+    // Rotate around X axis: positive flexion moves -Y (down) toward -Z (posterior)
+    let p = rotX(pt, flexRad);
+    return mir(p);
+  }
+
+  // --- FIXED FEMORAL STRUCTURES ---
+  const femurShaftTop = mir(FEMUR_SHAFT_TOP);
+  const femurShaftMid = mir(FEMUR_SHAFT_MID);
+
+  const condyleMed = CONDYLE_MED.map(v => mir(v));
+  const condyleLat = CONDYLE_LAT.map(v => mir(v));
+  const notch = NOTCH.map(v => mir(v));
+  const trochlea = TROCHLEA.map(v => mir(v));
+  const femurFlare = FEMUR_FLARE.map(v => mir(v));
+
+  // Ligament femoral attachments (fixed)
+  const mclFem = mir(MCL_FEM);
+  const lclFem = mir(LCL_FEM);
+
+  // --- PATELLA (tracks with flexion) ---
+  // As knee flexes, patella slides distally and posteriorly along trochlea
+  // Parametric: at 0° patella is anterior-superior, at 90° it's at the condylar ridge
+  const pFrac = Math.min(flexAngle / 140, 1);  // 0-1 across flexion range
+  const patY = 8 - pFrac * 22;        // slides from y=8 down to y=-14
+  const patZ = 18 - pFrac * 12;       // slides from z=18 back to z=6
+  const patScale = 1 - pFrac * 0.15;  // slightly compresses at deep flexion
+  const patella = {
+    base: mir({ x: 0, y: patY + 6*patScale, z: patZ }),
+    apex: mir({ x: 0, y: patY - 8*patScale, z: patZ - 2 }),
+    medR: mir({ x: -8*patScale, y: patY, z: patZ - 2 }),
+    latR: mir({ x:  8*patScale, y: patY, z: patZ - 2 }),
+    post: mir({ x: 0, y: patY, z: patZ - 5 }),
+  };
+
+  // --- TIBIAL STRUCTURES (rotate with flexion) ---
+  const plateauMed = applyFlex(TIBIA_PLATEAU_MED);
+  const plateauLat = applyFlex(TIBIA_PLATEAU_LAT);
+  const eminenceMed = applyFlex(TIBIA_EMINENCE_MED);
+  const eminenceLat = applyFlex(TIBIA_EMINENCE_LAT);
+  const eminencePeak = applyFlex(TIBIA_EMINENCE_PEAK);
+  const tuberosity = applyFlex(TIBIA_TUBEROSITY);
+  const tibShaftEnd = applyFlex(TIBIA_SHAFT_END);
+  const tibProx = TIBIA_PROX.map(v => applyFlex(v));
+
+  // Fibula
+  const fibHead = applyFlex(FIBULA_HEAD);
+  const fibNeck = applyFlex(FIBULA_NECK);
+  const fibShaftEnd = applyFlex(FIBULA_SHAFT_END);
+
+  // Ligament tibial/fibular attachments (rotate)
+  const mclTib = applyFlex(MCL_TIB);
+
+  // Joint center marker
+  const jointCenter = mir({ x: 0, y: 0, z: 0 });
+
+  return {
+    femurShaftTop, femurShaftMid,
+    condyleMed, condyleLat, notch, trochlea, femurFlare,
+    patella,
+    plateauMed, plateauLat,
+    eminenceMed, eminenceLat, eminencePeak,
+    tuberosity, tibShaftEnd, tibProx,
+    fibHead, fibNeck, fibShaftEnd,
+    mclFem, mclTib, lclFem, fibHead,
+    jointCenter,
+    side,
+  };
+}
+
+// ============================================================
+// BUILD RENDER LIST
+// ============================================================
+function buildRenderList(flexL, flexR) {
+  const items = [];
+
+  for (const side of ['L', 'R']) {
+    const flex = side === 'L' ? flexL : flexR;
+    const k = transformKneeMesh(flex, side);
+
+    // ---- FEMUR SHAFT (fixed) ----
+    items.push({ type: 'edge', p0: k.femurShaftTop, p1: k.femurShaftMid, color: '#e8e0d0aa', width: 3.5, z: (k.femurShaftTop.z+k.femurShaftMid.z)/2, layer: 1 });
+    // Cut mark at top
+    items.push({ type: 'dot', pt: k.femurShaftTop, color: '#e8e0d066', radius: 5, z: k.femurShaftTop.z, layer: 2 });
+
+    // Femur flare (shaft widening toward condyles)
+    const flareFaces = [
+      [0,1,5,4], // posterior
+      [2,3,7,6], // anterior
+      [0,3,7,4], // left/medial
+      [1,2,6,5], // right/lateral
+    ];
+    for (const face of flareFaces) {
+      const pts = face.map(i => k.femurFlare[i]);
+      const avgZ = pts.reduce((s,p)=>s+p.z,0)/pts.length;
+      items.push({ type: 'face', pts, color: '#e8e0d0', opacity: 0.08, z: avgZ, layer: 1 });
+    }
+    const flareEdges = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+    for (const [a,b] of flareEdges) {
+      items.push({ type: 'edge', p0: k.femurFlare[a], p1: k.femurFlare[b], color: '#e8e0d044', width: 0.8, z: (k.femurFlare[a].z+k.femurFlare[b].z)/2, layer: 1 });
+    }
+
+    // ---- CONDYLES (fixed) ----
+    for (const [cData, label, cSide] of [[k.condyleMed, 'Med.C', 'med'], [k.condyleLat, 'Lat.C', 'lat']]) {
+      // Condyle outline (closed polygon)
+      for (let i = 0; i < cData.length; i++) {
+        const j = (i + 1) % cData.length;
+        items.push({ type: 'edge', p0: cData[i], p1: cData[j], color: '#e8e0d0aa', width: 1.5, z: (cData[i].z+cData[j].z)/2, layer: 2 });
+      }
+      // Condyle fill
+      const avgZ = cData.reduce((s,p)=>s+p.z,0)/cData.length;
+      items.push({ type: 'face', pts: cData, color: '#e8e0d0', opacity: 0.1, z: avgZ, layer: 1 });
+      // Center dot
+      const cc = { x: cData.reduce((s,p)=>s+p.x,0)/cData.length, y: cData.reduce((s,p)=>s+p.y,0)/cData.length, z: avgZ };
+      items.push({ type: 'dot', pt: cc, color: '#e8e0d0', radius: 3, z: cc.z, layer: 3, label });
+    }
+
+    // Intercondylar notch
+    for (let i = 0; i < k.notch.length; i++) {
+      const j = (i+1) % k.notch.length;
+      items.push({ type: 'edge', p0: k.notch[i], p1: k.notch[j], color: '#e8e0d044', width: 1, z: (k.notch[i].z+k.notch[j].z)/2, layer: 2 });
+    }
+
+    // Trochlea (patellar groove)
+    for (let i = 0; i < k.trochlea.length; i++) {
+      const j = (i+1) % k.trochlea.length;
+      items.push({ type: 'edge', p0: k.trochlea[i], p1: k.trochlea[j], color: '#e8e0d044', width: 0.8, z: (k.trochlea[i].z+k.trochlea[j].z)/2, layer: 2 });
+    }
+
+    // ---- JOINT CENTER ----
+    items.push({ type: 'dot', pt: k.jointCenter, color: '#d4af37', radius: 5, z: k.jointCenter.z, layer: 4, glow: true, label: 'Joint' });
+
+    // ---- PATELLA ----
+    const pat = k.patella;
+    const patPts = [pat.base, pat.latR, pat.apex, pat.medR];
+    const patAvgZ = patPts.reduce((s,p)=>s+p.z,0)/4;
+    items.push({ type: 'face', pts: patPts, color: '#f9a825', opacity: 0.25, z: patAvgZ, layer: 3 });
+    for (let i = 0; i < patPts.length; i++) {
+      const j = (i+1) % patPts.length;
+      items.push({ type: 'edge', p0: patPts[i], p1: patPts[j], color: '#f9a825cc', width: 1.5, z: (patPts[i].z+patPts[j].z)/2, layer: 3 });
+    }
+    items.push({ type: 'dot', pt: pat.base, color: '#f9a825', radius: 3, z: pat.base.z, layer: 4 });
+    items.push({ type: 'dot', pt: pat.apex, color: '#f9a825', radius: 3, z: pat.apex.z, layer: 4, label: 'Patella' });
+
+    // Patellar tendon (patella apex → tibial tuberosity)
+    items.push({ type: 'edge', p0: pat.apex, p1: k.tuberosity, color: '#ff6b6b66', width: 1.8, z: (pat.apex.z+k.tuberosity.z)/2, layer: 2 });
+
+    // ---- TIBIAL PLATEAU ----
+    items.push({ type: 'edge', p0: k.plateauMed, p1: k.plateauLat, color: '#4ecdc4cc', width: 2.5, z: (k.plateauMed.z+k.plateauLat.z)/2, layer: 3 });
+    items.push({ type: 'dot', pt: k.plateauMed, color: '#4ecdc4', radius: 3.5, z: k.plateauMed.z, layer: 3 });
+    items.push({ type: 'dot', pt: k.plateauLat, color: '#4ecdc4', radius: 3.5, z: k.plateauLat.z, layer: 3 });
+
+    // Tibial eminence (intercondylar ridge)
+    items.push({ type: 'edge', p0: k.eminenceMed, p1: k.eminencePeak, color: '#4ecdc488', width: 1.5, z: (k.eminenceMed.z+k.eminencePeak.z)/2, layer: 3 });
+    items.push({ type: 'edge', p0: k.eminenceLat, p1: k.eminencePeak, color: '#4ecdc488', width: 1.5, z: (k.eminenceLat.z+k.eminencePeak.z)/2, layer: 3 });
+    items.push({ type: 'dot', pt: k.eminencePeak, color: '#4ecdc488', radius: 2.5, z: k.eminencePeak.z, layer: 3, label: 'Emin.' });
+
+    // Tibial proximal cross-section
+    const tibFaces = [[0,1,2,3]];
+    for (const face of tibFaces) {
+      const pts = face.map(i => k.tibProx[i]);
+      const avgZ = pts.reduce((s,p)=>s+p.z,0)/pts.length;
+      items.push({ type: 'face', pts, color: '#4ecdc4', opacity: 0.08, z: avgZ, layer: 1 });
+    }
+    for (let i = 0; i < k.tibProx.length; i++) {
+      const j = (i+1) % k.tibProx.length;
+      items.push({ type: 'edge', p0: k.tibProx[i], p1: k.tibProx[j], color: '#4ecdc444', width: 0.8, z: (k.tibProx[i].z+k.tibProx[j].z)/2, layer: 2 });
+    }
+
+    // Tibial tuberosity
+    items.push({ type: 'dot', pt: k.tuberosity, color: '#d4af37', radius: 4, z: k.tuberosity.z, layer: 3, label: 'Tub.' });
+
+    // Tibia shaft (plateau center → shaft end)
+    const plateauCenter = lerpV(k.plateauMed, k.plateauLat, 0.5);
+    items.push({ type: 'edge', p0: plateauCenter, p1: k.tibShaftEnd, color: '#e8e0d0aa', width: 3, z: (plateauCenter.z+k.tibShaftEnd.z)/2, layer: 1 });
+    items.push({ type: 'dot', pt: k.tibShaftEnd, color: '#e8e0d066', radius: 4, z: k.tibShaftEnd.z, layer: 2 });
+
+    // ---- FIBULA ----
+    items.push({ type: 'dot', pt: k.fibHead, color: '#e8e0d088', radius: 4, z: k.fibHead.z, layer: 3, label: 'Fib.' });
+    items.push({ type: 'edge', p0: k.fibHead, p1: k.fibNeck, color: '#e8e0d077', width: 2, z: (k.fibHead.z+k.fibNeck.z)/2, layer: 1 });
+    items.push({ type: 'edge', p0: k.fibNeck, p1: k.fibShaftEnd, color: '#e8e0d066', width: 1.5, z: (k.fibNeck.z+k.fibShaftEnd.z)/2, layer: 1 });
+    items.push({ type: 'dot', pt: k.fibShaftEnd, color: '#e8e0d044', radius: 3, z: k.fibShaftEnd.z, layer: 2 });
+    // Tibiofibular connection
+    items.push({ type: 'edge', p0: k.plateauLat, p1: k.fibHead, color: '#e8e0d044', width: 1, z: (k.plateauLat.z+k.fibHead.z)/2, layer: 2 });
+
+    // ---- LIGAMENTS ----
+    // MCL (medial collateral)
+    items.push({ type: 'edge', p0: k.mclFem, p1: k.mclTib, color: '#ff6b6b44', width: 1.5, z: (k.mclFem.z+k.mclTib.z)/2, layer: 2 });
+    // LCL (lateral collateral → fibular head)
+    items.push({ type: 'edge', p0: k.lclFem, p1: k.fibHead, color: '#ff6b6b44', width: 1.5, z: (k.lclFem.z+k.fibHead.z)/2, layer: 2 });
+
+    // ---- SIDE LABEL ----
+    const labelPt = { x: k.femurShaftTop.x, y: k.femurShaftTop.y + 14, z: k.femurShaftTop.z };
+    items.push({ type: 'label', pt: labelPt, text: side === 'L' ? 'LEFT — يَسَار' : 'RIGHT — يَمِين', color: '#d4af37cc', z: labelPt.z, layer: 5 });
+  }
+
+  // Depth sort
+  items.sort((a, b) => {
+    const getCenter = (item) => {
+      if (item.type === 'dot' || item.type === 'label') return item.pt;
+      if (item.type === 'edge') return { x:(item.p0.x+item.p1.x)/2, y:(item.p0.y+item.p1.y)/2, z:(item.p0.z+item.p1.z)/2 };
+      if (item.type === 'face') { const pts=item.pts; return { x:pts.reduce((s,p)=>s+p.x,0)/pts.length, y:pts.reduce((s,p)=>s+p.y,0)/pts.length, z:pts.reduce((s,p)=>s+p.z,0)/pts.length }; }
+      return { x:0, y:0, z: item.z };
+    };
+    const az = rotY(getCenter(a), camAz);
+    const bz = rotY(getCenter(b), camAz);
+    if (a.layer !== b.layer) return a.layer - b.layer;
+    return az.z - bz.z;
+  });
+
+  return items;
+}
+
+// ============================================================
+// DRAWING FUNCTIONS
+// ============================================================
+function drawFace(item) {
+  if (item.pts.length < 3) return;
+  const projected = item.pts.map(p => project(p));
+  ctx.save();
+  ctx.globalAlpha = item.opacity;
+  ctx.fillStyle = item.color;
+  ctx.strokeStyle = item.color;
+  ctx.lineWidth = 0.5;
+  ctx.beginPath();
+  ctx.moveTo(projected[0].sx, projected[0].sy);
+  for (let i = 1; i < projected.length; i++) ctx.lineTo(projected[i].sx, projected[i].sy);
+  ctx.closePath();
+  ctx.fill();
+  ctx.globalAlpha = item.opacity * 1.5;
+  ctx.stroke();
+  ctx.restore();
+}
+function drawEdge(item) {
+  const p0 = project(item.p0), p1 = project(item.p1);
+  ctx.save();
+  ctx.strokeStyle = item.color;
+  ctx.lineWidth = item.width;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(p0.sx, p0.sy);
+  ctx.lineTo(p1.sx, p1.sy);
+  ctx.stroke();
+  ctx.restore();
+}
+function drawDot(item) {
+  const p = project(item.pt);
+  const r = item.radius * (p.scale / 1.5);
+  ctx.save();
+  if (item.glow) {
+    const grd = ctx.createRadialGradient(p.sx, p.sy, 0, p.sx, p.sy, r*3);
+    grd.addColorStop(0, item.color + '66');
+    grd.addColorStop(1, item.color + '00');
+    ctx.fillStyle = grd;
+    ctx.beginPath(); ctx.arc(p.sx, p.sy, r*3, 0, Math.PI*2); ctx.fill();
+  }
+  ctx.fillStyle = item.color;
+  ctx.beginPath(); ctx.arc(p.sx, p.sy, r, 0, Math.PI*2); ctx.fill();
+  if (item.label) {
+    ctx.fillStyle = '#d4af37cc';
+    ctx.font = 'bold 9px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(item.label, p.sx, p.sy - r - 4);
+  }
+  ctx.restore();
+}
+function drawLabel(item) {
+  const p = project(item.pt);
+  ctx.save();
+  ctx.fillStyle = item.color;
+  ctx.font = 'bold 11px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(item.text, p.sx, p.sy);
+  ctx.restore();
+}
+
+// ============================================================
+// GRID, REFERENCE FRAME, GHOST NEUTRAL
+// ============================================================
+function drawGrid() {
+  ctx.save();
+  ctx.globalAlpha = 0.15;
+  ctx.strokeStyle = '#30363d';
+  ctx.lineWidth = 0.5;
+  const gridY = -85;
+  const gridSize = 150;
+  const step = 30;
+  for (let x = -gridSize; x <= gridSize; x += step) {
+    const p0 = project({ x, y: gridY, z: -gridSize });
+    const p1 = project({ x, y: gridY, z: gridSize });
+    ctx.beginPath(); ctx.moveTo(p0.sx, p0.sy); ctx.lineTo(p1.sx, p1.sy); ctx.stroke();
+  }
+  for (let z = -gridSize; z <= gridSize; z += step) {
+    const p0 = project({ x: -gridSize, y: gridY, z });
+    const p1 = project({ x: gridSize, y: gridY, z });
+    ctx.beginPath(); ctx.moveTo(p0.sx, p0.sy); ctx.lineTo(p1.sx, p1.sy); ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawReferenceFrame() {
+  ctx.save();
+  const origin = project({ x: 0, y: 0, z: 0 });
+  const grd = ctx.createRadialGradient(origin.sx, origin.sy, 0, origin.sx, origin.sy, 16);
+  grd.addColorStop(0, '#ffffff15');
+  grd.addColorStop(1, '#ffffff00');
+  ctx.fillStyle = grd;
+  ctx.beginPath(); ctx.arc(origin.sx, origin.sy, 16, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#ffffff30';
+  ctx.beginPath(); ctx.arc(origin.sx, origin.sy, 3, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#ffffff25';
+  ctx.font = '8px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('ORIGIN', origin.sx, origin.sy + 20);
+
+  const vTop = project({ x: 0, y: 140, z: 0 });
+  const vBot = project({ x: 0, y: -120, z: 0 });
+  ctx.setLineDash([4, 6]);
+  ctx.strokeStyle = '#ffffff10';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(vTop.sx, vTop.sy); ctx.lineTo(vBot.sx, vBot.sy); ctx.stroke();
+
+  const hL = project({ x: -130, y: 0, z: 0 });
+  const hR = project({ x: 130, y: 0, z: 0 });
+  ctx.strokeStyle = '#ffffff08';
+  ctx.beginPath(); ctx.moveTo(hL.sx, hL.sy); ctx.lineTo(hR.sx, hR.sy); ctx.stroke();
+
+  ctx.setLineDash([]);
+  ctx.restore();
+}
+
+function drawGhostNeutral() {
+  ctx.save();
+  ctx.setLineDash([3, 5]);
+  ctx.globalAlpha = 0.15;
+
+  for (const side of ['L', 'R']) {
+    const ghost = transformKneeMesh(0, side);
+
+    // Ghost femur shaft
+    ctx.strokeStyle = '#e8e0d0';
+    ctx.lineWidth = 1.5;
+    let p0 = project(ghost.femurShaftTop), p1 = project(ghost.femurShaftMid);
+    ctx.beginPath(); ctx.moveTo(p0.sx, p0.sy); ctx.lineTo(p1.sx, p1.sy); ctx.stroke();
+
+    // Ghost condyle outlines
+    for (const cData of [ghost.condyleMed, ghost.condyleLat]) {
+      ctx.lineWidth = 0.8;
+      for (let i = 0; i < cData.length; i++) {
+        const j = (i+1) % cData.length;
+        p0 = project(cData[i]); p1 = project(cData[j]);
+        ctx.beginPath(); ctx.moveTo(p0.sx, p0.sy); ctx.lineTo(p1.sx, p1.sy); ctx.stroke();
+      }
+    }
+
+    // Ghost tibia shaft
+    ctx.strokeStyle = '#4ecdc4';
+    ctx.lineWidth = 1.5;
+    const gPlateauCenter = lerpV(ghost.plateauMed, ghost.plateauLat, 0.5);
+    p0 = project(gPlateauCenter); p1 = project(ghost.tibShaftEnd);
+    ctx.beginPath(); ctx.moveTo(p0.sx, p0.sy); ctx.lineTo(p1.sx, p1.sy); ctx.stroke();
+
+    // Ghost plateau
+    ctx.lineWidth = 1;
+    p0 = project(ghost.plateauMed); p1 = project(ghost.plateauLat);
+    ctx.beginPath(); ctx.moveTo(p0.sx, p0.sy); ctx.lineTo(p1.sx, p1.sy); ctx.stroke();
+
+    // Ghost patella outline
+    ctx.strokeStyle = '#f9a825';
+    ctx.lineWidth = 0.8;
+    const gPat = [ghost.patella.base, ghost.patella.latR, ghost.patella.apex, ghost.patella.medR, ghost.patella.base];
+    ctx.beginPath();
+    p0 = project(gPat[0]);
+    ctx.moveTo(p0.sx, p0.sy);
+    for (let i = 1; i < gPat.length; i++) { p1 = project(gPat[i]); ctx.lineTo(p1.sx, p1.sy); }
+    ctx.stroke();
+  }
+
+  ctx.globalAlpha = 0.18;
+  ctx.fillStyle = '#4ecdc4';
+  ctx.font = '8px sans-serif';
+  ctx.textAlign = 'center';
+  const nlp = project({ x: 0, y: 95, z: 0 });
+  ctx.fillText('NEUTRAL', nlp.sx, nlp.sy);
+
+  ctx.setLineDash([]);
+  ctx.restore();
+}
+
+// ============================================================
+// DRAW SCENE
+// ============================================================
+function drawScene(flexL, flexR) {
+  ctx.clearRect(0, 0, W, H);
+
+  const grad = ctx.createRadialGradient(W/2, H/2, 50, W/2, H/2, 450);
+  grad.addColorStop(0, '#111820');
+  grad.addColorStop(1, '#0a0e14');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  drawGrid();
+  drawReferenceFrame();
+  drawGhostNeutral();
+
+  const items = buildRenderList(flexL, flexR);
+
+  for (const item of items) {
+    if (item.type === 'face') drawFace(item);
+    else if (item.type === 'edge') drawEdge(item);
+    else if (item.type === 'dot') drawDot(item);
+    else if (item.type === 'label') drawLabel(item);
+  }
+
+  drawAnnotations(flexL, flexR);
+}
+
+function drawAnnotations(flexL, flexR) {
+  ctx.save();
+
+  ctx.fillStyle = '#d4af37aa';
+  ctx.font = 'bold 11px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('مَفْصِل الرُّكْبَة — 3D Knee Joint', 15, 22);
+
+  const fL = Math.round(flexL);
+  const fR = Math.round(flexR);
+
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#8b949eaa';
+  ctx.font = '9px sans-serif';
+  ctx.fillText('Flexion L / R', W - 15, 22);
+  ctx.font = 'bold 14px sans-serif';
+  ctx.fillStyle = fL > 100 ? '#ff6b6b' : fL > 50 ? '#f9a825' : '#4ecdc4';
+  ctx.fillText(`${fL}°`, W - 55, 40);
+  ctx.fillStyle = fR > 100 ? '#ff6b6b' : fR > 50 ? '#f9a825' : '#4ecdc4';
+  ctx.fillText(`${fR}°`, W - 15, 40);
+  ctx.fillStyle = '#8b949e66';
+  ctx.font = '9px sans-serif';
+  ctx.fillText('/', W - 48, 40);
+
+  const isAsym = Math.abs(fL - fR) > 10;
+  if (isAsym) {
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#f9a825cc';
+    ctx.font = 'bold 11px sans-serif';
+    ctx.fillText('⚡ ASYMMETRIC', W/2, H - 20);
+  }
+
+  drawAxisIndicator();
+  ctx.restore();
+}
+
+function drawAxisIndicator() {
+  const ox = 50, oy = H - 50;
+  const len = 30;
+  const axes = [
+    { dir: { x:1, y:0, z:0 }, color: '#ff6b6b', label: 'X' },
+    { dir: { x:0, y:1, z:0 }, color: '#4ecdc4', label: 'Y' },
+    { dir: { x:0, y:0, z:1 }, color: '#d4af37', label: 'Z' },
+  ];
+  for (const ax of axes) {
+    let d = rotY(ax.dir, camAz);
+    d = rotX(d, camEl);
+    const ex = ox + d.x * len, ey = oy - d.y * len;
+    ctx.strokeStyle = ax.color;
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ex, ey); ctx.stroke();
+    ctx.fillStyle = ax.color;
+    ctx.font = 'bold 9px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(ax.label, ex + (d.x > 0 ? 8 : -8), ey - (d.y > 0 ? 4 : -10));
+  }
+}
+
+// ============================================================
+// CAMERA CONTROLS
+// ============================================================
+let isDragging = false;
+let dragStartX = 0, dragStartY = 0, dragStartAz = 0, dragStartEl = 0;
+
+canvas.addEventListener('mousedown', e => {
+  isDragging = true;
+  dragStartX = e.clientX; dragStartY = e.clientY;
+  dragStartAz = camAz; dragStartEl = camEl;
+});
+window.addEventListener('mousemove', e => {
+  if (!isDragging) return;
+  camAz = dragStartAz + (e.clientX - dragStartX) * 0.008;
+  camEl = Math.max(-1.2, Math.min(1.2, dragStartEl + (e.clientY - dragStartY) * 0.008));
+});
+window.addEventListener('mouseup', () => { isDragging = false; });
+
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  camDist = Math.max(CAM_NEAR, Math.min(CAM_FAR, camDist + e.deltaY * 0.5));
+}, { passive: false });
+
+canvas.addEventListener('touchstart', e => {
+  if (e.touches.length === 1) {
+    isDragging = true;
+    dragStartX = e.touches[0].clientX; dragStartY = e.touches[0].clientY;
+    dragStartAz = camAz; dragStartEl = camEl;
+  }
+});
+canvas.addEventListener('touchmove', e => {
+  if (!isDragging || e.touches.length !== 1) return;
+  e.preventDefault();
+  camAz = dragStartAz + (e.touches[0].clientX - dragStartX) * 0.008;
+  camEl = Math.max(-1.2, Math.min(1.2, dragStartEl + (e.touches[0].clientY - dragStartY) * 0.008));
+}, { passive: false });
+canvas.addEventListener('touchend', () => { isDragging = false; });
+
+const CAM_PRESETS = {
+  latR: { az: Math.PI/2,  el: 0.05, label: 'camLatR' },
+  latL: { az: -Math.PI/2, el: 0.05, label: 'camLatL' },
+  ant:  { az: 0,           el: 0.05, label: 'camAnt' },
+  post: { az: Math.PI,    el: 0.1,  label: 'camPost' },
+  sup:  { az: Math.PI/2,  el: 1.1,  label: 'camSup' },
+};
+let targetAz = null, targetEl = null;
+
+function setCam(preset) {
+  const p = CAM_PRESETS[preset];
+  targetAz = p.az; targetEl = p.el;
+  document.querySelectorAll('.cam-presets button').forEach(b => b.classList.remove('cam-active'));
+  document.getElementById(p.label).classList.add('cam-active');
+}
+
+// ============================================================
+// ANIMATION LOOP
+// ============================================================
+function animate(timestamp) {
+  if (!lastFrameTime) lastFrameTime = timestamp;
+  const dt = (timestamp - lastFrameTime) / 1000;
+  lastFrameTime = timestamp;
+
+  if (isPlaying) {
+    currentTime += dt * speed;
+    if (currentTime >= TOTAL_TIME) {
+      currentTime = TOTAL_TIME;
+      isPlaying = false;
+      updatePlayButton();
+    }
+    document.getElementById('timeline').value = currentTime;
+  }
+
+  if (targetAz !== null) {
+    camAz += (targetAz - camAz) * 0.1;
+    camEl += (targetEl - camEl) * 0.1;
+    if (Math.abs(camAz - targetAz) < 0.005 && Math.abs(camEl - targetEl) < 0.005) {
+      camAz = targetAz; camEl = targetEl;
+      targetAz = null; targetEl = null;
+    }
+  }
+
+  const stage = getStage(currentTime);
+  const poseKey = getPoseKey(stage);
+  const targetPose = KNEE_POSES[poseKey];
+  currentFlexL = lerpVal(currentFlexL, targetPose.L);
+  currentFlexR = lerpVal(currentFlexR, targetPose.R);
+
+  drawScene(currentFlexL, currentFlexR);
+  updateUI(stage, currentFlexL, currentFlexR);
+  document.getElementById('timeLabel').textContent = currentTime.toFixed(1) + 's';
+
+  requestAnimationFrame(animate);
+}
+
+function updateUI(stage, flexL, flexR) {
+  const info = STAGE_INFO[stage] || STAGE_INFO.qiyam;
+  document.getElementById('stgAr').textContent = info.ar;
+  document.getElementById('stgTr').textContent = info.tr;
+  document.getElementById('stgEn').textContent = info.en;
+
+  const fL = Math.round(flexL), fR = Math.round(flexR);
+  const elL = document.getElementById('angKneeL');
+  elL.textContent = fL + '°';
+  elL.className = 'angle-val ' + (fL > 100 ? 'high' : fL > 50 ? 'med' : 'low');
+  const elR = document.getElementById('angKneeR');
+  elR.textContent = fR + '°';
+  elR.className = 'angle-val ' + (fR > 100 ? 'high' : fR > 50 ? 'med' : 'low');
+
+  const badge = document.getElementById('sittingBadge');
+  if (Math.abs(fL - fR) > 10) {
+    badge.innerHTML = '<span class="sitting-badge asym">Asymmetric (L ≠ R)</span>';
+  } else {
+    badge.innerHTML = '<span class="sitting-badge sym">Symmetric</span>';
+  }
+}
+
+// ============================================================
+// TRANSPORT CONTROLS
+// ============================================================
+function togglePlay() {
+  if (currentTime >= TOTAL_TIME) currentTime = 0;
+  isPlaying = !isPlaying;
+  lastFrameTime = null;
+  updatePlayButton();
+}
+function updatePlayButton() {
+  const btn = document.getElementById('btnPlay');
+  btn.textContent = isPlaying ? '\u23F8' : '\u25B6';
+  btn.classList.toggle('active', isPlaying);
+}
+function stepNext() {
+  isPlaying = false; updatePlayButton();
+  for (const kf of KEYFRAMES) { if (kf.t > currentTime + 0.1) { currentTime = kf.t; break; } }
+  document.getElementById('timeline').value = currentTime;
+}
+function stepPrev() {
+  isPlaying = false; updatePlayButton();
+  for (let i = KEYFRAMES.length - 1; i >= 0; i--) {
+    if (KEYFRAMES[i].t < currentTime - 0.1) { currentTime = KEYFRAMES[i].t; break; }
+  }
+  document.getElementById('timeline').value = currentTime;
+}
+function scrub(val) {
+  isPlaying = false; updatePlayButton();
+  currentTime = parseFloat(val);
+  currentFlexL = null; currentFlexR = null;
+}
+function setSpeed(s) {
+  speed = s;
+  document.querySelectorAll('.controls button').forEach(b => {
+    if (b.textContent.includes('×') || b.textContent.includes('¼') || b.textContent.includes('½'))
+      b.classList.remove('active');
+  });
+  if (s === 1) document.getElementById('speed1').classList.add('active');
+}
+
+window.addEventListener('keydown', e => {
+  if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+  if (e.code === 'ArrowRight') { e.preventDefault(); stepNext(); }
+  if (e.code === 'ArrowLeft') { e.preventDefault(); stepPrev(); }
+});
+
+requestAnimationFrame(animate);
+</script>
+</body>
+</html>

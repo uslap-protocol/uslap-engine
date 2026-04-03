@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>USLaP | Lumbar–Sacral Back View — Qiyam → Ruku</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d1117;color:#e0dcd0;font-family:'Segoe UI',sans-serif;overflow:hidden;height:100vh}
+canvas{display:block}
+.bis{position:fixed;top:6px;width:100%;text-align:center;color:#d4af3799;font-family:'Traditional Arabic',serif;font-size:0.95em;pointer-events:none;z-index:5}
+.title{position:fixed;top:24px;width:100%;text-align:center;color:#d4af37;font-size:0.85em;font-weight:700;pointer-events:none;z-index:5}
+.sub{position:fixed;top:42px;width:100%;text-align:center;color:#8b949e;font-size:0.68em;pointer-events:none;z:index:5;pointer-events:none}
+.controls{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:10;display:flex;flex-direction:column;align-items:center;gap:6px;background:#161b22dd;padding:12px 24px;border-radius:8px;border:1px solid #30363d}
+.controls label{color:#d4af37;font-size:0.8em;font-weight:600}
+.controls input[type=range]{width:320px;accent-color:#d4af37}
+.phase{color:#8b949e;font-size:0.75em}
+</style>
+</head>
+<body>
+<div class="bis">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+<div class="title">Lumbar–Sacral — Posterior View (symmetrical)</div>
+<div class="sub">Spine centred | L1 → Co + concentric خُطُوط arcs | Drag slider for قِيَام → رُكُوع</div>
+
+<canvas id="c"></canvas>
+
+<div class="controls">
+  <label>قِيَام ← → رُكُوع</label>
+  <input type="range" id="slider" min="0" max="1000" value="0"/>
+  <div class="phase" id="phaseLabel">QIYAM — lordotic curve (hollow lower back)</div>
+</div>
+
+<script>
+const cv=document.getElementById('c'), cx=cv.getContext('2d');
+const slider=document.getElementById('slider'), phaseLabel=document.getElementById('phaseLabel');
+let W,H;
+function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight;}
+resize();onresize=resize;
+
+let rukuT=0;
+slider.oninput=function(){
+  rukuT=this.value/1000;
+  if(rukuT<0.15) phaseLabel.textContent='QIYAM — lordotic curve (hollow lower back, arcs compressed)';
+  else if(rukuT<0.45) phaseLabel.textContent='TRANSITION — lordosis flattening, arcs beginning to spread';
+  else if(rukuT<0.7) phaseLabel.textContent='FLAT BACK — lordosis eliminated, arcs separating';
+  else phaseLabel.textContent='RUKU — lower back ROUNDED (kyphotic), arcs at MAXIMUM spread';
+};
+
+// ════════════════════════════════════════
+// BACK VIEW: looking at the person from behind
+// x = left/right (0 = spine centre)
+// y = up/down on screen (up = superior)
+// z = depth INTO the screen (positive = further from viewer = anterior)
+//
+// What we see: the spine as a vertical line in the centre,
+// the posterior skin surface curving away from/toward us,
+// and the concentric arcs spreading across the back.
+//
+// The KEY thing to show: in qiyam the lumbar region is a
+// CONCAVE valley (lordosis hollows toward the viewer).
+// In ruku it becomes CONVEX (rounds away from the viewer).
+// The arcs spread apart as the surface expands.
+// ════════════════════════════════════════
+
+// Lordosis: 1 = qiyam (concave), -1.2 = ruku (convex)
+function lordosis(){ return 1.0 - rukuT * 2.2; }
+
+// Vertebrae from T12 (top of view) to Co (bottom)
+// In back view: all at x=0, spaced vertically
+// z = depth = how far the vertebra is from the viewer
+// Lordosis changes z: concave = closer to viewer, convex = further
+const VERT_DATA = [
+  {label:'T12', baseY:0,    baseZ:0},
+  {label:'L1',  baseY:-30,  baseZ:0},
+  {label:'L2',  baseY:-60,  baseZ:0},
+  {label:'L3',  baseY:-90,  baseZ:0},  // peak of lordosis
+  {label:'L4',  baseY:-120, baseZ:0},
+  {label:'L5',  baseY:-150, baseZ:0},
+  {label:'S1',  baseY:-178, baseZ:2},
+  {label:'S2',  baseY:-200, baseZ:5},
+  {label:'S3',  baseY:-218, baseZ:9},
+  {label:'S4',  baseY:-232, baseZ:12},
+  {label:'S5',  baseY:-244, baseZ:14},
+  {label:'Co',  baseY:-256, baseZ:16},
+];
+
+function getVerts(){
+  const lord = lordosis();
+  return VERT_DATA.map((v,i)=>{
+    // Lordosis affects z (depth) of lumbar vertebrae
+    // L1-L5 (indices 1-5): lordosis pulls them TOWARD viewer (negative z)
+    // when lord>0 (concave) and pushes them AWAY (positive z) when lord<0 (convex)
+    let z = v.baseZ;
+    if(i>=1 && i<=5){
+      // Peak at L3 (index 3)
+      const t = i-1; // 0=L1, 4=L5
+      const peak = Math.sin((t/4)*Math.PI); // peaks at L3
+      z -= lord * peak * 25; // lord>0: z goes negative (toward viewer), lord<0: z goes positive (away)
+    }
+    return {label:v.label, x:0, y:v.baseY, z};
+  });
+}
+
+// Half-width of the back at each vertebral level
+function backHalfWidth(i){
+  // T12: wide (rib cage), narrows at waist (L3), widens at pelvis (S1-S3)
+  const widths = [140, 130, 115, 100, 108, 120, 145, 150, 148, 140, 120, 90];
+  return widths[i] || 100;
+}
+
+// Skin surface z-depth at a given (x, vertebral level index)
+// The back surface curves: at spine (x=0) it's at vertebra z-depth
+// At the sides (x=±halfWidth) it curves away from the viewer
+function skinZ(x, vertIdx, verts){
+  const hw = backHalfWidth(vertIdx);
+  const spineZ = verts[vertIdx].z;
+  const t = Math.abs(x) / hw; // 0 at spine, 1 at edge
+  // Surface curves away from viewer at the sides (z increases)
+  // The curvature is stronger when lordotic (the hollow is deeper)
+  const lord = lordosis();
+  // At the spine: z = spineZ
+  // At the sides: z = spineZ + sideDepth
+  const sideDepth = 20 + (vertIdx>=1 && vertIdx<=5 ? Math.abs(lord)*8 : 0);
+  return spineZ + t*t * sideDepth;
+}
+
+// ════════════════════════════════════════
+// PROJECTION — mild perspective
+// ════════════════════════════════════════
+const FOCAL = 800;
+function project(x3d, y3d, z3d){
+  const s = FOCAL / (FOCAL + z3d);
+  return {x: W/2 + x3d * s, y: H*0.42 - y3d * s, s};
+}
+
+// ════════════════════════════════════════
+// DRAW
+// ════════════════════════════════════════
+function draw(){
+  cx.clearRect(0,0,W,H);
+  const g=cx.createRadialGradient(W/2,H/2,50,W/2,H/2,600);
+  g.addColorStop(0,'#111820');g.addColorStop(1,'#0a0e14');
+  cx.fillStyle=g;cx.fillRect(0,0,W,H);
+
+  const verts = getVerts();
+  const lord = lordosis();
+
+  // ── SKIN SURFACE — mesh of the posterior back ──
+  // Draw horizontal contour lines at each vertebral level
+  // and vertical lines connecting them
+  const ROWS = verts.length;
+  const COLS = 21; // points across the back at each level
+
+  // Build mesh
+  const mesh = [];
+  for(let r=0; r<ROWS; r++){
+    const row = [];
+    const hw = backHalfWidth(r);
+    for(let c=0; c<COLS; c++){
+      const t = c/(COLS-1); // 0 to 1
+      const x = -hw + t * 2 * hw;
+      const z = skinZ(x, r, verts);
+      row.push({x, y:verts[r].y, z});
+    }
+    mesh.push(row);
+  }
+
+  // Draw mesh as filled quad strips (shaded by depth)
+  for(let r=0; r<ROWS-1; r++){
+    for(let c=0; c<COLS-1; c++){
+      const p00 = project(mesh[r][c].x, mesh[r][c].y, mesh[r][c].z);
+      const p10 = project(mesh[r][c+1].x, mesh[r][c+1].y, mesh[r][c+1].z);
+      const p01 = project(mesh[r+1][c].x, mesh[r+1][c].y, mesh[r+1][c].z);
+      const p11 = project(mesh[r+1][c+1].x, mesh[r+1][c+1].y, mesh[r+1][c+1].z);
+
+      // Shade by average z-depth (closer = brighter)
+      const avgZ = (mesh[r][c].z + mesh[r][c+1].z + mesh[r+1][c].z + mesh[r+1][c+1].z)/4;
+      const brightness = Math.max(15, Math.min(45, 35 - avgZ * 0.5));
+      cx.fillStyle = `rgb(${brightness},${brightness+4},${brightness+10})`;
+      cx.beginPath();
+      cx.moveTo(p00.x, p00.y);
+      cx.lineTo(p10.x, p10.y);
+      cx.lineTo(p11.x, p11.y);
+      cx.lineTo(p01.x, p01.y);
+      cx.closePath();
+      cx.fill();
+    }
+  }
+
+  // Draw horizontal contour lines (each vertebral level)
+  for(let r=0; r<ROWS; r++){
+    cx.beginPath();
+    for(let c=0; c<COLS; c++){
+      const p = project(mesh[r][c].x, mesh[r][c].y, mesh[r][c].z);
+      if(c===0) cx.moveTo(p.x, p.y);
+      else cx.lineTo(p.x, p.y);
+    }
+    cx.strokeStyle = '#30363d';
+    cx.lineWidth = 0.8;
+    cx.stroke();
+  }
+
+  // Draw vertical lines (spine-parallel)
+  for(let c=0; c<COLS; c+=2){
+    cx.beginPath();
+    for(let r=0; r<ROWS; r++){
+      const p = project(mesh[r][c].x, mesh[r][c].y, mesh[r][c].z);
+      if(r===0) cx.moveTo(p.x, p.y);
+      else cx.lineTo(p.x, p.y);
+    }
+    cx.strokeStyle = '#21262d';
+    cx.lineWidth = 0.5;
+    cx.stroke();
+  }
+
+  // ── SPINE LINE (centre) ──
+  cx.beginPath();
+  for(let r=0; r<ROWS; r++){
+    const p = project(0, verts[r].y, verts[r].z - 1); // slightly in front of surface
+    if(r===0) cx.moveTo(p.x, p.y);
+    else cx.lineTo(p.x, p.y);
+  }
+  cx.strokeStyle = '#d4af37';
+  cx.lineWidth = 2.5;
+  cx.stroke();
+
+  // ── VERTEBRA DOTS + LABELS ──
+  for(let r=0; r<ROWS; r++){
+    const v = verts[r];
+    const p = project(0, v.y, v.z - 2);
+    // Dot
+    cx.beginPath();cx.arc(p.x, p.y, 5, 0, Math.PI*2);
+    cx.fillStyle = v.label.startsWith('L') ? '#e040fb' :
+                   v.label.startsWith('S') ? '#c080d0' :
+                   v.label === 'Co' ? '#c9a84c' : '#d4af37';
+    cx.fill();
+    // Label on left
+    cx.fillStyle = cx.fillStyle; // same color
+    cx.font = '11px sans-serif';
+    cx.textAlign = 'right';
+    cx.fillText(v.label, p.x - 12, p.y + 4);
+    // Symmetric label on right
+    cx.textAlign = 'left';
+    cx.fillText(v.label, p.x + 12, p.y + 4);
+  }
+
+  // ── COCCYX HIGHLIGHT ──
+  const coVert = verts[ROWS-1];
+  const coP = project(0, coVert.y, coVert.z - 3);
+  cx.beginPath();cx.arc(coP.x, coP.y, 10, 0, Math.PI*2);
+  cx.fillStyle='#c9a84c';cx.globalAlpha=0.2;cx.fill();cx.globalAlpha=1;
+  cx.font='bold 11px sans-serif';cx.textAlign='center';cx.fillStyle='#c9a84c';
+  cx.fillText('عَجْب الذَّنَب', coP.x, coP.y + 24);
+
+  // ── CONCENTRIC ARCS from coccyx ──
+  // Each arc sweeps left-right across the back, centred on coccyx
+  // The arc follows the skin surface curvature
+  const arcData = [
+    {vertIdx:10, label:'S5', col:'#e8a84c', alpha:0.5},
+    {vertIdx:9,  label:'S4', col:'#e8a84c', alpha:0.5},
+    {vertIdx:8,  label:'S3', col:'#d4a0e0', alpha:0.55},
+    {vertIdx:7,  label:'S2', col:'#ce93d8', alpha:0.6},
+    {vertIdx:6,  label:'S1', col:'#c080d0', alpha:0.7},
+    {vertIdx:5,  label:'L5', col:'#d050eb', alpha:0.7},
+    {vertIdx:4,  label:'L4', col:'#d840f0', alpha:0.75},
+    {vertIdx:3,  label:'L3', col:'#e040fb', alpha:0.8},
+    {vertIdx:2,  label:'L2', col:'#e040fb', alpha:0.6},
+    {vertIdx:1,  label:'L1', col:'#e040fb', alpha:0.5},
+  ];
+
+  for(const arc of arcData){
+    const ri = arc.vertIdx;
+    // Distance from coccyx to this vertebral level
+    const dy = verts[ri].y - coVert.y;
+    const dz = verts[ri].z - coVert.z;
+    const radius = Math.sqrt(dy*dy + dz*dz);
+
+    // Sweep the arc across the back width at this level
+    const hw = backHalfWidth(ri) * 0.85;
+    const segs = 40;
+    cx.beginPath();
+    for(let s=0; s<=segs; s++){
+      const t = s/segs;
+      const x = -hw + t * 2 * hw;
+      // Arc follows the concentric distance from coccyx
+      // y position: interpolate between coccyx y and the vertebral level y
+      // x position: spread laterally
+      // The arc should bow upward (toward the vertebral level) at centre
+      // and curve down toward coccyx at the sides
+      const lateralT = Math.abs(x) / hw; // 0 at centre, 1 at edge
+      const arcY = coVert.y + dy * (1 - lateralT * lateralT * 0.7);
+      const arcZ = skinZ(x, ri, verts);
+
+      const p = project(x, arcY, arcZ - 3);
+      if(s===0) cx.moveTo(p.x, p.y);
+      else cx.lineTo(p.x, p.y);
+    }
+    cx.strokeStyle = arc.col;
+    cx.lineWidth = 2.2;
+    cx.globalAlpha = arc.alpha;
+    cx.stroke();
+    cx.globalAlpha = 1;
+
+    // Label at right end
+    const endP = project(hw + 15, coVert.y + dy * 0.55, 0);
+    cx.fillStyle = arc.col;
+    cx.font = '9px sans-serif';
+    cx.textAlign = 'left';
+    cx.fillText(arc.label, endP.x, endP.y);
+  }
+
+  // ── DEPTH INDICATOR — show lordosis/kyphosis visually ──
+  // Small side-view inset at top-left
+  const inX = 30, inY = 70, inW = 80, inH = 200;
+  cx.save();
+  cx.fillStyle='#161b22';cx.fillRect(inX-5,inY-25,inW+30,inH+50);
+  cx.strokeStyle='#30363d';cx.strokeRect(inX-5,inY-25,inW+30,inH+50);
+  cx.fillStyle='#8b949e';cx.font='bold 9px sans-serif';cx.textAlign='center';
+  cx.fillText('SIDE VIEW',inX+inW/2+10,inY-12);
+  // Draw spine from side
+  cx.beginPath();
+  for(let r=0; r<ROWS; r++){
+    const px = inX + inW/2 - verts[r].z * 1.5; // z maps to x in side view
+    const py = inY + (r/(ROWS-1)) * inH;
+    if(r===0) cx.moveTo(px, py);
+    else cx.lineTo(px, py);
+  }
+  cx.strokeStyle='#d4af37';cx.lineWidth=2;cx.stroke();
+  // Dots
+  for(let r=0; r<ROWS; r++){
+    const px = inX + inW/2 - verts[r].z * 1.5;
+    const py = inY + (r/(ROWS-1)) * inH;
+    cx.beginPath();cx.arc(px,py,3,0,Math.PI*2);
+    cx.fillStyle = verts[r].label.startsWith('L')?'#e040fb':
+                   verts[r].label==='Co'?'#c9a84c':'#c080d0';
+    cx.fill();
+  }
+  // Arrow showing curvature direction
+  if(lord > 0.3){
+    cx.fillStyle='#58a6ff';cx.font='8px sans-serif';cx.textAlign='left';
+    cx.fillText('← hollow',inX+inW/2+12,inY+inH*0.35);
+    cx.fillText('(lordosis)',inX+inW/2+12,inY+inH*0.35+11);
+  } else if(lord < -0.3){
+    cx.fillStyle='#ff6b6b';cx.font='8px sans-serif';cx.textAlign='left';
+    cx.fillText('rounded →',inX+inW/2+12,inY+inH*0.35);
+    cx.fillText('(kyphosis)',inX+inW/2+12,inY+inH*0.35+11);
+  } else {
+    cx.fillStyle='#e8e0d0';cx.font='8px sans-serif';cx.textAlign='left';
+    cx.fillText('flat',inX+inW/2+12,inY+inH*0.35);
+  }
+  cx.fillStyle='#484f58';cx.font='7px sans-serif';
+  cx.fillText('anterior →',inX+inW-5,inY+inH+15);
+  cx.fillText('← posterior',inX-2,inY+inH+15);
+  cx.restore();
+
+  // ── STATUS ──
+  cx.save();
+  cx.fillStyle='#d4af37';cx.font='bold 12px sans-serif';cx.textAlign='right';
+  cx.fillText('Hip flexion: ' + Math.round(rukuT*90) + '°', W-20, H-95);
+  cx.fillStyle='#8b949e';cx.font='10px sans-serif';
+  if(lord>0.3){
+    cx.fillText('Lumbar: LORDOTIC (concave)', W-20, H-78);
+    cx.fillText('Arcs: compressed together', W-20, H-63);
+  } else if(lord>-0.3){
+    cx.fillText('Lumbar: FLAT', W-20, H-78);
+    cx.fillText('Arcs: opening', W-20, H-63);
+  } else {
+    cx.fillStyle='#ff6b6b';cx.font='bold 10px sans-serif';
+    cx.fillText('Lumbar: KYPHOTIC (convex — ROUNDED)', W-20, H-78);
+    cx.fillText('Arcs: MAXIMUM spread', W-20, H-63);
+  }
+  cx.restore();
+
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>

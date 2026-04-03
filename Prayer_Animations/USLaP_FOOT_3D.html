@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>USLaP | 3D Foot / Ankle Animation</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #0d1117;
+  color: #e8e0d0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+.header {
+  text-align: center;
+  padding: 14px 20px 10px;
+  background: linear-gradient(180deg, #161b22 0%, #0d1117 100%);
+  border-bottom: 1px solid #d4af3744;
+}
+.header h1 { font-size: 1.3em; color: #d4af37; letter-spacing: 1px; }
+.header .bismillah {
+  font-size: 1.05em; color: #d4af3799;
+  font-family: 'Traditional Arabic', 'Scheherazade', serif; margin-bottom: 2px;
+}
+.header .subtitle { font-size: 0.78em; color: #8b949e; margin-top: 3px; }
+.main-layout {
+  display: flex; max-width: 1400px; margin: 0 auto; padding: 12px; gap: 12px;
+}
+.canvas-col { flex: 1; min-width: 0; }
+.canvas-wrap {
+  position: relative; background: #0a0e14;
+  border: 1px solid #30363d; border-radius: 8px; overflow: hidden;
+}
+canvas#foot3d { display: block; width: 100%; height: auto; cursor: grab; }
+canvas#foot3d:active { cursor: grabbing; }
+.controls {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; background: #161b22;
+  border: 1px solid #30363d; border-radius: 8px; margin-top: 8px;
+}
+.controls button {
+  background: #21262d; color: #e8e0d0; border: 1px solid #30363d;
+  border-radius: 4px; padding: 4px 10px; cursor: pointer; font-size: 0.9em;
+}
+.controls button:hover { background: #30363d; }
+.controls button.active { background: #d4af3744; border-color: #d4af37; }
+.controls input[type=range] { flex: 1; accent-color: #d4af37; }
+.controls .time-label { font-size: 0.75em; color: #8b949e; min-width: 45px; text-align: center; }
+.controls .speed-label { font-size: 0.7em; color: #8b949e; }
+.cam-presets {
+  display: flex; gap: 4px; margin-left: auto;
+}
+.cam-presets button { font-size: 0.72em; padding: 3px 7px; }
+.cam-presets button.cam-active { background: #d4af3744; border-color: #d4af37; color: #d4af37; }
+.info-col { width: 280px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; }
+.info-panel {
+  background: #161b22; border: 1px solid #30363d; border-radius: 8px;
+  padding: 10px 12px;
+}
+.info-panel h3 {
+  font-size: 0.82em; color: #d4af37; margin-bottom: 6px;
+  border-bottom: 1px solid #d4af3733; padding-bottom: 4px;
+}
+.stage-info .arabic { font-size: 1.4em; color: #d4af37; font-family: 'Traditional Arabic', serif; }
+.stage-info .translit { font-size: 0.9em; color: #e8e0d0; }
+.stage-info .english { font-size: 0.78em; color: #8b949e; }
+.angle-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 3px 0; font-size: 0.8em;
+}
+.angle-label { color: #8b949e; }
+.angle-val { color: #e8e0d0; font-weight: bold; }
+.angle-val.high { color: #ff6b6b; }
+.angle-val.med { color: #f9a825; }
+.angle-val.low { color: #4ecdc4; }
+.side-header { font-size: 0.75em; color: #d4af37; margin: 4px 0 2px; font-weight: bold; }
+.sitting-badge {
+  display: inline-block; padding: 3px 8px; border-radius: 4px;
+  font-size: 0.75em; font-weight: bold; margin-top: 4px;
+}
+.sitting-badge.sym { background: #4ecdc422; color: #4ecdc4; border: 1px solid #4ecdc444; }
+.sitting-badge.asym { background: #f9a82522; color: #f9a825; border: 1px solid #f9a82544; }
+.legend-item { display: flex; align-items: center; gap: 6px; padding: 2px 0; font-size: 0.78em; }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.instructions { font-size: 0.72em; color: #8b949e; line-height: 1.4; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+  <h1>3D Foot / Ankle — القَدَم والكاحِل</h1>
+  <div class="subtitle">Interactive 3D Visualization of Foot & Toe Movement During Prayer</div>
+</div>
+
+<div class="main-layout">
+  <div class="canvas-col">
+    <div class="canvas-wrap">
+      <canvas id="foot3d" width="900" height="680"></canvas>
+    </div>
+    <div class="controls">
+      <button id="btnPlay" onclick="togglePlay()">&#9654;</button>
+      <button onclick="stepPrev()">&#9664;&#9664;</button>
+      <button onclick="stepNext()">&#9654;&#9654;</button>
+      <input type="range" id="timeline" min="0" max="41" step="0.1" value="3" oninput="scrub(this.value)">
+      <span class="time-label" id="timeLabel">3.0s</span>
+      <span class="speed-label">Speed:</span>
+      <button onclick="setSpeed(0.25)">¼</button>
+      <button onclick="setSpeed(0.5)">½</button>
+      <button onclick="setSpeed(1)" class="active" id="speed1">1×</button>
+      <div class="cam-presets">
+        <button onclick="setCam('latR')" class="cam-active" id="camLatR">Lat R</button>
+        <button onclick="setCam('latL')" id="camLatL">Lat L</button>
+        <button onclick="setCam('sup')" id="camSup">Superior</button>
+        <button onclick="setCam('ant')" id="camAnt">Anterior</button>
+        <button onclick="setCam('post')" id="camPost">Posterior</button>
+      </div>
+    </div>
+  </div>
+  <div class="info-col">
+    <div class="info-panel stage-info" id="stagePanel">
+      <h3>CURRENT STAGE</h3>
+      <div class="arabic" id="stgAr">قِيَام</div>
+      <div class="translit" id="stgTr">Qiyam</div>
+      <div class="english" id="stgEn">Standing</div>
+    </div>
+    <div class="info-panel" id="anglesPanel">
+      <h3>FOOT ANGLES</h3>
+      <div class="side-header">LEFT — يَسَار</div>
+      <div class="angle-row"><span class="angle-label">Ankle Dorsi/Plantar</span><span class="angle-val" id="angAnkleL">5°</span></div>
+      <div class="angle-row"><span class="angle-label">Subtalar Inv/Ev</span><span class="angle-val" id="angSubtalarL">0°</span></div>
+      <div class="angle-row"><span class="angle-label">MTP Extension</span><span class="angle-val" id="angMtpL">0°</span></div>
+      <div class="angle-row"><span class="angle-label">Toe Curl</span><span class="angle-val" id="angCurlL">0°</span></div>
+      <div class="side-header" style="margin-top:6px">RIGHT — يَمِين</div>
+      <div class="angle-row"><span class="angle-label">Ankle Dorsi/Plantar</span><span class="angle-val" id="angAnkleR">5°</span></div>
+      <div class="angle-row"><span class="angle-label">Subtalar Inv/Ev</span><span class="angle-val" id="angSubtalarR">0°</span></div>
+      <div class="angle-row"><span class="angle-label">MTP Extension</span><span class="angle-val" id="angMtpR">0°</span></div>
+      <div class="angle-row"><span class="angle-label">Toe Curl</span><span class="angle-val" id="angCurlR">0°</span></div>
+      <div id="sittingBadge"></div>
+    </div>
+    <div class="info-panel">
+      <h3>FOOT LANDMARKS</h3>
+      <div class="legend-item"><span class="legend-dot" style="background:#e8e0d0"></span>Tibia / Fibula stubs</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#4ecdc4"></span>Talus (ankle bone)</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#d4af37"></span>Calcaneus (heel)</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#8b6914"></span>Midfoot (navicular, cuboid, cuneiforms)</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#f9a825"></span>Metatarsals (MT1–MT5)</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#ff6b6b"></span>Phalanges (toes)</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#d4af3788"></span>Joint markers (ankle, MTP, IP)</div>
+      <h3 style="margin-top:8px">REFERENCE FRAME</h3>
+      <div class="legend-item"><span class="legend-dot" style="background:#ffffff30"></span>Origin + plumb line (fixed)</div>
+      <div class="legend-item" style="font-size:0.72em;color:#8b949e;padding-left:14px">┄┄ Dashed ghost = anatomical neutral</div>
+    </div>
+    <div class="info-panel">
+      <h3>CONTROLS</h3>
+      <div class="instructions">
+        <b>Rotate:</b> Click + drag on the 3D view<br>
+        <b>Zoom:</b> Scroll wheel<br>
+        <b>Presets:</b> Lat R, Lat L, Superior, Anterior, Posterior<br>
+        <b>Play:</b> Space bar or ▶ button<br>
+        <b>Step:</b> Arrow keys or ◀◀ / ▶▶ buttons
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CANVAS SETUP
+// ============================================================
+const canvas = document.getElementById('foot3d');
+const ctx = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+
+// ============================================================
+// 3D MATH UTILITIES
+// ============================================================
+function rotX(p, a) {
+  const c = Math.cos(a), s = Math.sin(a);
+  return { x: p.x, y: p.y * c - p.z * s, z: p.y * s + p.z * c };
+}
+function rotY(p, a) {
+  const c = Math.cos(a), s = Math.sin(a);
+  return { x: p.x * c + p.z * s, y: p.y, z: -p.x * s + p.z * c };
+}
+function rotZ(p, a) {
+  const c = Math.cos(a), s = Math.sin(a);
+  return { x: p.x * c - p.y * s, y: p.x * s + p.y * c, z: p.z };
+}
+function addV(a, b) { return { x: a.x + b.x, y: a.y + b.y, z: a.z + b.z }; }
+function subV(a, b) { return { x: a.x - b.x, y: a.y - b.y, z: a.z - b.z }; }
+function scaleV(p, s) { return { x: p.x * s, y: p.y * s, z: p.z * s }; }
+function lerpV(a, b, t) { return { x: a.x+(b.x-a.x)*t, y: a.y+(b.y-a.y)*t, z: a.z+(b.z-a.z)*t }; }
+function norm(v) { const l = Math.sqrt(v.x*v.x+v.y*v.y+v.z*v.z); return l>0?scaleV(v,1/l):v; }
+function deg(r) { return r * Math.PI / 180; }
+
+// Camera — default lateral right view (best for seeing arch + dorsiflexion)
+let camAz = Math.PI / 2;
+let camEl = 0.1;
+let camDist = 380;
+const CAM_NEAR = 120, CAM_FAR = 800;
+
+function project(p3) {
+  let pt = rotY(p3, camAz);
+  pt = rotX(pt, camEl);
+  const fov = 600;
+  const z = pt.z + camDist;
+  const scale = fov / Math.max(z, 1);
+  return { sx: W/2 + pt.x * scale, sy: H/2 - pt.y * scale, z: z, scale: scale };
+}
+
+// ============================================================
+// FOOT MESH — NEUTRAL POSITION (foot flat on ground)
+// ============================================================
+// Origin = ankle joint center (talocrural).  Y=up, Z=anterior (toward toes), X=medial/lateral
+// Right foot: X positive = lateral.  Left foot: mirror X.
+// All in mm, approximate.
+
+// Tibia stub (fixed reference, extends upward from ankle)
+const TIBIA_TOP = { x: 0, y: 60, z: 0 };
+const TIBIA_BOT = { x: 0, y: 0, z: 0 };  // = ankle joint center
+const FIBULA_TOP = { x: 12, y: 55, z: -2 };
+const FIBULA_BOT = { x: 10, y: -2, z: -1 };  // lateral malleolus
+
+// Talus (dome-shaped, sits in ankle mortise)
+const TALUS = [
+  { x: -10, y: -2, z: -8 },   // 0: post-med
+  { x:  10, y: -2, z: -8 },   // 1: post-lat
+  { x:  12, y: -4, z:  5 },   // 2: ant-lat
+  { x: -10, y: -4, z:  8 },   // 3: ant-med
+  { x:   0, y:  3, z:  0 },   // 4: dome top
+];
+
+// Calcaneus (heel bone — extends posterior and inferior)
+const CALCANEUS = [
+  { x:  -8, y: -8,  z: -12 },  // 0: post-med-top
+  { x:   8, y: -8,  z: -12 },  // 1: post-lat-top
+  { x:  10, y: -10, z: -30 },  // 2: heel post-lat
+  { x:  -8, y: -10, z: -30 },  // 3: heel post-med
+  { x:  -6, y: -18, z: -28 },  // 4: heel bottom-med
+  { x:   8, y: -18, z: -28 },  // 5: heel bottom-lat
+  { x:  10, y: -16, z: -10 },  // 6: ant-lat-bottom
+  { x:  -8, y: -16, z: -10 },  // 7: ant-med-bottom
+];
+
+// Midfoot block (navicular + cuboid + cuneiforms simplified)
+const MIDFOOT = [
+  { x: -12, y: -8,  z:  8 },   // 0: post-med
+  { x:  14, y: -8,  z:  6 },   // 1: post-lat
+  { x:  14, y: -10, z: 28 },   // 2: ant-lat
+  { x: -14, y: -10, z: 30 },   // 3: ant-med
+  { x: -12, y: -16, z:  8 },   // 4: bottom-post-med
+  { x:  14, y: -16, z:  6 },   // 5: bottom-post-lat
+  { x:  14, y: -16, z: 28 },   // 6: bottom-ant-lat
+  { x: -14, y: -16, z: 30 },   // 7: bottom-ant-med
+];
+
+// Metatarsals — base (proximal, near midfoot) and head (distal, MTP joint)
+// MT1 = big toe (most medial), MT5 = little toe (most lateral)
+const MT_BASES = [
+  { x: -14, y: -12, z: 32 },   // MT1 base (big toe)
+  { x:  -6, y: -12, z: 30 },   // MT2
+  { x:   2, y: -12, z: 29 },   // MT3
+  { x:   9, y: -12, z: 28 },   // MT4
+  { x:  14, y: -12, z: 26 },   // MT5 (little toe)
+];
+const MT_HEADS = [
+  { x: -14, y: -16, z: 60 },   // MT1 head (MTP1 joint)
+  { x:  -6, y: -16, z: 62 },   // MT2 head
+  { x:   2, y: -16, z: 61 },   // MT3 head
+  { x:   9, y: -16, z: 58 },   // MT4 head
+  { x:  14, y: -16, z: 54 },   // MT5 head
+];
+
+// Phalanges (toe bones) — defined as offsets from MTP joint
+// Each toe: proximal phalanx length, then middle (toes 2-5) or distal (big toe)
+const TOE_LENGTHS = [
+  { prox: 16, dist: 12 },                    // Toe 1 (hallux): 2 bones
+  { prox: 12, mid: 8, dist: 6 },             // Toe 2
+  { prox: 11, mid: 7, dist: 5 },             // Toe 3
+  { prox: 10, mid: 6, dist: 5 },             // Toe 4
+  { prox:  8, mid: 5, dist: 4 },             // Toe 5
+];
+
+// ============================================================
+// FOOT POSES — All 8 prayer positions (LEFT + RIGHT)
+// ============================================================
+// ankleDorsi: + = dorsiflexion (foot up), - = plantarflexion (foot points down)
+// subtalarInv: + = inversion (sole inward), - = eversion
+// mtpExt: + = extension (toes bend up/back), - = flexion (toes point down)
+// toeCurl: + = curl at PIP/DIP/IP joints
+
+const FOOT_POSES = {
+  qiyam: {
+    L: { ankleDorsi: 5,  subtalarInv: 0,  mtpExt: 0,  toeCurl: 0 },
+    R: { ankleDorsi: 5,  subtalarInv: 0,  mtpExt: 0,  toeCurl: 0 },
+  },
+  ruku: {
+    L: { ankleDorsi: 12, subtalarInv: 0,  mtpExt: 5,  toeCurl: 5 },
+    R: { ankleDorsi: 12, subtalarInv: 0,  mtpExt: 5,  toeCurl: 5 },
+  },
+  goingDown: {
+    L: { ankleDorsi: 25, subtalarInv: 0,  mtpExt: 25, toeCurl: 10 },
+    R: { ankleDorsi: 25, subtalarInv: 0,  mtpExt: 25, toeCurl: 10 },
+  },
+  sujud: {
+    // Both feet: toes curled under pressing on ground, ankles dorsiflexed
+    L: { ankleDorsi: 35, subtalarInv: 0,  mtpExt: 65, toeCurl: 15 },
+    R: { ankleDorsi: 35, subtalarInv: 0,  mtpExt: 65, toeCurl: 15 },
+  },
+  iftirash: {
+    // LEFT: top of foot flat on ground (strong plantarflexion), person sits ON ankle
+    // RIGHT: foot UPRIGHT/VERTICAL, standing on toes pointing toward qibla
+    L: { ankleDorsi: -50, subtalarInv: 5,  mtpExt: -5,  toeCurl: 0 },
+    R: { ankleDorsi: 70,  subtalarInv: 0,  mtpExt: 55,  toeCurl: 10 },
+  },
+  tawarruk: {
+    // LEFT: slides out from under right leg, even more plantarflexed + inverted
+    // RIGHT: same as iftirash — upright on toes toward qibla
+    L: { ankleDorsi: -55, subtalarInv: 20, mtpExt: -5,  toeCurl: 0 },
+    R: { ankleDorsi: 70,  subtalarInv: 0,  mtpExt: 55,  toeCurl: 10 },
+  },
+  tasleem_r: {
+    L: { ankleDorsi: -55, subtalarInv: 20, mtpExt: -5,  toeCurl: 0 },
+    R: { ankleDorsi: 70,  subtalarInv: 0,  mtpExt: 55,  toeCurl: 10 },
+  },
+  tasleem_l: {
+    L: { ankleDorsi: -55, subtalarInv: 20, mtpExt: -5,  toeCurl: 0 },
+    R: { ankleDorsi: 70,  subtalarInv: 0,  mtpExt: 55,  toeCurl: 10 },
+  },
+};
+
+const NEUTRAL_FOOT = { ankleDorsi: 0, subtalarInv: 0, mtpExt: 0, toeCurl: 0 };
+
+// ============================================================
+// STAGE / TIMELINE (identical to pelvis file)
+// ============================================================
+const STAGE_INFO = {
+  qiyam:       { ar: 'قِيَام',    tr: 'Qiyam',     en: 'Standing' },
+  qiyam_return:{ ar: 'قِيَام',    tr: 'Qiyam',     en: 'Return to Standing' },
+  ruku:        { ar: 'رُكُوع',    tr: 'Ruku',       en: 'Bowing' },
+  trans_sujud: { ar: 'اِنْتِقَال', tr: 'Intiqal',   en: 'Transition' },
+  sujud_1:     { ar: 'سُجُود',    tr: 'Sujud',      en: 'Prostration (1st)' },
+  sujud_2:     { ar: 'سُجُود',    tr: 'Sujud',      en: 'Prostration (2nd)' },
+  juloos_1:    { ar: 'جُلُوس',    tr: 'Juloos',     en: 'Sitting (Iftirash)' },
+  tashahhud:   { ar: 'تَشَهُّد',   tr: 'Tashahhud',  en: 'Testimony (Tawarruk)' },
+  tasleem_r:   { ar: 'تَسْلِيم',   tr: 'Tasleem',    en: 'Peace Greeting (Right)' },
+  tasleem_mid: { ar: 'تَسْلِيم',   tr: 'Tasleem',    en: 'Peace (Center)' },
+  tasleem_l:   { ar: 'تَسْلِيم',   tr: 'Tasleem',    en: 'Peace Greeting (Left)' },
+};
+
+const KEYFRAMES = [
+  { t: 0,    stage: 'qiyam' },
+  { t: 3,    stage: 'qiyam' },
+  { t: 5,    stage: 'ruku' },
+  { t: 8,    stage: 'ruku' },
+  { t: 10,   stage: 'qiyam_return' },
+  { t: 12,   stage: 'qiyam_return' },
+  { t: 13.5, stage: 'trans_sujud' },
+  { t: 15,   stage: 'sujud_1' },
+  { t: 18,   stage: 'sujud_1' },
+  { t: 20,   stage: 'juloos_1' },
+  { t: 23,   stage: 'juloos_1' },
+  { t: 24.5, stage: 'trans_sujud' },
+  { t: 26,   stage: 'sujud_2' },
+  { t: 29,   stage: 'sujud_2' },
+  { t: 31,   stage: 'tashahhud' },
+  { t: 34,   stage: 'tashahhud' },
+  { t: 35.5, stage: 'tasleem_r' },
+  { t: 37,   stage: 'tasleem_r' },
+  { t: 38,   stage: 'tasleem_mid' },
+  { t: 39,   stage: 'tasleem_l' },
+  { t: 41,   stage: 'tasleem_l' },
+];
+const TOTAL_TIME = 41;
+
+function getStage(time) {
+  let stage = 'qiyam';
+  for (const kf of KEYFRAMES) { if (time >= kf.t) stage = kf.stage; }
+  return stage;
+}
+function getPoseKey(stage) {
+  const map = {
+    'qiyam': 'qiyam', 'qiyam_return': 'qiyam', 'ruku': 'ruku',
+    'trans_sujud': 'goingDown', 'sujud_1': 'sujud', 'sujud_2': 'sujud',
+    'juloos_1': 'iftirash', 'tashahhud': 'tawarruk',
+    'tasleem_r': 'tasleem_r', 'tasleem_mid': 'tawarruk', 'tasleem_l': 'tasleem_l',
+  };
+  return map[stage] || 'qiyam';
+}
+
+// ============================================================
+// ANIMATION STATE
+// ============================================================
+let currentTime = 3;
+let isPlaying = false;
+let lastFrameTime = null;
+let speed = 1;
+const LERP = 0.08;
+let currentPoseL = null;
+let currentPoseR = null;
+
+function lerpSide(cur, tgt) {
+  if (!cur) return { ...tgt };
+  const r = {};
+  for (const k in tgt) {
+    r[k] = cur[k] + (tgt[k] - cur[k]) * LERP;
+  }
+  return r;
+}
+
+// ============================================================
+// FOOT TRANSFORMATION PIPELINE
+// ============================================================
+// Kinematic chain:
+//   Tibia (FIXED) → Ankle rotation (dorsi/plantar around X)
+//     → Subtalar (inversion around Z, calcaneus only)
+//       → Foot body (talus, midfoot, metatarsals move with ankle)
+//         → MTP (per-toe extension around X at each MT head)
+//           → PIP/DIP curl (around X at each inter-phalangeal joint)
+
+function transformFootMesh(pose, side) {
+  const s = side === 'L' ? -1 : 1;  // mirror X for left foot
+  const xOff = side === 'L' ? -65 : 65;  // separate L and R
+
+  const ankleAngle = deg(-pose.ankleDorsi);  // rotX: negative dorsi = foot up
+  const subtalarAngle = deg(-pose.subtalarInv * s);  // inversion: rotate around Z
+
+  // Helper: mirror + offset
+  function mir(pt) { return { x: pt.x * s + xOff, y: pt.y, z: pt.z }; }
+
+  // Apply ankle rotation around origin (ankle joint center)
+  function applyAnkle(pt) {
+    let p = rotX(pt, ankleAngle);
+    return mir(p);
+  }
+
+  // Apply ankle + subtalar (for calcaneus)
+  function applyAnkleSubtalar(pt) {
+    let p = rotX(pt, ankleAngle);
+    p = rotZ(p, subtalarAngle);
+    return mir(p);
+  }
+
+  // Tibia stays FIXED (reference)
+  const tibiaTop = mir(TIBIA_TOP);
+  const tibiaBot = mir(TIBIA_BOT);
+  const fibulaTop = mir(FIBULA_TOP);
+  const fibulaBot = mir(FIBULA_BOT);
+
+  // Talus rotates with ankle
+  const talus = TALUS.map(v => applyAnkle(v));
+  const talusDome = applyAnkle(TALUS[4]);
+
+  // Calcaneus rotates with ankle + subtalar
+  const calcaneus = CALCANEUS.map(v => applyAnkleSubtalar(v));
+
+  // Midfoot rotates with ankle
+  const midfoot = MIDFOOT.map(v => applyAnkle(v));
+
+  // Metatarsal bases rotate with ankle
+  const mtBases = MT_BASES.map(v => applyAnkle(v));
+
+  // Metatarsal heads rotate with ankle
+  const mtHeads = MT_HEADS.map(v => applyAnkle(v));
+
+  // Per-toe phalanges: MTP extension + curl
+  const toes = [];
+  for (let t = 0; t < 5; t++) {
+    const mtHead = MT_HEADS[t]; // in foot-local space (before ankle)
+    const toeInfo = TOE_LENGTHS[t];
+
+    // Direction along metatarsal (base → head), projected on Z
+    const mtDir = norm(subV(MT_HEADS[t], MT_BASES[t]));
+
+    // MTP rotation: toes extend (bend up/back) or flex (bend down)
+    // Big toe gets full mtpExt, smaller toes get progressively less
+    const mtpScale = [1.0, 0.85, 0.7, 0.55, 0.4][t];
+    const mtpAngle = deg(-pose.mtpExt * mtpScale);  // negative = extend upward
+
+    // Proximal phalanx direction: start with metatarsal direction, rotate by MTP
+    let proxDir = { x: 0, y: 0, z: 1 }; // forward in foot space
+    proxDir = rotX(proxDir, ankleAngle + mtpAngle);
+
+    // Proximal phalanx end (in world space)
+    const proxEnd = addV(mtHeads[t], scaleV({ x: 0, y: 0, z: toeInfo.prox }, 1));
+    // Transform proximal end
+    let proxEndLocal = { x: mtHead.x, y: mtHead.y, z: mtHead.z + toeInfo.prox };
+    // Apply MTP rotation around MT head
+    let relProx = { x: 0, y: 0, z: toeInfo.prox };
+    relProx = rotX(relProx, mtpAngle);
+
+    // Now apply ankle to the rotated point (relative to MT head in ankle-space)
+    let proxEndWorld = addV(MT_HEADS[t], relProx);
+    proxEndWorld = applyAnkle(proxEndWorld);
+
+    if (t === 0) {
+      // Big toe: proximal → IP joint → distal
+      const curlAngle = deg(pose.toeCurl * 0.8);  // IP curl
+      let relDist = { x: 0, y: 0, z: toeInfo.dist };
+      relDist = rotX(relDist, mtpAngle + curlAngle);
+      let distEndWorld = addV(MT_HEADS[t], addV(relProx, relDist));
+      distEndWorld = applyAnkle(distEndWorld);
+
+      toes.push({
+        mtpJoint: mtHeads[t],
+        proxEnd: proxEndWorld,
+        distEnd: distEndWorld,
+        segments: 2,
+      });
+    } else {
+      // Toes 2-5: proximal → PIP → middle → DIP → distal
+      const pipCurl = deg(pose.toeCurl);
+      const dipCurl = deg(pose.toeCurl * 0.6);
+
+      let relMid = { x: 0, y: 0, z: toeInfo.mid };
+      relMid = rotX(relMid, mtpAngle + pipCurl);
+
+      let relDist = { x: 0, y: 0, z: toeInfo.dist };
+      relDist = rotX(relDist, mtpAngle + pipCurl + dipCurl);
+
+      let midEndWorld = addV(MT_HEADS[t], addV(relProx, relMid));
+      midEndWorld = applyAnkle(midEndWorld);
+
+      let distEndWorld = addV(MT_HEADS[t], addV(relProx, addV(relMid, relDist)));
+      distEndWorld = applyAnkle(distEndWorld);
+
+      toes.push({
+        mtpJoint: mtHeads[t],
+        proxEnd: midEndWorld,
+        midEnd: midEndWorld,
+        distEnd: distEndWorld,
+        segments: 3,
+      });
+    }
+  }
+
+  return {
+    tibiaTop, tibiaBot, fibulaTop, fibulaBot,
+    talus, talusDome, calcaneus, midfoot,
+    mtBases, mtHeads, toes, side,
+  };
+}
+
+// ============================================================
+// BUILD RENDER LIST
+// ============================================================
+function buildRenderList(poseL, poseR) {
+  const items = [];
+
+  for (const side of ['L', 'R']) {
+    const pose = side === 'L' ? poseL : poseR;
+    const foot = transformFootMesh(pose, side);
+
+    // ---- TIBIA / FIBULA (fixed reference stubs) ----
+    items.push({ type: 'edge', p0: foot.tibiaTop, p1: foot.tibiaBot, color: '#e8e0d0aa', width: 3, z: (foot.tibiaTop.z+foot.tibiaBot.z)/2, layer: 1 });
+    items.push({ type: 'edge', p0: foot.fibulaTop, p1: foot.fibulaBot, color: '#e8e0d077', width: 2, z: (foot.fibulaTop.z+foot.fibulaBot.z)/2, layer: 1 });
+    // Tibia-fibula bridge at top
+    items.push({ type: 'edge', p0: foot.tibiaTop, p1: foot.fibulaTop, color: '#e8e0d044', width: 1, z: (foot.tibiaTop.z+foot.fibulaTop.z)/2, layer: 1 });
+    // Cut marks at top
+    items.push({ type: 'dot', pt: foot.tibiaTop, color: '#e8e0d066', radius: 4, z: foot.tibiaTop.z, layer: 2 });
+
+    // Ankle joint marker
+    items.push({ type: 'dot', pt: foot.tibiaBot, color: '#d4af37', radius: 5, z: foot.tibiaBot.z, layer: 4, glow: true, label: 'Ankle' });
+
+    // ---- TALUS ----
+    // Talus faces
+    const talusFaces = [
+      [0,1,2,3],  // inferior
+      [0,1,4],    // posterior
+      [2,3,4],    // anterior
+      [0,3,4],    // medial
+      [1,2,4],    // lateral
+    ];
+    for (const face of talusFaces) {
+      const pts = face.map(i => foot.talus[i]);
+      const avgZ = pts.reduce((s,p)=>s+p.z,0)/pts.length;
+      items.push({ type: 'face', pts, color: '#4ecdc4', opacity: 0.18, z: avgZ, layer: 2 });
+    }
+    // Talus edges
+    const talusEdges = [[0,1],[1,2],[2,3],[3,0],[0,4],[1,4],[2,4],[3,4]];
+    for (const [a,b] of talusEdges) {
+      items.push({ type: 'edge', p0: foot.talus[a], p1: foot.talus[b], color: '#4ecdc4aa', width: 1.2, z: (foot.talus[a].z+foot.talus[b].z)/2, layer: 2 });
+    }
+    // Talus dome marker
+    items.push({ type: 'dot', pt: foot.talusDome, color: '#4ecdc4', radius: 3, z: foot.talusDome.z, layer: 3 });
+
+    // ---- CALCANEUS ----
+    const calcFaces = [
+      [0,1,2,3],  // posterior (heel back)
+      [4,5,2,3],  // bottom-posterior
+      [6,7,0,1],  // top-anterior
+      [4,5,6,7],  // inferior
+      [0,3,4,7],  // medial
+      [1,2,5,6],  // lateral
+    ];
+    for (const face of calcFaces) {
+      const pts = face.map(i => foot.calcaneus[i]);
+      const avgZ = pts.reduce((s,p)=>s+p.z,0)/pts.length;
+      items.push({ type: 'face', pts, color: '#d4af37', opacity: 0.15, z: avgZ, layer: 2 });
+    }
+    const calcEdges = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,7],[1,6],[2,5],[3,4]];
+    for (const [a,b] of calcEdges) {
+      items.push({ type: 'edge', p0: foot.calcaneus[a], p1: foot.calcaneus[b], color: '#d4af3788', width: 1.2, z: (foot.calcaneus[a].z+foot.calcaneus[b].z)/2, layer: 2 });
+    }
+    // Heel tuberosity marker
+    const heelPt = lerpV(foot.calcaneus[2], foot.calcaneus[3], 0.5);
+    items.push({ type: 'dot', pt: heelPt, color: '#d4af37', radius: 3.5, z: heelPt.z, layer: 3, label: 'Heel' });
+
+    // ---- MIDFOOT ----
+    const midFaces = [
+      [0,1,2,3],  // top
+      [4,5,6,7],  // bottom
+      [0,1,5,4],  // posterior
+      [2,3,7,6],  // anterior
+      [0,3,7,4],  // medial
+      [1,2,6,5],  // lateral
+    ];
+    for (const face of midFaces) {
+      const pts = face.map(i => foot.midfoot[i]);
+      const avgZ = pts.reduce((s,p)=>s+p.z,0)/pts.length;
+      items.push({ type: 'face', pts, color: '#8b6914', opacity: 0.12, z: avgZ, layer: 2 });
+    }
+    const midEdges = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+    for (const [a,b] of midEdges) {
+      items.push({ type: 'edge', p0: foot.midfoot[a], p1: foot.midfoot[b], color: '#8b691488', width: 1, z: (foot.midfoot[a].z+foot.midfoot[b].z)/2, layer: 2 });
+    }
+
+    // ---- METATARSALS ----
+    for (let m = 0; m < 5; m++) {
+      const width = m === 0 ? 2.5 : 1.8;
+      items.push({ type: 'edge', p0: foot.mtBases[m], p1: foot.mtHeads[m], color: '#f9a825aa', width, z: (foot.mtBases[m].z+foot.mtHeads[m].z)/2, layer: 2 });
+      // MT head dot (MTP joint)
+      items.push({ type: 'dot', pt: foot.mtHeads[m], color: '#d4af3788', radius: 3, z: foot.mtHeads[m].z, layer: 3, label: m===0?'MTP1':m===4?'MTP5':null });
+    }
+
+    // ---- TOES (PHALANGES) ----
+    for (let t = 0; t < 5; t++) {
+      const toe = foot.toes[t];
+      const toeColor = '#ff6b6baa';
+      const toeWidth = t === 0 ? 2 : 1.5;
+
+      // Proximal phalanx: MTP → proxEnd
+      items.push({ type: 'edge', p0: toe.mtpJoint, p1: toe.proxEnd, color: toeColor, width: toeWidth, z: (toe.mtpJoint.z+toe.proxEnd.z)/2, layer: 3 });
+
+      if (t === 0) {
+        // Big toe: proxEnd = IP joint → distEnd
+        items.push({ type: 'dot', pt: toe.proxEnd, color: '#d4af3766', radius: 2, z: toe.proxEnd.z, layer: 3 });
+        items.push({ type: 'edge', p0: toe.proxEnd, p1: toe.distEnd, color: toeColor, width: 1.5, z: (toe.proxEnd.z+toe.distEnd.z)/2, layer: 3 });
+        items.push({ type: 'dot', pt: toe.distEnd, color: '#ff6b6b88', radius: 2, z: toe.distEnd.z, layer: 3 });
+      } else {
+        // Toes 2-5: proxEnd → midEnd (PIP), midEnd → distEnd (DIP)
+        items.push({ type: 'dot', pt: toe.proxEnd, color: '#d4af3744', radius: 1.5, z: toe.proxEnd.z, layer: 3 });
+        items.push({ type: 'edge', p0: toe.proxEnd, p1: toe.distEnd, color: toeColor, width: 1.2, z: (toe.proxEnd.z+toe.distEnd.z)/2, layer: 3 });
+        items.push({ type: 'dot', pt: toe.distEnd, color: '#ff6b6b66', radius: 1.5, z: toe.distEnd.z, layer: 3 });
+      }
+    }
+
+    // ---- SIDE LABEL ----
+    const labelPt = { x: foot.tibiaTop.x, y: foot.tibiaTop.y + 12, z: foot.tibiaTop.z };
+    items.push({ type: 'label', pt: labelPt, text: side === 'L' ? 'LEFT — يَسَار' : 'RIGHT — يَمِين', color: '#d4af37cc', z: labelPt.z, layer: 5 });
+  }
+
+  // Depth sort
+  items.sort((a, b) => {
+    const getCenter = (item) => {
+      if (item.type === 'dot' || item.type === 'label') return item.pt;
+      if (item.type === 'edge') return { x:(item.p0.x+item.p1.x)/2, y:(item.p0.y+item.p1.y)/2, z:(item.p0.z+item.p1.z)/2 };
+      if (item.type === 'face') {
+        const pts = item.pts;
+        return { x: pts.reduce((s,p)=>s+p.x,0)/pts.length, y: pts.reduce((s,p)=>s+p.y,0)/pts.length, z: pts.reduce((s,p)=>s+p.z,0)/pts.length };
+      }
+      return { x:0, y:0, z: item.z };
+    };
+    const az = rotY(getCenter(a), camAz);
+    const bz = rotY(getCenter(b), camAz);
+    if (a.layer !== b.layer) return a.layer - b.layer;
+    return az.z - bz.z;
+  });
+
+  return items;
+}
+
+// ============================================================
+// DRAWING FUNCTIONS
+// ============================================================
+function drawFace(item) {
+  if (item.pts.length < 3) return;
+  const projected = item.pts.map(p => project(p));
+  ctx.save();
+  ctx.globalAlpha = item.opacity;
+  ctx.fillStyle = item.color;
+  ctx.strokeStyle = item.color;
+  ctx.lineWidth = 0.5;
+  ctx.beginPath();
+  ctx.moveTo(projected[0].sx, projected[0].sy);
+  for (let i = 1; i < projected.length; i++) ctx.lineTo(projected[i].sx, projected[i].sy);
+  ctx.closePath();
+  ctx.fill();
+  ctx.globalAlpha = item.opacity * 1.5;
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawEdge(item) {
+  const p0 = project(item.p0), p1 = project(item.p1);
+  ctx.save();
+  ctx.strokeStyle = item.color;
+  ctx.lineWidth = item.width;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(p0.sx, p0.sy);
+  ctx.lineTo(p1.sx, p1.sy);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawDot(item) {
+  const p = project(item.pt);
+  const r = item.radius * (p.scale / 1.5);
+  ctx.save();
+  if (item.glow) {
+    const grd = ctx.createRadialGradient(p.sx, p.sy, 0, p.sx, p.sy, r*3);
+    grd.addColorStop(0, item.color + '66');
+    grd.addColorStop(1, item.color + '00');
+    ctx.fillStyle = grd;
+    ctx.beginPath();
+    ctx.arc(p.sx, p.sy, r*3, 0, Math.PI*2);
+    ctx.fill();
+  }
+  if (item.ring) {
+    ctx.strokeStyle = item.color;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(p.sx, p.sy, r, 0, Math.PI*2);
+    ctx.stroke();
+  } else {
+    ctx.fillStyle = item.color;
+    ctx.beginPath();
+    ctx.arc(p.sx, p.sy, r, 0, Math.PI*2);
+    ctx.fill();
+  }
+  if (item.label) {
+    ctx.fillStyle = '#d4af37cc';
+    ctx.font = 'bold 9px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(item.label, p.sx, p.sy - r - 4);
+  }
+  ctx.restore();
+}
+
+function drawLabel(item) {
+  const p = project(item.pt);
+  ctx.save();
+  ctx.fillStyle = item.color;
+  ctx.font = 'bold 11px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(item.text, p.sx, p.sy);
+  ctx.restore();
+}
+
+// ============================================================
+// GRID, REFERENCE FRAME, GHOST NEUTRAL
+// ============================================================
+function drawGrid() {
+  ctx.save();
+  ctx.globalAlpha = 0.15;
+  ctx.strokeStyle = '#30363d';
+  ctx.lineWidth = 0.5;
+  const gridY = -25;  // ground level (bottom of foot)
+  const gridSize = 150;
+  const step = 30;
+  for (let x = -gridSize; x <= gridSize; x += step) {
+    const p0 = project({ x, y: gridY, z: -gridSize });
+    const p1 = project({ x, y: gridY, z: gridSize });
+    ctx.beginPath(); ctx.moveTo(p0.sx, p0.sy); ctx.lineTo(p1.sx, p1.sy); ctx.stroke();
+  }
+  for (let z = -gridSize; z <= gridSize; z += step) {
+    const p0 = project({ x: -gridSize, y: gridY, z });
+    const p1 = project({ x: gridSize, y: gridY, z });
+    ctx.beginPath(); ctx.moveTo(p0.sx, p0.sy); ctx.lineTo(p1.sx, p1.sy); ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawReferenceFrame() {
+  ctx.save();
+  // Origin at ankle center (0,0,0)
+  const origin = project({ x: 0, y: 0, z: 0 });
+  const grd = ctx.createRadialGradient(origin.sx, origin.sy, 0, origin.sx, origin.sy, 16);
+  grd.addColorStop(0, '#ffffff15');
+  grd.addColorStop(1, '#ffffff00');
+  ctx.fillStyle = grd;
+  ctx.beginPath();
+  ctx.arc(origin.sx, origin.sy, 16, 0, Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle = '#ffffff30';
+  ctx.beginPath();
+  ctx.arc(origin.sx, origin.sy, 3, 0, Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle = '#ffffff25';
+  ctx.font = '8px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('ORIGIN', origin.sx, origin.sy + 20);
+
+  // Vertical plumb line
+  const vTop = project({ x: 0, y: 120, z: 0 });
+  const vBot = project({ x: 0, y: -60, z: 0 });
+  ctx.setLineDash([4, 6]);
+  ctx.strokeStyle = '#ffffff10';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(vTop.sx, vTop.sy);
+  ctx.lineTo(vBot.sx, vBot.sy);
+  ctx.stroke();
+
+  // Horizontal at ground level
+  const hL = project({ x: -120, y: -18, z: 0 });
+  const hR = project({ x: 120, y: -18, z: 0 });
+  ctx.strokeStyle = '#ffffff08';
+  ctx.beginPath();
+  ctx.moveTo(hL.sx, hL.sy);
+  ctx.lineTo(hR.sx, hR.sy);
+  ctx.stroke();
+
+  ctx.setLineDash([]);
+  ctx.restore();
+}
+
+function drawGhostNeutral() {
+  ctx.save();
+  ctx.setLineDash([3, 5]);
+  ctx.globalAlpha = 0.15;
+
+  for (const side of ['L', 'R']) {
+    const ghost = transformFootMesh(NEUTRAL_FOOT, side);
+
+    // Ghost tibia
+    ctx.strokeStyle = '#e8e0d0';
+    ctx.lineWidth = 1.5;
+    let p0 = project(ghost.tibiaTop), p1 = project(ghost.tibiaBot);
+    ctx.beginPath(); ctx.moveTo(p0.sx, p0.sy); ctx.lineTo(p1.sx, p1.sy); ctx.stroke();
+
+    // Ghost talus outline
+    ctx.strokeStyle = '#4ecdc4';
+    ctx.lineWidth = 0.8;
+    const tEdges = [[0,1],[1,2],[2,3],[3,0],[0,4],[1,4],[2,4],[3,4]];
+    for (const [a,b] of tEdges) {
+      p0 = project(ghost.talus[a]); p1 = project(ghost.talus[b]);
+      ctx.beginPath(); ctx.moveTo(p0.sx, p0.sy); ctx.lineTo(p1.sx, p1.sy); ctx.stroke();
+    }
+
+    // Ghost calcaneus outline
+    ctx.strokeStyle = '#d4af37';
+    ctx.lineWidth = 0.8;
+    const cEdges = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,7],[1,6],[2,5],[3,4]];
+    for (const [a,b] of cEdges) {
+      p0 = project(ghost.calcaneus[a]); p1 = project(ghost.calcaneus[b]);
+      ctx.beginPath(); ctx.moveTo(p0.sx, p0.sy); ctx.lineTo(p1.sx, p1.sy); ctx.stroke();
+    }
+
+    // Ghost metatarsals
+    ctx.strokeStyle = '#f9a825';
+    ctx.lineWidth = 0.8;
+    for (let m = 0; m < 5; m++) {
+      p0 = project(ghost.mtBases[m]); p1 = project(ghost.mtHeads[m]);
+      ctx.beginPath(); ctx.moveTo(p0.sx, p0.sy); ctx.lineTo(p1.sx, p1.sy); ctx.stroke();
+    }
+
+    // Ghost toes (proximal segments)
+    ctx.strokeStyle = '#ff6b6b';
+    ctx.lineWidth = 0.6;
+    for (let t = 0; t < 5; t++) {
+      const toe = ghost.toes[t];
+      p0 = project(toe.mtpJoint); p1 = project(toe.proxEnd);
+      ctx.beginPath(); ctx.moveTo(p0.sx, p0.sy); ctx.lineTo(p1.sx, p1.sy); ctx.stroke();
+      p0 = project(toe.proxEnd); p1 = project(toe.distEnd);
+      ctx.beginPath(); ctx.moveTo(p0.sx, p0.sy); ctx.lineTo(p1.sx, p1.sy); ctx.stroke();
+    }
+  }
+
+  // NEUTRAL label
+  ctx.globalAlpha = 0.18;
+  ctx.fillStyle = '#4ecdc4';
+  ctx.font = '8px sans-serif';
+  ctx.textAlign = 'center';
+  const nlp = project({ x: 0, y: 72, z: 0 });
+  ctx.fillText('NEUTRAL', nlp.sx, nlp.sy);
+
+  ctx.setLineDash([]);
+  ctx.restore();
+}
+
+// ============================================================
+// DRAW SCENE
+// ============================================================
+function drawScene(poseL, poseR) {
+  ctx.clearRect(0, 0, W, H);
+
+  // Background
+  const grad = ctx.createRadialGradient(W/2, H/2, 50, W/2, H/2, 450);
+  grad.addColorStop(0, '#111820');
+  grad.addColorStop(1, '#0a0e14');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  drawGrid();
+  drawReferenceFrame();
+  drawGhostNeutral();
+
+  const items = buildRenderList(poseL, poseR);
+
+  for (const item of items) {
+    if (item.type === 'face') drawFace(item);
+    else if (item.type === 'edge') drawEdge(item);
+    else if (item.type === 'dot') drawDot(item);
+    else if (item.type === 'label') drawLabel(item);
+  }
+
+  drawAnnotations(poseL, poseR);
+}
+
+function drawAnnotations(poseL, poseR) {
+  ctx.save();
+
+  // Title top-left
+  ctx.fillStyle = '#d4af37aa';
+  ctx.font = 'bold 11px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('القَدَم والكاحِل — 3D Foot / Ankle', 15, 22);
+
+  // Dorsiflexion readout top-right
+  const ankL = Math.round(poseL.ankleDorsi);
+  const ankR = Math.round(poseR.ankleDorsi);
+
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#8b949eaa';
+  ctx.font = '9px sans-serif';
+  ctx.fillText('Ankle L / R', W - 15, 22);
+  const colL = Math.abs(ankL) > 30 ? '#ff6b6b' : Math.abs(ankL) > 10 ? '#f9a825' : '#4ecdc4';
+  const colR = Math.abs(ankR) > 30 ? '#ff6b6b' : Math.abs(ankR) > 10 ? '#f9a825' : '#4ecdc4';
+  ctx.font = 'bold 14px sans-serif';
+  ctx.fillStyle = colL;
+  ctx.fillText(`${ankL > 0 ? '+' : ''}${ankL}°`, W - 55, 40);
+  ctx.fillStyle = colR;
+  ctx.fillText(`${ankR > 0 ? '+' : ''}${ankR}°`, W - 15, 40);
+  ctx.fillStyle = '#8b949e66';
+  ctx.font = '9px sans-serif';
+  ctx.fillText('/', W - 48, 40);
+
+  // MTP readout
+  const mtpL = Math.round(poseL.mtpExt);
+  const mtpR = Math.round(poseR.mtpExt);
+  ctx.fillStyle = '#8b949eaa';
+  ctx.font = '9px sans-serif';
+  ctx.fillText('MTP Ext L / R', W - 15, 56);
+  ctx.font = 'bold 13px sans-serif';
+  ctx.fillStyle = Math.abs(mtpL) > 40 ? '#ff6b6b' : '#f9a825';
+  ctx.fillText(`${mtpL}°`, W - 55, 72);
+  ctx.fillStyle = Math.abs(mtpR) > 40 ? '#ff6b6b' : '#f9a825';
+  ctx.fillText(`${mtpR}°`, W - 15, 72);
+
+  // Asymmetry badge
+  const isAsym = Math.abs(ankL - ankR) > 10 || Math.abs(mtpL - mtpR) > 10;
+  if (isAsym) {
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#f9a825cc';
+    ctx.font = 'bold 11px sans-serif';
+    ctx.fillText('⚡ ASYMMETRIC', W/2, H - 20);
+  }
+
+  // Axis indicator
+  drawAxisIndicator();
+
+  ctx.restore();
+}
+
+function drawAxisIndicator() {
+  const ox = 50, oy = H - 50;
+  const len = 30;
+  const axes = [
+    { dir: { x:1, y:0, z:0 }, color: '#ff6b6b', label: 'X' },
+    { dir: { x:0, y:1, z:0 }, color: '#4ecdc4', label: 'Y' },
+    { dir: { x:0, y:0, z:1 }, color: '#d4af37', label: 'Z' },
+  ];
+  for (const ax of axes) {
+    let d = rotY(ax.dir, camAz);
+    d = rotX(d, camEl);
+    const ex = ox + d.x * len, ey = oy - d.y * len;
+    ctx.strokeStyle = ax.color;
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ex, ey); ctx.stroke();
+    ctx.fillStyle = ax.color;
+    ctx.font = 'bold 9px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(ax.label, ex + (d.x > 0 ? 8 : -8), ey - (d.y > 0 ? 4 : -10));
+  }
+}
+
+// ============================================================
+// CAMERA CONTROLS
+// ============================================================
+let isDragging = false;
+let dragStartX = 0, dragStartY = 0;
+let dragStartAz = 0, dragStartEl = 0;
+
+canvas.addEventListener('mousedown', e => {
+  isDragging = true;
+  dragStartX = e.clientX; dragStartY = e.clientY;
+  dragStartAz = camAz; dragStartEl = camEl;
+});
+window.addEventListener('mousemove', e => {
+  if (!isDragging) return;
+  camAz = dragStartAz + (e.clientX - dragStartX) * 0.008;
+  camEl = Math.max(-1.2, Math.min(1.2, dragStartEl + (e.clientY - dragStartY) * 0.008));
+});
+window.addEventListener('mouseup', () => { isDragging = false; });
+
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  camDist = Math.max(CAM_NEAR, Math.min(CAM_FAR, camDist + e.deltaY * 0.5));
+}, { passive: false });
+
+canvas.addEventListener('touchstart', e => {
+  if (e.touches.length === 1) {
+    isDragging = true;
+    dragStartX = e.touches[0].clientX; dragStartY = e.touches[0].clientY;
+    dragStartAz = camAz; dragStartEl = camEl;
+  }
+});
+canvas.addEventListener('touchmove', e => {
+  if (!isDragging || e.touches.length !== 1) return;
+  e.preventDefault();
+  camAz = dragStartAz + (e.touches[0].clientX - dragStartX) * 0.008;
+  camEl = Math.max(-1.2, Math.min(1.2, dragStartEl + (e.touches[0].clientY - dragStartY) * 0.008));
+}, { passive: false });
+canvas.addEventListener('touchend', () => { isDragging = false; });
+
+const CAM_PRESETS = {
+  latR: { az: Math.PI/2,  el: 0.1,  label: 'camLatR' },
+  latL: { az: -Math.PI/2, el: 0.1,  label: 'camLatL' },
+  sup:  { az: Math.PI/2,  el: 1.1,  label: 'camSup' },
+  ant:  { az: 0,           el: 0.05, label: 'camAnt' },
+  post: { az: Math.PI,    el: 0.1,  label: 'camPost' },
+};
+let targetAz = null, targetEl = null;
+
+function setCam(preset) {
+  const p = CAM_PRESETS[preset];
+  targetAz = p.az; targetEl = p.el;
+  document.querySelectorAll('.cam-presets button').forEach(b => b.classList.remove('cam-active'));
+  document.getElementById(p.label).classList.add('cam-active');
+}
+
+// ============================================================
+// ANIMATION LOOP
+// ============================================================
+function animate(timestamp) {
+  if (!lastFrameTime) lastFrameTime = timestamp;
+  const dt = (timestamp - lastFrameTime) / 1000;
+  lastFrameTime = timestamp;
+
+  if (isPlaying) {
+    currentTime += dt * speed;
+    if (currentTime >= TOTAL_TIME) {
+      currentTime = TOTAL_TIME;
+      isPlaying = false;
+      updatePlayButton();
+    }
+    document.getElementById('timeline').value = currentTime;
+  }
+
+  // Camera smooth transition
+  if (targetAz !== null) {
+    camAz += (targetAz - camAz) * 0.1;
+    camEl += (targetEl - camEl) * 0.1;
+    if (Math.abs(camAz - targetAz) < 0.005 && Math.abs(camEl - targetEl) < 0.005) {
+      camAz = targetAz; camEl = targetEl;
+      targetAz = null; targetEl = null;
+    }
+  }
+
+  // Target pose
+  const stage = getStage(currentTime);
+  const poseKey = getPoseKey(stage);
+  const targetFootPose = FOOT_POSES[poseKey];
+  currentPoseL = lerpSide(currentPoseL, targetFootPose.L);
+  currentPoseR = lerpSide(currentPoseR, targetFootPose.R);
+
+  drawScene(currentPoseL, currentPoseR);
+  updateUI(stage, currentPoseL, currentPoseR);
+  document.getElementById('timeLabel').textContent = currentTime.toFixed(1) + 's';
+
+  requestAnimationFrame(animate);
+}
+
+function updateUI(stage, poseL, poseR) {
+  const info = STAGE_INFO[stage] || STAGE_INFO.qiyam;
+  document.getElementById('stgAr').textContent = info.ar;
+  document.getElementById('stgTr').textContent = info.tr;
+  document.getElementById('stgEn').textContent = info.en;
+
+  function setAngle(id, val, threshHigh, threshMed) {
+    const el = document.getElementById(id);
+    const v = Math.round(val);
+    el.textContent = (v > 0 ? '+' : '') + v + '°';
+    el.className = 'angle-val ' + (Math.abs(v) > threshHigh ? 'high' : Math.abs(v) > threshMed ? 'med' : 'low');
+  }
+
+  setAngle('angAnkleL', poseL.ankleDorsi, 30, 10);
+  setAngle('angSubtalarL', poseL.subtalarInv, 10, 3);
+  setAngle('angMtpL', poseL.mtpExt, 40, 15);
+  setAngle('angCurlL', poseL.toeCurl, 12, 5);
+  setAngle('angAnkleR', poseR.ankleDorsi, 30, 10);
+  setAngle('angSubtalarR', poseR.subtalarInv, 10, 3);
+  setAngle('angMtpR', poseR.mtpExt, 40, 15);
+  setAngle('angCurlR', poseR.toeCurl, 12, 5);
+
+  const badge = document.getElementById('sittingBadge');
+  const isAsym = Math.abs(poseL.ankleDorsi - poseR.ankleDorsi) > 10;
+  if (isAsym) {
+    badge.innerHTML = '<span class="sitting-badge asym">Asymmetric (L ≠ R)</span>';
+  } else {
+    badge.innerHTML = '<span class="sitting-badge sym">Symmetric</span>';
+  }
+}
+
+// ============================================================
+// TRANSPORT CONTROLS
+// ============================================================
+function togglePlay() {
+  if (currentTime >= TOTAL_TIME) currentTime = 0;
+  isPlaying = !isPlaying;
+  lastFrameTime = null;
+  updatePlayButton();
+}
+function updatePlayButton() {
+  const btn = document.getElementById('btnPlay');
+  btn.textContent = isPlaying ? '\u23F8' : '\u25B6';
+  btn.classList.toggle('active', isPlaying);
+}
+function stepNext() {
+  isPlaying = false; updatePlayButton();
+  for (const kf of KEYFRAMES) { if (kf.t > currentTime + 0.1) { currentTime = kf.t; break; } }
+  document.getElementById('timeline').value = currentTime;
+}
+function stepPrev() {
+  isPlaying = false; updatePlayButton();
+  for (let i = KEYFRAMES.length - 1; i >= 0; i--) {
+    if (KEYFRAMES[i].t < currentTime - 0.1) { currentTime = KEYFRAMES[i].t; break; }
+  }
+  document.getElementById('timeline').value = currentTime;
+}
+function scrub(val) {
+  isPlaying = false; updatePlayButton();
+  currentTime = parseFloat(val);
+  currentPoseL = null; currentPoseR = null;
+}
+function setSpeed(s) {
+  speed = s;
+  document.querySelectorAll('.controls button').forEach(b => {
+    if (b.textContent.includes('×') || b.textContent.includes('¼') || b.textContent.includes('½'))
+      b.classList.remove('active');
+  });
+  if (s === 1) document.getElementById('speed1').classList.add('active');
+}
+
+window.addEventListener('keydown', e => {
+  if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+  if (e.code === 'ArrowRight') { e.preventDefault(); stepNext(); }
+  if (e.code === 'ArrowLeft') { e.preventDefault(); stepPrev(); }
+});
+
+// Start
+requestAnimationFrame(animate);
+</script>
+</body>
+</html>

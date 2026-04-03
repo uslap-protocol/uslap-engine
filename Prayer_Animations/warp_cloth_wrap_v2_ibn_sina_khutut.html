@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>USLaP | خُطُوط ابن سينا — Ibn Sīnā's Force Lines</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d1117;color:#e8e0d0;font-family:'Segoe UI',sans-serif;overflow:hidden;height:100vh}
+canvas{display:block;cursor:grab}canvas:active{cursor:grabbing}
+.bis{position:fixed;top:6px;width:100%;text-align:center;color:#d4af3799;font-family:'Traditional Arabic',serif;font-size:0.95em;pointer-events:none;z-index:5}
+.title{position:fixed;top:24px;width:100%;text-align:center;color:#d4af37;font-size:0.85em;font-weight:700;pointer-events:none;z-index:5}
+.sub{position:fixed;top:42px;width:100%;text-align:center;color:#8b949e;font-size:0.7em;pointer-events:none;z-index:5}
+.ui{position:fixed;top:65px;left:10px;z-index:10;display:flex;flex-direction:column;gap:5px;width:240px}
+.btn{background:#21262d;border:1px solid #30363d;color:#e8e0d0;padding:3px 9px;border-radius:4px;cursor:pointer;font-size:0.72em;text-align:left}
+.btn:hover{background:#30363d}.btn.on{border-color:#d4af37;background:#d4af3722}
+.info{position:fixed;bottom:8px;left:10px;font-size:0.65em;color:#484f58;z-index:10}
+.legend{position:fixed;bottom:8px;right:10px;font-size:0.68em;color:#8b949e;text-align:right;z-index:10;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="bis">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+<div class="title">خُطُوط ابن سينا — Ibn Sīnā's Force Lines (SC02)</div>
+<div class="sub">قِيَام | المِحْوَر الظَّهْرِي / al-miḥwar al-ẓahrī = stable conductor</div>
+<canvas id="c"></canvas>
+<div class="ui">
+  <button class="btn on" id="bBody" onclick="cycleBody()">👤 Body: solid</button>
+  <button class="btn on" id="bWarp" onclick="t('warp')">│ خُطُوط ALL</button>
+  <div id="warpList" style="display:flex;flex-wrap:wrap;gap:2px;max-width:240px"></div>
+  <button class="btn" id="bThor" onclick="toggleThoracic()">╌ T1-T12 أَضْلَاع / ribs</button>
+  <div id="thorList" style="display:none;flex-wrap:wrap;gap:2px;max-width:240px"></div>
+  <button class="btn on" id="bSeam" onclick="t('seam')">━ المِحْوَر الظَّهْرِي</button>
+  <button class="btn on" id="bMeet" onclick="t('meet')">● Meeting pts</button>
+  <button class="btn" id="bLabel" onclick="t('label')">Aⁿ Labels</button>
+  <button class="btn" id="bXsec" onclick="t('xsec')">◎ Cross-section</button>
+  <div style="height:1px;background:#30363d;margin:2px 0"></div>
+  <div style="color:#8b949e;font-size:0.58em;padding:1px 0">خُطُوط مُسَمَّاة / Named Force Lines</div>
+  <div id="khututList" style="display:flex;flex-direction:column;gap:2px;max-width:240px"></div>
+  <div style="height:1px;background:#30363d;margin:2px 0"></div>
+  <button class="btn" onclick="az=Math.PI;el=0.15;dist=1100">↺ Back</button>
+  <button class="btn" onclick="az=0;el=0.15;dist=1100">↺ Front</button>
+  <button class="btn" onclick="az=Math.PI/2;el=0.15;dist=1100">↺ Side</button>
+  <button class="btn" onclick="az=Math.PI;el=1.2;dist=900">↺ Top</button>
+  <div style="height:1px;background:#30363d;margin:2px 0"></div>
+  <button class="btn" id="bRuku" onclick="toggleRuku()">ↄ Ruku pose</button>
+  <div style="height:1px;background:#30363d;margin:2px 0"></div>
+  <div style="color:#8b949e;font-size:0.58em;padding:1px 0">L4 Source Comparison</div>
+  <button class="btn" id="bL4cmp" onclick="toggleL4Compare()" style="font-size:0.65em;border-color:#555">⚡ L4: Ibn Sīnā vs Criminal DM</button>
+  <div id="l4info" style="display:none;font-size:0.55em;color:#8b949e;padding:2px 4px;line-height:1.5">
+    <span style="color:#ef5350">━━</span> Criminal DM: PI×0.7 (anterior-lateral)<br>
+    <span style="color:#66bb6a">━━</span> Ibn Sīnā: PI+0.15 (medial shin/ankle)
+  </div>
+</div>
+<div class="info">Drag: rotate | Scroll: zoom</div>
+<div class="legend">
+  <div style="color:#c9a84c">━ المِحْوَر الظَّهْرِي / al-miḥwar al-ẓahrī / stable conductor (BA013)</div>
+  <div style="color:#e040fb">│ خُطُوط / khuṭūṭ / vertebral force lines</div>
+  <div style="color:#4fc3f7">━ الخَطّ البَطْنِي السُّفْلِي / al-khaṭṭ al-baṭnī al-suflī / ventral lower (BA016/017)</div>
+  <div style="color:#66bb6a">━ خَطّ السَّهْمِي الأَمامِي / khaṭṭ al-sahmī al-amāmī / sagittal anterior (BA018)</div>
+  <div style="color:#ffa726">━ خَطّ جانِبِي / khaṭṭ jānibī / lateral (BA019)</div>
+  <div style="color:#ef5350">━ خَطّ حَلَزُونِي / khaṭṭ ḥalazūnī / spiral (BA020)</div>
+  <div style="color:#ff6b6b">● meeting points on المِحْوَر</div>
+</div>
+
+<script>
+const cv=document.getElementById('c'),cx=cv.getContext('2d');
+let W,H;function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight;}resize();onresize=resize;
+let az=Math.PI*0.8,el=0.3,dist=1100;
+let drag=false,mx,my,a0,e0;
+cv.onmousedown=e=>{drag=true;mx=e.clientX;my=e.clientY;a0=az;e0=el;};
+onmousemove=e=>{if(!drag)return;az=a0+(e.clientX-mx)*0.005;el=Math.max(-1.2,Math.min(1.2,e0+(e.clientY-my)*0.005));};
+onmouseup=()=>drag=false;
+cv.ontouchstart=e=>{if(e.touches.length!==1)return;drag=true;mx=e.touches[0].clientX;my=e.touches[0].clientY;a0=az;e0=el;};
+ontouchmove=e=>{if(!drag||e.touches.length!==1)return;e.preventDefault();az=a0+(e.touches[0].clientX-mx)*0.005;el=Math.max(-1.2,Math.min(1.2,e0+(e.touches[0].clientY-my)*0.005));};
+ontouchend=()=>drag=false;
+cv.onwheel=e=>{dist=Math.max(150,Math.min(1800,dist+e.deltaY*0.4));e.preventDefault();};
+const sh={body:true,warp:true,seam:true,meet:true,label:false,xsec:false};
+// Body display mode: 'solid' (opaque fill), 'transparent' (wireframe + ghost fill), 'off'
+let bodyMode='solid';
+function cycleBody(){
+  const modes=['solid','transparent','off'];
+  const labels=['👤 Body: solid','👻 Body: transparent','✕ Body: off'];
+  let idx=modes.indexOf(bodyMode);
+  idx=(idx+1)%3;
+  bodyMode=modes[idx];
+  sh.body=(bodyMode!=='off');
+  const btn=document.getElementById('bBody');
+  if(btn){ btn.textContent=labels[idx]; btn.classList.toggle('on',bodyMode!=='off'); }
+}
+// Per-vertebra visibility (all ON by default)
+const warpOn=new Array(20).fill(true); // oversized to accommodate any VERT count
+function t(k){sh[k]=!sh[k];const el2=document.getElementById('b'+k.charAt(0).toUpperCase()+k.slice(1));if(el2)el2.classList.toggle('on');}
+function tw(i){warpOn[i]=!warpOn[i];const el2=document.getElementById('bW'+i);if(el2)el2.classList.toggle('on');}
+function allWarps(on){for(let i=0;i<WARPS;i++){warpOn[i]=on;const el2=document.getElementById('bW'+i);if(el2)el2.classList.toggle('on',on);}}
+function rY(p,a){const c=Math.cos(a),s=Math.sin(a);return{x:p.x*c+p.z*s,y:p.y,z:-p.x*s+p.z*c};}
+function rX(p,a){const c=Math.cos(a),s=Math.sin(a);return{x:p.x,y:p.y*c-p.z*s,z:p.y*s+p.z*c};}
+const VIEW_CY=72; // vertical center of full body: (HEAD_TOP_Y+HEEL_Y)/2
+function pr(p){const tp=poseT(p);const r=rX(rY(tp,az),el);const s=dist/(dist+r.z);return{x:W/2+r.x*s,y:H/2-(r.y-VIEW_CY)*s,z:r.z,s};}
+function line3(pts,col,w,a){if(pts.length<2)return;const pp=pts.map(p=>pr(p));cx.save();cx.strokeStyle=col;cx.lineWidth=w;cx.globalAlpha=a;cx.lineCap='round';cx.lineJoin='round';cx.beginPath();cx.moveTo(pp[0].x,pp[0].y);for(let i=1;i<pp.length;i++)cx.lineTo(pp[i].x,pp[i].y);cx.stroke();cx.restore();}
+function dot3(pt,col,r,a){const p=pr(pt);cx.save();cx.globalAlpha=a;cx.fillStyle=col;cx.beginPath();cx.arc(p.x,p.y,r*p.s,0,Math.PI*2);cx.fill();cx.restore();}
+function txt3(pt,text,col,sz){const p=pr(pt);cx.save();cx.fillStyle=col;cx.font=sz+'px sans-serif';cx.textAlign='center';cx.fillText(text,p.x,p.y-8);cx.restore();}
+function txt3m(pt,lines,col,sz){const p=pr(pt);cx.save();cx.fillStyle=col;cx.font=sz+'px sans-serif';cx.textAlign='left';for(let i=0;i<lines.length;i++)cx.fillText(lines[i],p.x+12,p.y+i*(sz+3));cx.restore();}
+function fill3(pts,col,a){if(pts.length<3)return;const pp=pts.map(p=>pr(p));cx.save();cx.fillStyle=col;cx.globalAlpha=a;cx.beginPath();cx.moveTo(pp[0].x,pp[0].y);for(let i=1;i<pp.length;i++)cx.lineTo(pp[i].x,pp[i].y);cx.closePath();cx.fill();cx.restore();}
+
+// Two-sided ribbon: outer face = outerCol, inner face (against skin) = innerCol
+// Determines facing per-segment using body surface normal vs camera direction.
+function ribbon2s(pts,outerCol,innerCol,w,a){
+  if(pts.length<2)return;
+  // Batch segments by color to reduce draw calls
+  let curCol=null, batch=[];
+  for(let i=0;i<pts.length;i++){
+    const p=pts[i];
+    // Surface normal: direction from lobe center to this point
+    const prof=profAt(p.y);
+    const hs=prof.sep/2;
+    const lobeCx=(p.x>=0)?hs:-hs; // which lobe
+    const nx=p.x-lobeCx, nz=p.z;
+    // Rotate normal by camera
+    const rn=rX(rY({x:nx,y:0,z:nz},az),el);
+    // z<0 means normal faces viewer → outer
+    // In solid body mode, skip back-facing segments entirely
+    if(bodyMode==='solid' && rn.z>=0){
+      if(batch.length>1){
+        cx.save();cx.strokeStyle=curCol;cx.lineWidth=w;cx.globalAlpha=a;cx.lineCap='round';cx.lineJoin='round';
+        cx.beginPath();cx.moveTo(batch[0].x,batch[0].y);
+        for(let j=1;j<batch.length;j++)cx.lineTo(batch[j].x,batch[j].y);
+        cx.stroke();cx.restore();
+      }
+      batch=[];curCol=null;continue;
+    }
+    const col=rn.z<0?outerCol:innerCol;
+    const pp=pr(p);
+    if(col!==curCol && batch.length>0){
+      // flush previous batch
+      cx.save();cx.strokeStyle=curCol;cx.lineWidth=w;cx.globalAlpha=a;cx.lineCap='round';cx.lineJoin='round';
+      cx.beginPath();cx.moveTo(batch[0].x,batch[0].y);
+      for(let j=1;j<batch.length;j++)cx.lineTo(batch[j].x,batch[j].y);
+      cx.stroke();cx.restore();
+      batch=[batch[batch.length-1]]; // keep last point for continuity
+    }
+    if(col!==curCol) curCol=col;
+    batch.push(pp);
+  }
+  // flush final batch
+  if(batch.length>1){
+    cx.save();cx.strokeStyle=curCol;cx.lineWidth=w;cx.globalAlpha=a;cx.lineCap='round';cx.lineJoin='round';
+    cx.beginPath();cx.moveTo(batch[0].x,batch[0].y);
+    for(let j=1;j<batch.length;j++)cx.lineTo(batch[j].x,batch[j].y);
+    cx.stroke();cx.restore();
+  }
+}
+
+// ── FRONT-FACE CULLING (solid body mode) ──
+// Returns true if the body surface at point p faces the camera.
+function isFrontFacing(p){
+  const prof=profAt(p.y);
+  const hs=prof.sep/2;
+  const lobeCx=(p.x>=0)?hs:-hs;
+  const nx=p.x-lobeCx, nz=p.z;
+  const rn=rX(rY({x:nx,y:0,z:nz},az),el);
+  return rn.z<0;
+}
+// line3 variant: only draws front-facing runs of points (culls back)
+function line3f(pts,col,w,a){
+  if(pts.length<2)return;
+  let run=[];
+  for(let i=0;i<pts.length;i++){
+    if(isFrontFacing(pts[i])){
+      run.push(pts[i]);
+    } else {
+      if(run.length>1) line3(run,col,w,a);
+      run=[];
+    }
+  }
+  if(run.length>1) line3(run,col,w,a);
+}
+// dot3 variant: only draws if point is front-facing
+function dot3f(pt,col,r,a){
+  if(isFrontFacing(pt)) dot3(pt,col,r,a);
+}
+
+// ═══════════════════════════════════════════════════════════
+// UNIFIED BI-LOBE BODY — ONE shape that pinches and splits
+// NO side parameter above crotch. Living body, not cadaver.
+//
+// Cross-section at each height is defined by TWO circles:
+//   R-lobe center at (+sep, 0) with radius r
+//   L-lobe center at (-sep, 0) with radius r
+//
+// Above crotch: sep=0 or sep<r → circles overlap → ONE merged form
+// At crotch: sep≈r → figure-8 pinch
+// Below crotch: sep>r → two separate circles
+//
+// The merged boundary is traced using implicit-surface (metaball) math:
+//   f(x,z) = r²/(dx_R²+dz²) + r²/(dx_L²+dz²)
+//   surface where f = 1 (when sep=0 this is a single circle of radius r√2)
+// ═══════════════════════════════════════════════════════════
+
+const WAIST_Y=200, HEEL_Y=-285;
+const HEAD_TOP_Y=430, SHOULDER_Y=330, NECK_TOP_Y=370;
+const SACRUM_Y=160, COCCYX_Y=140;
+const CROTCH_Y=135;
+const HIP_PIVOT_Y=135; // crotch level — center of blend zone
+const BLEND_HALF=40;   // ±40 units: tissue stretches from y=95 to y=175
+
+// ── FOOT GEOMETRY ──
+// Foot extends forward (negative z) from the ankle.
+// frac: 0=heel, 1=toes. angle: 0=sole(bottom), PI=dorsum(top), PI/2=lateral, -PI/2=medial
+const ANKLE_Y=-270, TOE_Y=-300, FOOT_LENGTH=80;
+function footPt(frac, angle, side){
+  const p = profAt(ANKLE_Y);
+  const halfSep = p.sep / 2;
+  const cxF = (side==='R' ? 1 : -1) * halfSep;
+  // Cross-section: ball of foot wider (~frac 0.5-0.7), toes narrow
+  const wMul = frac < 0.55 ? 1.0 + frac*0.5 : 1.275 - (frac-0.55)*2.0;
+  const fw = Math.max(5, p.r * Math.max(0.3, wMul));  // foot half-width
+  const fh = Math.max(3, 10 * (1 - frac*0.6));         // foot half-height
+  // Foot descends slightly from ankle to ball, then back up to toes
+  const yDrop = frac < 0.6 ? frac*25 : 15 + (1-frac)*10;
+  const heelZ = p.r * p.dz;  // posterior surface z at ankle
+  return {
+    x: cxF + fw * Math.sin(angle),
+    y: ANKLE_Y - yDrop + fh * Math.cos(angle),
+    z: heelZ - frac * FOOT_LENGTH  // extends forward (negative z)
+  };
+}
+
+// ── RUKU ANIMATION ──
+// Smooth hip flexion: rukuT interpolates 0 (qiyam) → 1 (full ruku = 90°)
+// NO hard cutoff — tissue stretches smoothly through the blend zone.
+let rukuTarget=0, rukuT=0;
+let ruku=false;
+
+// Hermite smoothstep: smooth 0→1 with zero derivative at endpoints
+function sstep(t){ t=Math.max(0,Math.min(1,t)); return t*t*(3-2*t); }
+
+function poseT(p){
+  if(rukuT<0.001) return p;
+
+  // Blend: how much rotation at this y-level (0=no rotation, 1=full rotation)
+  const dy=p.y-HIP_PIVOT_Y;
+  let blend;
+  if(dy<=-BLEND_HALF) blend=0;       // well below pivot: legs, no rotation
+  else if(dy>=BLEND_HALF) blend=1;    // well above pivot: full pelvis rotation
+  else blend=sstep((dy+BLEND_HALF)/(2*BLEND_HALF)); // smooth transition
+
+  if(blend<0.001) return p;
+
+  // Rotation angle at this point: blend × rukuT × 90°
+  const a=blend*rukuT*Math.PI/2;
+  const ca=Math.cos(a), sa=Math.sin(a);
+  const yr=p.y-HIP_PIVOT_Y, zr=p.z;
+  let ry=HIP_PIVOT_Y+yr*ca+zr*sa, rz=-yr*sa+zr*ca;
+
+  // ── GRAVITY DRAPE ──
+  // In ruku, the rotated pelvis is horizontal. Fabric drapes vertically
+  // under gravity: pull elevated points DOWN toward hip level.
+  // This makes warp ribbons become nearly vertical lines.
+  const heightAbove=ry-HIP_PIVOT_Y;
+  if(heightAbove>0){
+    const drape=rukuT*blend*0.92; // 92% collapse at full ruku
+    ry-=heightAbove*drape;         // pull toward hip level
+  }
+
+  // ── ELASTIC CONTRACTION ──
+  // At the hip crease, tissue stretches tight over the joint — it contracts
+  // laterally instead of folding. Pull x and z toward the leg axis.
+  const distFromPivot=Math.abs(ry-HIP_PIVOT_Y);
+  const creaseBand=BLEND_HALF*0.6; // contraction zone ±24 units from pivot
+  if(distFromPivot<creaseBand && blend>0.05){
+    const nearness=1.0-distFromPivot/creaseBand; // 1 at pivot, 0 at edge
+    const shrink=rukuT*nearness*0.45;            // 45% max contraction at pivot
+    rz*=(1.0-shrink);
+    // Also contract x slightly toward the leg center
+    const prof=profAt(HIP_PIVOT_Y);
+    const legCx=(p.x>=0?1:-1)*prof.sep/2;
+    return {x:legCx+(p.x-legCx)*(1.0-shrink*0.3), y:ry, z:rz};
+  }
+
+  return {x:p.x, y:ry, z:rz};
+}
+
+function toggleRuku(){
+  ruku=!ruku;
+  rukuTarget=ruku?1:0;
+  const btn=document.getElementById('bRuku');
+  btn.classList.toggle('on',ruku);
+  document.querySelector('.sub').textContent=
+    ruku ? 'رُكُوع | خُطُوط / khuṭūṭ ⊥ floor | all force lines vertical'
+         : 'قِيَام | المِحْوَر الظَّهْرِي / al-miḥwar al-ẓahrī = stable conductor';
+  if(ruku){az=Math.PI*0.55;el=0.12;dist=1200;}
+}
+
+
+// ── BODY PROFILE TABLE ──
+// Each row: y, radius (of each lobe), separation (center-to-center),
+//           depthScale (front-to-back squash, 1.0=circle)
+// sep=0 means lobes fully merged. sep > 2*r means fully separated.
+const PROFILE = [
+  // ── HEAD ──
+  {y:430, r:30,  sep:0, dz:0.95},  // crown
+  {y:420, r:46,  sep:0, dz:0.98},  // upper cranium
+  {y:410, r:54,  sep:0, dz:1.00},  // widest cranium
+  {y:400, r:56,  sep:0, dz:1.00},  // mid face — widest
+  {y:390, r:52,  sep:0, dz:0.98},  // jaw
+  {y:380, r:44,  sep:0, dz:0.95},  // chin
+  // ── NECK — عُنُق ──
+  {y:370, r:30,  sep:0, dz:0.96},  // top of neck
+  {y:360, r:32,  sep:0, dz:0.94},  // upper neck
+  {y:350, r:34,  sep:0, dz:0.92},  // mid neck
+  {y:340, r:38,  sep:0, dz:0.90},  // neck base
+  // ── SHOULDERS + UPPER TORSO — كَتِف + صَدْر ──
+  {y:330, r:80,  sep:0, dz:0.78},  // shoulder top — sharp widening
+  {y:315, r:90,  sep:0, dz:0.82},  // shoulder level
+  {y:305, r:98,  sep:0, dz:0.85},  // upper chest
+  {y:290, r:102, sep:0, dz:0.88},  // chest peak — widest
+  {y:275, r:100, sep:0, dz:0.90},  // upper rib cage
+  // ── LOWER TORSO ──
+  {y:260, r:96,  sep:0, dz:0.88},  // mid rib cage
+  {y:245, r:88,  sep:0, dz:0.85},  // lower rib cage
+  {y:230, r:80,  sep:0, dz:0.82},  // rib cage → waist transition
+  {y:220, r:76,  sep:0, dz:0.80},  // narrowest waist
+  {y:210, r:78,  sep:0, dz:0.82},  // waist narrowing
+  // ── PELVIS + LEGS (existing) ──
+  {y:200, r:80,  sep:0,   dz:0.85},  // waist — one oval
+  {y:195, r:84,  sep:0,   dz:0.88},
+  {y:188, r:92,  sep:0,   dz:0.90},  // hip flare
+  {y:180, r:100, sep:8,   dz:0.92},  // iliac crest — hint of lobes
+  {y:172, r:104, sep:16,  dz:0.95},  // trochanter — widest
+  {y:165, r:100, sep:24,  dz:0.93},  // greater trochanter
+  {y:158, r:96,  sep:36,  dz:0.90},  // sacrum level — lobes emerging
+  {y:150, r:90,  sep:52,  dz:0.88},  // buttock
+  {y:142, r:84,  sep:68,  dz:0.85},  // coccyx — peanut shape
+  {y:135, r:76,  sep:84,  dz:0.82},  // crotch — figure-8 pinch
+  {y:128, r:70,  sep:104, dz:0.80},  // legs separating
+  {y:118, r:66,  sep:116, dz:0.78},  // upper thigh
+  {y:105, r:62,  sep:120, dz:0.76},
+  {y:90,  r:58,  sep:120, dz:0.74},  // mid thigh
+  {y:70,  r:54,  sep:120, dz:0.72},
+  {y:50,  r:50,  sep:120, dz:0.70},
+  {y:30,  r:48,  sep:120, dz:0.68},  // above knee
+  {y:10,  r:46,  sep:120, dz:0.66},
+  {y:0,   r:46,  sep:120, dz:0.65},  // knee
+  {y:-15, r:42,  sep:120, dz:0.64},
+  {y:-35, r:44,  sep:116, dz:0.66},  // calf bulge
+  {y:-60, r:40,  sep:112, dz:0.64},
+  {y:-90, r:34,  sep:108, dz:0.62},  // mid shin
+  {y:-120,r:28,  sep:100, dz:0.60},
+  {y:-160,r:24,  sep:92,  dz:0.58},
+  {y:-200,r:22,  sep:84,  dz:0.56},
+  {y:-240,r:20,  sep:76,  dz:0.54},  // ankle
+  {y:-270,r:18,  sep:72,  dz:0.52},
+  {y:-285,r:16,  sep:68,  dz:0.50},  // heel
+];
+
+// Interpolate profile at any Y
+function profAt(y){
+  if(y>=PROFILE[0].y) return {...PROFILE[0]};
+  if(y<=PROFILE[PROFILE.length-1].y) return {...PROFILE[PROFILE.length-1]};
+  for(let i=0;i<PROFILE.length-1;i++){
+    if(y<=PROFILE[i].y && y>=PROFILE[i+1].y){
+      const t=(PROFILE[i].y-y)/(PROFILE[i].y-PROFILE[i+1].y);
+      const a=PROFILE[i], b=PROFILE[i+1];
+      return {
+        y:y,
+        r:a.r+(b.r-a.r)*t,
+        sep:a.sep+(b.sep-a.sep)*t,
+        dz:a.dz+(b.dz-a.dz)*t,
+      };
+    }
+  }
+  return {...PROFILE[0]};
+}
+
+// ── UNIFIED BODY SURFACE ──
+// Traces the outer boundary of two merged circles (metaball).
+// angle: 0=back-center, PI=front-center (continuous around the whole form)
+// Returns a 3D point on the body surface at height y.
+// When lobes are merged (sep < r), this is one continuous oval.
+// When lobes are separated (sep > 2*r), this traces two separate circles
+// connected by the angle convention: 0..PI = right half, PI..2PI = left half.
+function bodyPt(angle, y){
+  const p = profAt(y);
+  const halfSep = p.sep / 2;
+  const r = p.r;
+
+  // Normalize angle to [0, 2PI)
+  let a = ((angle % (Math.PI*2)) + Math.PI*2) % (Math.PI*2);
+
+  // Determine if lobes are merged or separate
+  const merged = halfSep < r * 0.95; // lobes overlap
+
+  let x, z;
+
+  if(merged){
+    // ── METABALL BOUNDARY ──
+    // Two circles at (±halfSep, 0) with radius r.
+    // We trace the outer envelope using angle-based sampling.
+    // At each angle, find the point on the combined boundary.
+    //
+    // Simple approach: for each angle, compute the farthest point
+    // that is on either circle's boundary, taking the maximum radius.
+    const cosA = Math.cos(a);
+    const sinA = Math.sin(a);
+
+    // Direction vector from origin
+    // For the right lobe (center at +halfSep, 0):
+    //   point on circle: (halfSep + r*cos(t), r*sin(t)*dz)
+    // For the left lobe (center at -halfSep, 0):
+    //   point on circle: (-halfSep + r*cos(t), r*sin(t)*dz)
+    //
+    // We want the outermost point in direction (sinA, cosA) from origin.
+    // Project: for right lobe, max projection = halfSep*sinA + r
+    //          for left lobe, max projection = -halfSep*sinA + r
+    //
+    // Better approach: trace using smooth blend.
+    // Use the "sum of radii" implicit surface approach:
+    // At angle a, cast a ray from origin. Find where it hits the boundary.
+
+    // Even simpler and visually correct: parametric soft-union.
+    // Right lobe center shifted by halfSep along x.
+    // At the back (a=0) and front (a=PI), the merged shape has
+    // depth = r*dz (the lobe radius in z).
+    // At the sides (a=PI/2, 3PI/2), width = halfSep + r.
+
+    // Use superellipse blend for smooth union:
+    // The outline is an egg/peanut shape parameterized by angle.
+    // Width at angle a: we trace both lobes and take the outermost.
+
+    // Compute point on right lobe boundary closest to direction a
+    const rxR = halfSep + r * sinA;
+    const rzR = r * p.dz * cosA;
+    const distR = Math.sqrt(rxR*rxR + rzR*rzR);
+
+    // Compute point on left lobe boundary closest to direction a
+    const rxL = -halfSep + r * sinA;
+    const rzL = r * p.dz * cosA;
+    const distL = Math.sqrt(rxL*rxL + rzL*rzL);
+
+    // Pick the lobe that gives the outermost point in this direction
+    if(distR >= distL){
+      x = rxR; z = rzR;
+    } else {
+      x = rxL; z = rzL;
+    }
+
+    // But this creates a hard switch. Smooth it with soft-max:
+    // (log-sum-exp trick to prevent overflow when dist is large)
+    const k = 8; // blending sharpness
+    const maxD = Math.max(distR, distL);
+    const wR = Math.exp(k * (distR - maxD));
+    const wL = Math.exp(k * (distL - maxD));
+    const wSum = wR + wL;
+    x = (rxR * wR + rxL * wL) / wSum;
+    z = (rzR * wR + rzL * wL) / wSum;
+
+  } else {
+    // ── SEPARATED LOBES ──
+    // Right half: angle 0..PI traces the right leg
+    // Left half: angle PI..2PI traces the left leg
+    let lobeAngle, lobeCx;
+    if(a <= Math.PI){
+      // Right leg
+      lobeAngle = a; // 0=back of right leg, PI=front
+      lobeCx = halfSep;
+    } else {
+      // Left leg
+      lobeAngle = (2*Math.PI - a); // mirror: 0=back of left leg, PI=front
+      lobeCx = -halfSep;
+    }
+    x = lobeCx + r * Math.sin(lobeAngle);
+    z = r * p.dz * Math.cos(lobeAngle);
+  }
+
+  return {x: x, y: y, z: z};
+}
+
+// ── CONVENIENCE: point on a specific leg's surface ──
+// side='R' or 'L', lobeAngle: 0=back(seam), PI=front of that leg
+// This is what warp ribbons and seam use — they know which leg they're on.
+function legPt(lobeAngle, y, side){
+  const p = profAt(y);
+  const halfSep = p.sep / 2;
+  const cx2 = (side==='R' ? 1 : -1) * halfSep;
+  return {
+    x: cx2 + p.r * Math.sin(lobeAngle),
+    y: y,
+    z: p.r * p.dz * Math.cos(lobeAngle)
+  };
+}
+
+// ── WRAP POINT — smooth blend between bodyPt and legPt across crotch ──
+// Above crotch: line is on the torso surface (bodyPt)
+// Below crotch: line is on the leg surface (legPt)
+// Transition zone: smooth linear blend eliminates the kink
+const BLEND_TOP = CROTCH_Y + 40;  // y=175 — fully body
+const BLEND_BOT = CROTCH_Y - 20;  // y=115 — fully leg
+function wrapPt(angle, y, side){
+  if(y <= BLEND_BOT) return legPt(angle, y, side);
+  if(y >= BLEND_TOP) return bodyPt(angle, y);
+  // Blend zone
+  const t = (y - BLEND_BOT) / (BLEND_TOP - BLEND_BOT);  // 0=leg, 1=body
+  const sm = t*t*(3-2*t);  // smoothstep for extra smoothness
+  const lp = legPt(angle, y, side);
+  const bp = bodyPt(angle, y);
+  return {
+    x: lp.x + (bp.x - lp.x) * sm,
+    y: y,
+    z: lp.z + (bp.z - lp.z) * sm
+  };
+}
+
+// ═══ WARPS — خُطُوط ابن سينا — IBN SĪNĀ'S FORCE LINES (SC02) ═══
+// Each vertebra owns a VERTICAL STRIP at a specific angle around the leg.
+// tgtAngle: the angular position on the leg (0=posterior/seam, PI=anterior, PI/2=lateral)
+// dir multiplier handles R/L mirroring.
+// Vertebral ant-line zones — positions from standard clinical dermatome map.
+//   Claude cannot observe a body to verify Ibn Sīnā's descriptions directly.
+//   These positions are PROVISIONAL — to be corrected from al-Qānūn primary source.
+//   Posterior: Co, S5, S4, S3, S2, S1 (angles 0–0.9)
+//   Lateral: L5 (PI/2)
+//   Anterior: L2 (PI-0.35), L3 (PI)
+//   Medial: L4 (PI+0.5), L1 (PI+0.8)
+const PI=Math.PI;
+
+// ═══ L4 SOURCE COMPARISON ═══
+// Criminal DM placed L4 at anterior-lateral (PI*0.7 ≈ 126°).
+// Every clinical source says L4 = MEDIAL (inner shin, medial malleolus).
+// Toggle shows BOTH positions so the difference is visible.
+const L4_CRIMINAL = PI * 0.7;    // criminal DM: anterior-lateral (WRONG)
+const L4_IBNSINA  = PI + 0.15;   // Ibn Sīnā / living observation: medial (CORRECT)
+let l4Compare = false;
+
+function toggleL4Compare(){
+  l4Compare = !l4Compare;
+  const btn = document.getElementById('bL4cmp');
+  const info = document.getElementById('l4info');
+  if(btn) btn.classList.toggle('on', l4Compare);
+  if(info) info.style.display = l4Compare ? 'block' : 'none';
+  // When compare is ON, show L3+L4+L5 (neighbours for context)
+  if(l4Compare){
+    // Show L3, L4, L5 (indices 0, 1, 2 in current VERT)
+    for(let i=0;i<WARPS;i++){
+      const show = (VERT[i].label==='L3'||VERT[i].label==='L4'||VERT[i].label==='L5');
+      warpOn[i]=show;
+      const el2=document.getElementById('bW'+i); if(el2) el2.classList.toggle('on',show);
+    }
+  } else {
+    for(let i=0;i<WARPS;i++){ warpOn[i]=true; const el2=document.getElementById('bW'+i); if(el2) el2.classList.add('on'); }
+  }
+}
+
+const VERT = [
+  // Lower limb dermatomes from clinical map (Keegan & Garrett 1948) + OBJ blueprint.
+  // Coordinate ref: 0=posterior/seam, PI/2=lateral, PI=anterior, >PI=medial
+  // tgt = target angle on thigh, tgtEnd = angle by bottom of descent
+  // bot = y-level where the line ends. footExtend/footAngle = foot continuation.
+  // Scale: OBJ 1.75m → 715 canvas units. wrapPt() blends body↔leg across crotch.
+  //
+  // L3: Red dotted. Anterior thigh → across knee. Stops at knee.
+  {label:'L3', y:194, col:'#e05050', spineZ:-10, tgt:PI, tgtEnd:PI+0.15, bot:-30},
+  // L4: Yellow. Anterior-lateral thigh → spirals across ventral axial line →
+  //     medial shin → medial ankle → medial foot → big toe.
+  //     The dramatic crossover dermatome.
+  {label:'L4', y:192, col:'#e8d040', spineZ:-10, tgt:PI*0.7, tgtEnd:PI+0.4, bot:-270,
+   footExtend:0.7, footAngle:-PI/2},
+  // L5: Lateral shin → top of foot → toes. Stays roughly lateral.
+  {label:'L5', y:190, col:'#c8b040', spineZ:-10, tgt:PI/2, tgtEnd:PI*0.55, bot:-270,
+   footExtend:0.9, footAngle:0},
+  // S1: Posterior-lateral. Posterior thigh → lateral calf → heel → sole → little toe.
+  {label:'S1', y:170, col:'#e06080', spineZ:-5, tgt:0.9, tgtEnd:1.1, bot:-285,
+   footExtend:1.0, footAngle:PI/2},
+  // S2: Posterior midline. Back of thigh → back of calf. Close to seam.
+  {label:'S2', y:166, col:'#8060c0', spineZ:-5, tgt:0.4, tgtEnd:0.35, bot:-180},
+];
+const WARPS=VERT.length;
+const WARP_LABELS=VERT.map(v=>v.label);
+const WARP_COLS=VERT.map(v=>v.col);
+
+// Build per-vertebra toggle buttons
+(function(){
+  const list=document.getElementById('warpList');
+  if(!list)return;
+  VERT.forEach((v,i)=>{
+    const b=document.createElement('button');
+    b.className='btn on';
+    b.id='bW'+i;
+    b.style.cssText='padding:2px 5px;font-size:0.62em;color:'+v.col;
+    b.textContent=v.label;
+    b.onclick=()=>tw(i);
+    list.appendChild(b);
+  });
+})();
+
+// ═══ THORACIC WARPS — T1-T12 — circumferential rib خُطُوط ═══
+// Unlike lumbar warps that DESCEND to legs, thoracic warps WRAP AROUND the torso.
+// Each rib traces from spine (angle 0) around to sternum (angle PI).
+// In qiyam: horizontal. In ruku: vertical (the key discovery).
+const VERT_T = [
+  {label:'T12', y:210, col:'#e8b865', wrap:0.90},
+  {label:'T11', y:220, col:'#e8b865', wrap:0.85},
+  {label:'T10', y:235, col:'#e8c070', wrap:0.95},
+  {label:'T9',  y:245, col:'#e8c070', wrap:0.95},
+  {label:'T8',  y:255, col:'#e8c878', wrap:1.00},
+  {label:'T7',  y:265, col:'#e8c878', wrap:1.00},
+  {label:'T6',  y:272, col:'#e8d080', wrap:1.00},
+  {label:'T5',  y:279, col:'#e8d080', wrap:1.00},
+  {label:'T4',  y:286, col:'#e8d888', wrap:0.95},
+  {label:'T3',  y:293, col:'#e8d888', wrap:0.90},
+  {label:'T2',  y:300, col:'#e8e090', wrap:0.85},
+  {label:'T1',  y:308, col:'#e8e090', wrap:0.80},
+];
+let showThoracic=false;
+const tWarpOn=new Array(12).fill(true);
+function toggleThoracic(){ showThoracic=!showThoracic;
+  const el2=document.getElementById('bThor'); if(el2) el2.classList.toggle('on');
+  const tl=document.getElementById('thorList'); if(tl) tl.style.display=showThoracic?'flex':'none'; }
+function toggleTW(i){ tWarpOn[i]=!tWarpOn[i];
+  const el2=document.getElementById('bTW'+i); if(el2) el2.classList.toggle('on'); }
+
+// Build thoracic rib ribbon — circumferential wrap at constant y
+function buildThoracicRibbon(t, side){
+  const dir=side==='R'?1:-1;
+  const wrapExtent=t.wrap*PI;
+  const pts=[];
+  const steps=20;
+  for(let s=0;s<=steps;s++){
+    const a=dir*wrapExtent*(s/steps);
+    pts.push(bodyPt(((a%(PI*2))+(PI*2))%(PI*2), t.y));
+  }
+  return smooth(pts,2);
+}
+
+// Build thoracic toggle buttons
+(function(){
+  const list=document.getElementById('thorList');
+  if(!list)return;
+  VERT_T.forEach((v,i)=>{
+    const b=document.createElement('button');
+    b.className='btn on'; b.id='bTW'+i;
+    b.style.cssText='padding:2px 5px;font-size:0.62em;color:'+v.col;
+    b.textContent=v.label; b.onclick=()=>toggleTW(i);
+    list.appendChild(b);
+  });
+})();
+
+// ═══ NAMED FORCE LINES — خُطُوط ابن سينا المُسَمَّاة — BA013-BA020 ═══
+// BA013 (stable conductor) already drawn as the seam line.
+// Each named line runs along the body surface at a specific angular position.
+const KHUTUT = [
+  {id:'BA016/017', ar:'الخَطّ البَطْنِي السُّفْلِي', tr:'al-khaṭṭ al-baṭnī al-suflī',
+   en:'ventral lower line', col:'#4fc3f7', on:false, type:'bilateral', angle:PI+0.4, startY:220},
+  {id:'BA018', ar:'خَطّ السَّهْمِي الأَمامِي', tr:'khaṭṭ al-sahmī al-amāmī',
+   en:'sagittal anterior', col:'#66bb6a', on:false, type:'midline', angle:PI, startY:370},
+  {id:'BA019', ar:'خَطّ جانِبِي', tr:'khaṭṭ jānibī',
+   en:'lateral line', col:'#ffa726', on:false, type:'bilateral', angle:PI/2, startY:380},
+  {id:'BA020', ar:'خَطّ حَلَزُونِي', tr:'khaṭṭ ḥalazūnī',
+   en:'spiral line', col:'#ef5350', on:false, type:'spiral', startY:400},
+  {id:'BA014/015', ar:'الخَطّ البَطْنِي العُلْوِي', tr:'al-khaṭṭ al-baṭnī al-ʿulwī',
+   en:'ventral upper (needs arms)', col:'#80cbc4', on:false, type:'upper'},
+];
+function toggleKhatt(i){ KHUTUT[i].on=!KHUTUT[i].on;
+  const el2=document.getElementById('bKH'+i); if(el2) el2.classList.toggle('on'); }
+
+// Build named force line toggle buttons
+(function(){
+  const list=document.getElementById('khututList');
+  if(!list) return;
+  KHUTUT.forEach((kh,i)=>{
+    const b=document.createElement('button');
+    b.className='btn'+(kh.on?' on':'');
+    b.id='bKH'+i;
+    b.style.cssText='padding:2px 5px;font-size:0.55em;color:'+kh.col+
+      (kh.type==='upper'?';opacity:0.35':'');
+    b.textContent=(kh.type==='upper'?'⋯ ':'━ ')+kh.ar+' / '+kh.en;
+    b.title=kh.ar+' / '+kh.tr+' / '+kh.en;
+    b.onclick=()=>toggleKhatt(i);
+    list.appendChild(b);
+  });
+})();
+
+// Path builder for named force lines
+function buildKhattPath(kh, side){
+  if(kh.type==='upper') return [];
+  const pts=[];
+  const step=5;
+
+  const sY=kh.startY||WAIST_Y;
+
+  if(kh.type==='spiral'){
+    for(let y=sY; y>=HEEL_Y; y-=4){
+      const t=(sY-y)/(sY-HEEL_Y);
+      const rawA=t*PI*3; // 1.5 full wraps
+      const a=((rawA%(PI*2))+(PI*2))%(PI*2);
+      if(y>CROTCH_Y){
+        const ba=side==='R'?a:(PI*2-a)%(PI*2);
+        pts.push(bodyPt(ba,y));
+      } else {
+        const dirS=side==='R'?1:-1;
+        pts.push(legPt(dirS*a,y,side));
+      }
+    }
+    return smooth(pts,2);
+  }
+
+  const legA=kh.angle;
+  const dir=side==='R'?1:-1;
+  for(let y=sY; y>=HEEL_Y; y-=step){
+    if(y>CROTCH_Y){
+      let ba;
+      if(kh.type==='midline'||legA>PI){
+        // Midline or medial angles converge to front center
+        const d=(y-CROTCH_Y)/(sY-CROTCH_Y); // 1 at start, 0 at crotch
+        ba=side==='R'? PI-0.15*d : PI+0.15*d;
+      } else {
+        ba=side==='R'? legA : (PI*2-legA);
+      }
+      pts.push(bodyPt(ba,y));
+    } else {
+      pts.push(legPt(dir*legA,y,side));
+    }
+  }
+  return smooth(pts,2);
+}
+
+// Each warp meets the seam at a DIFFERENT height on the leg
+// L1 (w=0, highest origin) wraps furthest → meets lowest on seam
+// Co (w=10, lowest origin) wraps least → meets near its origin
+// L1 (w=0) wraps most → meets lowest. Co (w=10) wraps least → meets near origin.
+function meetY(idx){ return 110 - (WARPS-1-idx)*(110-HEEL_Y)/(WARPS-1); }
+
+// Catmull-Rom smooth
+function smooth(pts,segs){
+  if(pts.length<3) return pts;
+  const out=[];
+  for(let i=0;i<pts.length-1;i++){
+    const p0=pts[Math.max(0,i-1)],p1=pts[i],p2=pts[i+1],p3=pts[Math.min(pts.length-1,i+2)];
+    for(let s=0;s<segs;s++){
+      const t=s/segs,t2=t*t,t3=t2*t;
+      out.push({
+        x:0.5*((-p0.x+3*p1.x-3*p2.x+p3.x)*t3+(2*p0.x-5*p1.x+4*p2.x-p3.x)*t2+(-p0.x+p2.x)*t+2*p1.x),
+        y:0.5*((-p0.y+3*p1.y-3*p2.y+p3.y)*t3+(2*p0.y-5*p1.y+4*p2.y-p3.y)*t2+(-p0.y+p2.y)*t+2*p1.y),
+        z:0.5*((-p0.z+3*p1.z-3*p2.z+p3.z)*t3+(2*p0.z-5*p1.z+4*p2.z-p3.z)*t2+(-p0.z+p2.z)*t+2*p1.z),
+      });
+    }
+  }
+  out.push(pts[pts.length-1]);
+  return out;
+}
+
+// Build one warp ribbon — خُطُوط ابن سينا — IBN SĪNĀ'S FORCE LINES (SC02):
+//   VERTICAL STRIP from clinical dermatome map:
+//   1. Origin at spine (posterior midline)
+//   2. Fan from spine to target angular position (short route)
+//   3. Descend VERTICALLY at that angle from stripTop to stripBot
+//   4. Converge back to seam
+//   Each zone covers only its clinical height range.
+function buildRibbon(w, side){
+  const v = VERT[w];
+  const dir = side==='R' ? 1 : -1;
+  const tgtAngle = v.tgt;
+  const endAngle = v.tgtEnd !== undefined ? v.tgtEnd : tgtAngle;
+  const bot = v.bot !== undefined ? v.bot : HEEL_Y;
+
+  const key=[];
+
+  // 1. Origin: vertebra on posterior midline (spine)
+  const originY = v.y;
+  const origProf = profAt(originY);
+  key.push({x:0, y:originY, z: origProf.r * origProf.dz + 2 + (v.spineZ||0)});
+
+  // 2. Single continuous spiral: spine → target position
+  //    Uses wrapPt() which blends bodyPt↔legPt across the crotch
+  //    so the line hugs the actual body surface the whole way — no kink.
+  //    ease-out power 3: wraps around the hip region, then descends nearly straight.
+  const STEPS = 48;
+  for(let s=1; s<=STEPS; s++){
+    const t = s/STEPS;
+    const curY = originY - t * (originY - bot);
+    const wrap = 1 - Math.pow(1-t, 3);  // ease-out power 3
+    const targetHere = tgtAngle + (endAngle - tgtAngle) * t;
+    const curAngle = dir * targetHere * wrap;
+    key.push(wrapPt(curAngle, curY, side));
+  }
+
+  // 3. Foot extension (if the line continues onto the foot)
+  if(v.footExtend && v.footExtend > 0){
+    const footSteps = 10;
+    const fAngle = v.footAngle !== undefined ? v.footAngle : 0;
+    for(let fs=1; fs<=footSteps; fs++){
+      const frac = (fs/footSteps) * v.footExtend;
+      key.push(footPt(frac, dir * fAngle, side));
+    }
+    const endPt = footPt(v.footExtend, dir * fAngle, side);
+    return {pts:smooth(key,4), col:WARP_COLS[w], meetPt:endPt, originPt:key[0], my:endPt.y};
+  }
+
+  // 3b. Converge back to seam (lines that end on the leg, not foot)
+  const convSteps = 8;
+  const convEndY = bot - 15;
+  for(let cs=1; cs<=convSteps; cs++){
+    const t = cs/convSteps;
+    const curY = bot - t * (bot - convEndY);
+    const curAngle = dir * endAngle * (1.0 - t);
+    key.push(wrapPt(curAngle, curY, side));
+  }
+  key.push(legPt(0, convEndY, side));
+
+  const meetPt = legPt(0, convEndY, side);
+  return {pts:smooth(key,4), col:WARP_COLS[w], meetPt, originPt:key[0], my:convEndY};
+}
+
+// ═══ DRAW ═══
+function draw(){
+  // Smooth ruku animation
+  rukuT+=(rukuTarget-rukuT)*0.06;
+  if(Math.abs(rukuT-rukuTarget)<0.001) rukuT=rukuTarget;
+
+  cx.clearRect(0,0,W,H);
+  const g=cx.createRadialGradient(W/2,H/2,50,W/2,H/2,500);
+  g.addColorStop(0,'#111820');g.addColorStop(1,'#0a0e14');cx.fillStyle=g;cx.fillRect(0,0,W,H);
+
+  // Floor grid
+  cx.save();cx.globalAlpha=0.05;cx.strokeStyle='#30363d';cx.lineWidth=0.5;
+  for(let x=-200;x<=200;x+=40){const a=pr({x,y:HEEL_Y-15,z:-200}),b=pr({x,y:HEEL_Y-15,z:200});cx.beginPath();cx.moveTo(a.x,a.y);cx.lineTo(b.x,b.y);cx.stroke();}
+  for(let z=-200;z<=200;z+=40){const a=pr({x:-200,y:HEEL_Y-15,z}),b=pr({x:200,y:HEEL_Y-15,z});cx.beginPath();cx.moveTo(a.x,a.y);cx.lineTo(b.x,b.y);cx.stroke();}
+  cx.restore();
+
+  // ── PRE-BUILD ALL RIBBONS (cached for slicing + drawing) ──
+  const allR=[], allL=[];
+  for(let w=0; w<WARPS; w++){
+    allR.push(buildRibbon(w,'R'));
+    allL.push(buildRibbon(w,'L'));
+  }
+
+  // ── BODY FILL — complete ring fill from head to heel ──
+  if(sh.body){
+    const bTrans=(bodyMode==='transparent');
+    const solidB=(bodyMode==='solid');
+    const RING_SEGS=24;
+    const fillAlpha=bTrans?0.12:1.0;
+
+    // Helper: draw one ring band with painter's sort in solid mode
+    function fillRingBand(topR,botR){
+      if(solidB){
+        for(let seg=0;seg<RING_SEGS;seg++){
+          const mx=(topR[seg].x+topR[seg+1].x+botR[seg].x+botR[seg+1].x)/4;
+          const mz=(topR[seg].z+topR[seg+1].z+botR[seg].z+botR[seg+1].z)/4;
+          const my2=(topR[seg].y+botR[seg].y)/2;
+          if(!isFrontFacing({x:mx,y:my2,z:mz}))
+            fill3([topR[seg],topR[seg+1],botR[seg+1],botR[seg]],'#2a2535',1.0);
+        }
+        for(let seg=0;seg<RING_SEGS;seg++){
+          const mx=(topR[seg].x+topR[seg+1].x+botR[seg].x+botR[seg+1].x)/4;
+          const mz=(topR[seg].z+topR[seg+1].z+botR[seg].z+botR[seg+1].z)/4;
+          const my2=(topR[seg].y+botR[seg].y)/2;
+          if(isFrontFacing({x:mx,y:my2,z:mz}))
+            fill3([topR[seg],topR[seg+1],botR[seg+1],botR[seg]],'#2a2535',1.0);
+        }
+      } else {
+        for(let seg=0;seg<RING_SEGS;seg++){
+          fill3([topR[seg],topR[seg+1],botR[seg+1],botR[seg]],'#2a2535',fillAlpha);
+        }
+      }
+    }
+
+    // ── UPPER BODY (head → deep into thighs) — bodyPt handles merged+split ──
+    const UPPER_BOT=30;  // extend well into thighs for massive overlap
+    const UPPER_RINGS=50; // more rings = denser fill
+    for(let ring=0;ring<UPPER_RINGS;ring++){
+      const y1=UPPER_BOT+(ring/UPPER_RINGS)*(HEAD_TOP_Y-UPPER_BOT);
+      const y2=UPPER_BOT+((ring+1)/UPPER_RINGS)*(HEAD_TOP_Y-UPPER_BOT);
+      const topR=[],botR=[];
+      for(let seg=0;seg<=RING_SEGS;seg++){
+        const a=(seg/RING_SEGS)*Math.PI*2;
+        topR.push(bodyPt(a,y1));
+        botR.push(bodyPt(a,y2));
+      }
+      fillRingBand(topR,botR);
+    }
+
+    // ── LEGS (from hip flare → heel) — separate ring fill per leg ──
+    // Starts well above crotch for massive overlap with upper body
+    const LEG_TOP=WAIST_Y;  // start at waist (y=200)
+    const LEG_RINGS=50;     // more rings = denser fill
+    for(const sd of ['R','L']){
+      for(let ring=0;ring<LEG_RINGS;ring++){
+        const y1=LEG_TOP-(ring/LEG_RINGS)*(LEG_TOP-HEEL_Y);
+        const y2=LEG_TOP-((ring+1)/LEG_RINGS)*(LEG_TOP-HEEL_Y);
+        const topR=[],botR=[];
+        for(let seg=0;seg<=RING_SEGS;seg++){
+          const a=(seg/RING_SEGS)*Math.PI*2;
+          topR.push(legPt(a,y1,sd));
+          botR.push(legPt(a,y2,sd));
+        }
+        fillRingBand(topR,botR);
+      }
+      // ── FOOT FILL — ring bands along foot length ──
+      const FOOT_RINGS=12;
+      for(let ring=0;ring<FOOT_RINGS;ring++){
+        const f1=ring/FOOT_RINGS, f2=(ring+1)/FOOT_RINGS;
+        const topR2=[],botR2=[];
+        for(let seg=0;seg<=RING_SEGS;seg++){
+          const a=(seg/RING_SEGS)*Math.PI*2;
+          topR2.push(footPt(f1,a,sd));
+          botR2.push(footPt(f2,a,sd));
+        }
+        fillRingBand(topR2,botR2);
+      }
+    }
+
+    // Contour rings (hidden in solid mode)
+    if(!solidB){
+      const TORSO_RINGS=22;
+      for(let ring=1;ring<TORSO_RINGS;ring++){
+        const y=WAIST_Y+(ring/TORSO_RINGS)*(HEAD_TOP_Y-WAIST_Y);
+        const pts=[];
+        for(let seg=0;seg<=RING_SEGS;seg++) pts.push(bodyPt((seg/RING_SEGS)*Math.PI*2,y));
+        line3(pts,'#8b949e',1,bTrans?0.15:0.35);
+      }
+    }
+  }
+
+  // ── RIBBON-ALIGNED CONTOUR — slices perpendicular to warp flow ──
+  // Hidden in solid mode — wireframe breaks opacity illusion
+  if(sh.body && bodyMode!=='solid'){
+    const bTrans3=(bodyMode==='transparent');
+    const CONTOUR_SLICES=15;
+    for(let s=1; s<CONTOUR_SLICES; s++){
+      const t=s/CONTOUR_SLICES;
+      for(const ribbons of [allR, allL]){
+        const slicePts=[];
+        for(const r of ribbons){
+          const idx=Math.min(r.pts.length-1, Math.round(t*(r.pts.length-1)));
+          slicePts.push(r.pts[idx]);
+        }
+        if(slicePts.length>1) line3(slicePts,'#8b949e',1,bTrans3?0.15:0.5);
+      }
+    }
+  }
+
+  // ── SEAM LINE — المِحْوَر الظَّهْرِي — occiput → sacrum → heel ──
+  if(sh.seam){
+    const _sl=bodyMode==='solid'?line3f:line3;
+    const _sd=bodyMode==='solid'?dot3f:dot3;
+    // Upper seam: occiput → sacrum (spine line along posterior midline)
+    const upperSeamPts=[];
+    for(let y=HEAD_TOP_Y-10; y>=SACRUM_Y; y-=3){
+      upperSeamPts.push(bodyPt(0, y)); // angle 0 = posterior
+    }
+    _sl(upperSeamPts,'#c9a84c',3.5,0.95);
+    _sl(upperSeamPts,'#c9a84c',10,0.08); // glow
+
+    // Lower seam: sacrum → heel (per leg, posterior midline)
+    for(const sd of ['R','L']){
+      const seamPts=[];
+      for(let y=SACRUM_Y; y>=HEEL_Y; y-=3){
+        seamPts.push(legPt(0, y, sd));
+      }
+      _sl(seamPts,'#c9a84c',3.5,0.95);
+      _sl(seamPts,'#c9a84c',10,0.08);
+    }
+    // Key dots
+    _sd(bodyPt(0,HEAD_TOP_Y-10),'#c9a84c',5,0.7);   // occiput
+    _sd(bodyPt(0,SHOULDER_Y),'#c9a84c',4,0.6);       // C7/T1
+    _sd(legPt(0,SACRUM_Y,'R'),'#c9a84c',7,0.7);
+    _sd(legPt(0,COCCYX_Y,'R'),'#c9a84c',5,0.6);
+    // Foot seam: heel → toes (along sole, angle 0 = bottom)
+    for(const sd of ['R','L']){
+      const footSeamPts=[];
+      for(let f=0;f<=10;f++) footSeamPts.push(footPt(f/10, 0, sd));
+      _sl(footSeamPts,'#c9a84c',2.5,0.7);
+    }
+    _sd(legPt(0,HEEL_Y,'R'),'#c9a84c',5,0.7);
+    _sd(legPt(0,HEEL_Y,'L'),'#c9a84c',5,0.7);
+    _sd(footPt(1.0,0,'R'),'#c9a84c',4,0.6); // toe tip R
+    _sd(footPt(1.0,0,'L'),'#c9a84c',4,0.6); // toe tip L
+  }
+
+  // ── WARP RIBBONS ──
+  if(sh.warp){
+    for(const sd of ['R','L']){
+      for(let w=0; w<WARPS; w++){
+        if(!warpOn[w]) continue; // per-vertebra toggle
+
+        // ── L4 COMPARISON MODE ──
+        if(w===3 && l4Compare){
+          // Draw BOTH L4 positions with distinct colors + labels
+
+          // 1. Criminal DM position (RED — anterior-lateral)
+          const origTgt = VERT[3].tgt;
+          VERT[3].tgt = L4_CRIMINAL;
+          const rCrim = buildRibbon(3, sd);
+          VERT[3].tgt = origTgt; // restore
+          // Draw criminal version (thinner + different color)
+          {const _cl=bodyMode==='solid'?line3f:line3,_cd=bodyMode==='solid'?dot3f:dot3;
+          _cl(rCrim.pts, '#ef5350', 3.5, 0.9);
+          _cd(rCrim.originPt, '#ef5350', 5, 0.9);
+          _cd(rCrim.meetPt, '#ef5350', 4, 0.8);
+
+          // 2. Ibn Sīnā position (GREEN — medial)
+          VERT[3].tgt = L4_IBNSINA;
+          const rIbn = buildRibbon(3, sd);
+          VERT[3].tgt = origTgt; // restore
+          _cl(rIbn.pts, '#66bb6a', 3.5, 0.9);
+          _cd(rIbn.originPt, '#66bb6a', 5, 0.9);
+          _cd(rIbn.meetPt, '#66bb6a', 4, 0.8);}
+
+          // Labels (R side only, avoid clutter)
+          if(sd==='R'){
+            // Label at ~40% of each ribbon path
+            const ci=Math.floor(rCrim.pts.length*0.4);
+            const ii=Math.floor(rIbn.pts.length*0.4);
+            txt3m(rCrim.pts[ci],
+              ['L4 — Criminal DM','PI×0.7 = anterior-lateral','(WRONG SIDE)'],
+              '#ef5350', 8);
+            txt3m(rIbn.pts[ii],
+              ['L4 — Ibn Sīnā (SC02)','PI+0.15 = medial','(CORRECT — مِحْوَر medial malleolus)'],
+              '#66bb6a', 8);
+          }
+          continue; // skip normal L4 draw
+        }
+
+        const r=buildRibbon(w, sd);
+        ribbon2s(r.pts, r.col, '#111111', 2, 0.85);
+        if(bodyMode==='solid'){dot3f(r.originPt, r.col, 4.5, 0.9);dot3f(r.meetPt, r.col, 3.5, 0.9);}
+        else{dot3(r.originPt, r.col, 4.5, 0.9);dot3(r.meetPt, r.col, 3.5, 0.9);}
+      }
+    }
+  }
+
+  // ── THORACIC RIB WARPS — T1-T12 circumferential ──
+  if(showThoracic){
+    const _tl=bodyMode==='solid'?line3f:line3;
+    const _td=bodyMode==='solid'?dot3f:dot3;
+    for(const sd of ['R','L']){
+      for(let t=0;t<VERT_T.length;t++){
+        if(!tWarpOn[t]) continue;
+        const pts=buildThoracicRibbon(VERT_T[t],sd);
+        if(pts.length>1){
+          _tl(pts,VERT_T[t].col,2,0.8);
+          _td(pts[0],VERT_T[t].col,3.5,0.8); // spine origin
+          _td(pts[pts.length-1],VERT_T[t].col,3,0.7); // sternum end
+        }
+      }
+    }
+  }
+
+  // ── RIBBON-ALIGNED PLANES — drawn AFTER warps, follow body architecture ──
+  // Hidden in solid mode — wireframe breaks opacity illusion
+  if(sh.body && bodyMode!=='solid'){
+    const bTrans4=(bodyMode==='transparent');
+    const PLANE_SLICES=12;
+    for(let s=1; s<PLANE_SLICES; s++){
+      const t=s/PLANE_SLICES;
+      for(const ribbons of [allR, allL]){
+        const slicePts=[];
+        for(const r of ribbons){
+          const idx=Math.min(r.pts.length-1, Math.round(t*(r.pts.length-1)));
+          slicePts.push(r.pts[idx]);
+        }
+        if(slicePts.length>1) line3(slicePts,'#6e7681',bTrans4?0.8:1.5,bTrans4?0.2:0.6);
+      }
+    }
+  }
+
+  // ── NAMED FORCE LINES — خُطُوط مُسَمَّاة ──
+  {const _kl=bodyMode==='solid'?line3f:line3,_kd=bodyMode==='solid'?dot3f:dot3;
+  for(let k=0;k<KHUTUT.length;k++){
+    if(!KHUTUT[k].on) continue;
+    const kh=KHUTUT[k];
+    for(const sd of ['R','L']){
+      const kpts=buildKhattPath(kh,sd);
+      if(kpts.length>1){
+        _kl(kpts,kh.col,3,0.9);
+        _kl(kpts,kh.col,9,0.08); // glow
+        _kd(kpts[0],kh.col,5,0.8);
+        _kd(kpts[kpts.length-1],kh.col,4,0.7);
+        // ATT label at 30% of path (R side only)
+        if(sd==='R'){
+          const li=Math.floor(kpts.length*0.3);
+          txt3m(kpts[li],[kh.ar,kh.tr,kh.en],kh.col,7);
+        }
+      }
+    }
+  }}
+
+  // ── MEETING POINTS on seam ──
+  if(sh.meet){
+    const _md=bodyMode==='solid'?dot3f:dot3;
+    for(const sd of ['R','L']){
+      for(let w=0; w<WARPS; w++){
+        if(!warpOn[w]) continue;
+        const my_val=meetY(w);
+        _md(legPt(0, my_val, sd), WARP_COLS[w], 4, 0.85);
+      }
+    }
+  }
+
+  // ── LABELS ──
+  if(sh.label){
+    // Upper body landmarks (ATT)
+    txt3(bodyPt(0,HEAD_TOP_Y-15),'رَأْس / raʾs / head','#c9a84c',8);
+    txt3(bodyPt(0,NECK_TOP_Y),'عُنُق / ʿunuq / neck','#8b949e',7);
+    txt3(bodyPt(PI/2,SHOULDER_Y),'كَتِف / katif / shoulder','#8b949e',7);
+    txt3(bodyPt(PI,285),'صَدْر / ṣadr / chest','#8b949e',7);
+    txt3(bodyPt(0,WAIST_Y),'─ خَصْر / khaṣr / waist ─','#8b949e',8);
+    // Lower body
+    txt3(legPt(0,SACRUM_Y,'R'),'عَجْب الذَّنَب / ʿajb al-dhanab / sacrum','#c9a84c',8);
+    txt3(legPt(0,HEEL_Y,'R'),'عَقِب / ʿaqib R','#c9a84c',8);
+    txt3(legPt(0,HEEL_Y,'L'),'عَقِب / ʿaqib L','#c9a84c',8);
+    txt3(legPt(0.3,-80,'R'),'المِحْوَر الظَّهْرِي = SEAM','#c9a84c',8);
+    for(let w=0;w<WARPS;w++){
+      txt3(legPt(0.5,meetY(w),'R'),WARP_LABELS[w],WARP_COLS[w],7);
+    }
+    txt3(legPt(0,-150,'R'),'✂ cut + stitch','#ff6b6b',8);
+  }
+
+  // ── CROSS-SECTION OVERLAY ──
+  if(sh.xsec){
+    // Draw a horizontal slice at crotch to show the pinch
+    const sliceY = CROTCH_Y;
+    const pts=[];
+    const p = profAt(sliceY);
+    const merged = (p.sep/2) < p.r * 0.95;
+    if(merged){
+      for(let a=0;a<=Math.PI*2;a+=0.05) pts.push(bodyPt(a,sliceY));
+    } else {
+      for(const sd of ['R','L']){
+        for(let a=0;a<=Math.PI*2;a+=0.05) pts.push(legPt(a,sliceY,sd));
+      }
+    }
+    line3(pts,'#ff6b6b',2.5,0.6);
+  }
+
+
+  requestAnimationFrame(draw);
+}
+requestAnimationFrame(draw);
+// Fallback: ensure animation runs even when tab isn't focused
+setInterval(()=>{rukuT+=(rukuTarget-rukuT)*0.06;if(Math.abs(rukuT-rukuTarget)<0.001)rukuT=rukuTarget;},16);
+</script>
+</body>
+</html>
