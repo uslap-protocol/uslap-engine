@@ -48,3 +48,4 @@ Code_files/uslap_database_v3_pre_v4.db
 .env
 secrets.json
 config.local.json
+Code_files/exports/
