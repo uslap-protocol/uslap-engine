@@ -15,7 +15,12 @@ Usage:
   python3 uslap_body_lattice.py export    # export body lattice as JSON for the animation
 """
 
-import sqlite3, json, os, sys
+import sqlite3
+try:
+    from uslap_db_connect import connect as _uslap_connect
+    _HAS_WRAPPER = True
+except ImportError:
+    _HAS_WRAPPER = False, json, os, sys
 
 DB = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uslap_database_v3.db')
 
@@ -749,7 +754,8 @@ def populate(cur):
 
 
 def build():
-    conn = sqlite3.connect(DB)
+    conn = _uslap_connect(DB) if _HAS_WRAPPER else sqlite3.connect(DB)
+    conn.execute("PRAGMA foreign_keys = ON")
     cur = conn.cursor()
     create_tables(cur)
     populate(cur)
@@ -760,7 +766,8 @@ def build():
 
 
 def status():
-    conn = sqlite3.connect(DB)
+    conn = _uslap_connect(DB) if _HAS_WRAPPER else sqlite3.connect(DB)
+    conn.execute("PRAGMA foreign_keys = ON")
     cur = conn.cursor()
     tables = ['body_nodes','body_edges','prayer_states','prayer_transitions','pelvis_tissue']
     print("\n═══ BODY LATTICE STATUS ═══")
@@ -802,7 +809,8 @@ def status():
 
 
 def show_state(state_id):
-    conn = sqlite3.connect(DB)
+    conn = _uslap_connect(DB) if _HAS_WRAPPER else sqlite3.connect(DB)
+    conn.execute("PRAGMA foreign_keys = ON")
     cur = conn.cursor()
     cur.execute("SELECT * FROM prayer_states WHERE state_id=?", (state_id.upper(),))
     row = cur.fetchone()
@@ -826,7 +834,8 @@ def show_state(state_id):
 
 def export_json():
     """Export body lattice as JSON for the animation frontend."""
-    conn = sqlite3.connect(DB)
+    conn = _uslap_connect(DB) if _HAS_WRAPPER else sqlite3.connect(DB)
+    conn.execute("PRAGMA foreign_keys = ON")
     cur = conn.cursor()
     out = {'nodes':[],'edges':[],'states':[],'transitions':[],'pelvis_tissue':[]}
 

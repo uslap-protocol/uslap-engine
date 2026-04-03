@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مَخْرَج الشَّكْل — Letter Shape vs Articulatory Position</title>
+<style>
+:root {
+  --bg: #0a0a12; --bg2: #12121e; --bg3: #1a1a2e;
+  --gold: #d4a843; --gold-dim: #8a6e2c; --green: #2ecc71;
+  --blue: #3498db; --red: #e74c3c; --text: #e0ddd5;
+  --text-dim: #888; --border: #2a2a3e; --accent: #5b86e5; --radius: 8px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:'Amiri','Scheherazade New','Traditional Arabic',serif; line-height:1.6; overflow-x:hidden; }
+.latin { font-family:'Courier New',monospace; direction:ltr; unicode-bidi:embed; }
+header { text-align:center; padding:16px 20px; border-bottom:1px solid var(--border); background:linear-gradient(180deg,var(--bg2),var(--bg)); }
+header h1 { font-size:1.7em; color:var(--gold); margin-bottom:2px; }
+header .subtitle { color:var(--text-dim); font-size:0.85em; direction:ltr; }
+header .bismillah { font-size:1.2em; color:var(--gold-dim); margin-bottom:6px; }
+.ref-bar { background:var(--bg2); border-bottom:1px solid var(--border); padding:6px 20px; text-align:center; font-size:0.75em; color:var(--text-dim); direction:ltr; }
+.ref-bar a { color:var(--accent); text-decoration:none; }
+.ref-bar a:hover { text-decoration:underline; }
+.hypothesis-bar { background:var(--bg2); border-bottom:1px solid var(--border); padding:8px 20px; text-align:center; font-size:0.85em; color:var(--text-dim); direction:ltr; }
+.hypothesis-bar strong { color:var(--gold); }
+
+.main-layout { display:flex; gap:0; height:calc(100vh - 130px); }
+.letter-panel { width:250px; min-width:250px; background:var(--bg2); border-left:1px solid var(--border); overflow-y:auto; padding:8px; }
+.zone-group { margin-bottom:10px; }
+.zone-group h3 { font-size:0.75em; color:var(--gold-dim); padding:3px 6px; border-bottom:1px solid var(--border); margin-bottom:4px; font-weight:normal; direction:ltr; }
+.zone-group .letters-row { display:flex; flex-wrap:wrap; gap:3px; padding:0 3px; }
+.letter-btn { width:44px; height:44px; background:var(--bg3); border:2px solid var(--border); border-radius:var(--radius); color:var(--text); font-size:1.5em; font-family:inherit; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; }
+.letter-btn:hover { border-color:var(--gold); transform:scale(1.08); }
+.letter-btn.active { border-color:var(--gold); background:var(--bg); box-shadow:0 0 12px rgba(212,168,67,0.4); }
+
+.diagram-panel { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:8px; }
+#sagittal-svg { width:100%; max-width:750px; }
+
+.info-panel { width:310px; min-width:310px; background:var(--bg2); border-right:1px solid var(--border); overflow-y:auto; padding:12px; direction:ltr; }
+.info-card { background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius); padding:10px; margin-top:10px; }
+.info-card h4 { color:var(--gold); font-size:0.82em; margin-bottom:5px; font-weight:normal; }
+.info-card p { font-size:0.78em; color:var(--text-dim); line-height:1.5; }
+.info-card .big-letter { font-size:4.5em; color:var(--gold); text-align:center; line-height:1.1; font-family:'Amiri',serif; direction:rtl; }
+.tag { display:inline-block; background:var(--bg); padding:1px 6px; border-radius:3px; font-size:0.72em; margin:1px; border:1px solid var(--border); }
+
+.tongue-path { fill:#3a2a1e; stroke:#d4a843; stroke-width:2.5; transition:d 0.5s ease; }
+.lip-path { fill:none; stroke:#cc8888; stroke-width:3.5; stroke-linecap:round; transition:d 0.5s ease; }
+.tooth-line { stroke:#888; stroke-linecap:round; transition:all 0.4s ease; }
+.jaw-group { transition:transform 0.5s ease; }
+.contact-marker { fill:none; stroke:#e74c3c; stroke-width:2; stroke-dasharray:4,3; opacity:0; transition:opacity 0.3s; }
+.contact-marker.show { opacity:0.8; }
+.makhraj-dot { fill:#d4a843; opacity:0; transition:opacity 0.3s; }
+.makhraj-dot.show { opacity:0.6; }
+.letter-glyph { font-family:'Amiri','Scheherazade New',serif; fill:rgba(212,168,67,0.99); transition:all 0.3s; pointer-events:none; }
+
+@media (max-width:1100px) {
+  .main-layout { flex-direction:column; height:auto; }
+  .letter-panel,.info-panel { width:100%; min-width:0; }
+  .letter-panel { order:1; } .diagram-panel { order:2; min-height:500px; } .info-panel { order:3; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+  <h1>مَخْرَج الشَّكْل</h1>
+  <div class="subtitle">Does each letter draw its own articulatory position?</div>
+</header>
+
+<div class="ref-bar">
+  Source: Muteb Alqarni, <a href="https://lingbuzz.net/lingbuzz/006566" target="_blank">"The Phonetics of Arabic Alphabet" (2021)</a>
+  &amp; <a href="https://lingbuzz.net/lingbuzz/007970" target="_blank">"From Lip to Script" (2024)</a> — King Khalid University
+</div>
+
+<div class="hypothesis-bar">
+  <strong>HYPOTHESIS (Alqarni):</strong> Each AA letter is drawn based on the angle of the face, movement of the lips,
+  position of the tongue, and participation of teeth/palate/velum. The letter IS the articulatory diagram.
+</div>
+
+<div class="main-layout">
+
+<!-- LEFT: Letters -->
+<div class="letter-panel" id="letter-panel"></div>
+
+<!-- CENTER: Sagittal -->
+<div class="diagram-panel">
+<svg id="sagittal-svg" viewBox="0 0 700 520" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0,0 8,3 0,6" fill="#e67e22"/></marker>
+  </defs>
+
+  <!-- ═══════════════════════════════════════════════════════
+       ANATOMY — hand-drawn sagittal section
+       Landmarks:
+         Lips: (188,218)  Upper teeth: (233,194)  Lower teeth: (239,252)
+         Alveolar ridge: (248,188)  Hard palate: (260-490,170-198)
+         Soft palate/velum: (490-530,198-282)  Uvula: (520,290)
+         Pharynx wall: (555,340)  Glottis: (560,430)
+         Tongue tip (neutral): (248,260)  Tongue body: (320,248)
+         Tongue root: (445,355)  TMJ pivot: (480,310)
+       ═══════════════════════════════════════════════════════ -->
+
+  <!-- HARD PALATE -->
+  <path d="M 248,185 C 270,178 300,172 330,170 C 360,168 390,170 420,175 C 445,180 470,188 490,198"
+        fill="none" stroke="#8a6e2c" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- SOFT PALATE -->
+  <path d="M 490,198 C 510,205 525,218 530,235 C 535,252 532,270 520,282 L 512,278 C 520,268 522,255 518,242 C 514,228 502,218 488,212"
+        fill="#3a2a28" stroke="#b87c4a" stroke-width="2"/>
+  <!-- UVULA -->
+  <path d="M 515,278 L 520,295 L 528,298 L 522,282 Z" fill="#5a3a32" stroke="#a86a42" stroke-width="1"/>
+  <!-- PHARYNX BACK WALL — from behind uvula down to glottis -->
+  <path d="M 528,298 C 536,318 544,342 550,368 C 555,392 558,416 560,435"
+        fill="none" stroke="#6a5a4a" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+  <!-- PHARYNX FRONT WALL hint (tongue root area) -->
+  <path d="M 445,355 C 458,375 468,398 472,420 C 475,435 476,448 476,458"
+        fill="none" stroke="#4a3a2a" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.3"/>
+  <!-- NASAL CAVITY (above palate, hinted) -->
+  <path d="M 248,175 C 280,160 330,152 380,152 C 420,154 460,162 490,178"
+        fill="none" stroke="#444" stroke-width="1" stroke-dasharray="3,4" opacity="0.3"/>
+  <!-- GLOTTIS hint — the two folds -->
+  <line x1="558" y1="432" x2="478" y2="456" stroke="#6a4a3a" stroke-width="1.5" opacity="0.4"/>
+  <line x1="558" y1="438" x2="478" y2="462" stroke="#6a4a3a" stroke-width="1.5" opacity="0.4"/>
+
+  <!-- ═══════════════════════════════════════════════════════
+       INTERACTIVE ORGANS
+       Teeth: short vertical lines pointing TOWARD each other
+       Lips: animated paths with wide y-range
+       Jaw: lower group translated DOWN (not rotated)
+       Tongue: neutral hidden when active shown
+       ═══════════════════════════════════════════════════════ -->
+
+  <!-- UPPER TEETH — short lines hanging DOWN from palate/gum -->
+  <g id="upper-teeth-group">
+    <line x1="220" y1="190" x2="218" y2="206" stroke="#ccc" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="228" y1="189" x2="226" y2="206" stroke="#ccc" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="236" y1="188" x2="235" y2="205" stroke="#ddd" stroke-width="2" stroke-linecap="round"/>
+    <line x1="244" y1="188" x2="243" y2="204" stroke="#bbb" stroke-width="1.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- JAW GROUP — lower teeth + lower lip, translated DOWN by jawAngle -->
+  <g id="jaw-group" class="jaw-group">
+    <!-- LOWER TEETH — short lines pointing UP toward upper teeth -->
+    <line x1="222" y1="248" x2="220" y2="232" stroke="#ccc" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="230" y1="249" x2="228" y2="232" stroke="#ccc" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="238" y1="250" x2="237" y2="234" stroke="#ddd" stroke-width="2" stroke-linecap="round"/>
+    <line x1="246" y1="250" x2="245" y2="235" stroke="#bbb" stroke-width="1.5" stroke-linecap="round"/>
+    <!-- Lower lip — long path with visible movement range -->
+    <path id="lower-lip" class="lip-path"
+          d="M155,248 C165,255 180,260 200,262 C215,262 225,258 230,252"/>
+    <text id="jaw-angle-label" x="160" y="290" fill="#6a5a4a" font-size="10" font-family="monospace" opacity="0"></text>
+  </g>
+
+  <!-- Upper lip — long path matching lower lip span -->
+  <path id="upper-lip" class="lip-path"
+        d="M155,200 C165,194 180,190 200,189 C215,189 225,192 230,196"/>
+
+  <!-- TONGUE neutral -->
+  <path id="tongue-neutral"
+        d="M248,260 C270,254 295,248 320,248
+           C345,248 370,254 395,265
+           C415,275 430,288 440,305
+           C448,320 450,338 445,355
+           L435,358
+           C438,342 435,328 428,315
+           C418,298 402,288 382,280
+           C360,272 335,268 312,270
+           C290,272 268,278 255,285 Z"
+        fill="#2a2028" stroke="#555" stroke-width="1.5" opacity="0.5"/>
+
+  <!-- TONGUE (active — animated per letter) -->
+  <path id="tongue-active" class="tongue-path"
+        d="M248,260 C270,254 295,248 320,248
+           C345,248 370,254 395,265
+           C415,275 430,288 440,305
+           C448,320 450,338 445,355
+           L435,358
+           C438,342 435,328 428,315
+           C418,298 402,288 382,280
+           C360,272 335,268 312,270
+           C290,272 268,278 255,285 Z"
+        style="opacity:0;"/>
+
+  <!-- Contact zone -->
+  <ellipse id="contact-zone" class="contact-marker" cx="300" cy="200" rx="15" ry="10"/>
+  <!-- Makhraj dot -->
+  <circle id="makhraj-dot" class="makhraj-dot" cx="300" cy="200" r="8"/>
+
+  <!-- Direction arrow -->
+  <g id="dir-arrow-group" style="opacity:0;">
+    <line id="dir-arrow-line" x1="0" y1="0" x2="0" y2="0" stroke="#3498db" stroke-width="3" marker-end="url(#arr)"/>
+    <circle id="dir-arrow-origin" cx="0" cy="0" r="4" fill="#3498db" opacity="0.6"/>
+  </g>
+
+  <!-- Letter overlay -->
+  <g id="letter-overlay-group">
+    <text id="letter-overlay" class="letter-glyph" x="350" y="300" text-anchor="middle" dominant-baseline="central" font-size="120" opacity="0"></text>
+  </g>
+
+  <!-- Zone labels — offset AWAY from anatomy so they don't obscure it -->
+  <g id="zone-labels" opacity="0.85" font-family="monospace" font-size="12" font-weight="bold">
+    <text x="140" y="240" text-anchor="end" fill="#5cb8f0">LIPS</text>
+    <text x="140" y="198" text-anchor="end" fill="#4ae88a">LABIO-</text>
+    <text x="140" y="210" text-anchor="end" fill="#4ae88a">DENTAL</text>
+    <text x="215" y="172" text-anchor="end" fill="#f0a040">DENTAL</text>
+    <text x="248" y="148" text-anchor="middle" fill="#c080e8">ALVEOLAR</text>
+    <text x="360" y="142" text-anchor="middle" fill="#30e8b0">PALATAL</text>
+    <text x="500" y="170" fill="#ffc040">VELAR</text>
+    <text x="548" y="310" fill="#f06050">UVULAR</text>
+    <text x="572" y="365" fill="#b868d8">PHARYNGEAL</text>
+    <text x="572" y="450" fill="#e85050">GLOTTAL</text>
+  </g>
+
+  <text id="instruction-text" x="350" y="505" text-anchor="middle" fill="#555" font-size="10" font-family="monospace">Select a letter to see its full articulatory position</text>
+</svg>
+</div>
+
+<!-- RIGHT: Info -->
+<div class="info-panel">
+  <div class="info-card">
+    <div class="big-letter" id="info-big-letter" style="color:var(--text-dim);">؟</div>
+    <h4 id="info-name" style="text-align:center;">Select a letter</h4>
+  </div>
+
+  <div class="info-card" id="articulation-info" style="display:none;">
+    <h4>Articulatory Profile</h4>
+    <p id="art-tongue"></p>
+    <p id="art-lips" style="margin-top:4px;"></p>
+    <p id="art-jaw" style="margin-top:4px;"></p>
+    <p id="art-teeth" style="margin-top:4px;"></p>
+  </div>
+
+  <div class="info-card" id="dir-info" style="display:none;">
+    <h4>Shape Direction</h4>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+      <span id="dir-cat-badge" style="padding:2px 8px;border-radius:3px;font-size:0.8em;font-family:monospace;"></span>
+    </div>
+    <p id="dir-meaning" style="font-size:0.78em;color:var(--text-dim);"></p>
+  </div>
+
+  <div class="info-card" id="geo-info" style="display:none;">
+    <h4>Shape Geometry</h4>
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap;">
+      <span id="geo-closure-badge" style="padding:2px 8px;border-radius:3px;font-size:0.8em;font-family:monospace;"></span>
+      <span id="geo-dots-badge" style="padding:2px 8px;border-radius:3px;font-size:0.8em;font-family:monospace;background:var(--bg);border:1px solid var(--border);"></span>
+      <span id="geo-voiced-badge" style="padding:2px 8px;border-radius:3px;font-size:0.8em;font-family:monospace;"></span>
+      <span id="geo-emph-badge" style="padding:2px 8px;border-radius:3px;font-size:0.8em;font-family:monospace;display:none;"></span>
+    </div>
+    <p id="geo-body" style="font-size:0.78em;color:var(--text-dim);margin-bottom:4px;"></p>
+    <p id="geo-dotfn" style="font-size:0.78em;color:var(--text-dim);margin-bottom:4px;"></p>
+    <p id="geo-jaw" style="font-size:0.78em;color:var(--text-dim);margin-bottom:4px;"></p>
+    <p id="geo-diff" style="font-size:0.78em;color:var(--gold-dim);font-style:italic;"></p>
+  </div>
+
+  <div class="info-card" id="shape-analysis" style="display:none;">
+    <h4>Shape ↔ Articulation (Alqarni)</h4>
+    <p id="shape-text"></p>
+  </div>
+</div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// LETTER DATA — 28 letters, 5 articulators per letter
+// Coordinates matched to hand-drawn sagittal anatomy (viewBox 0 0 700 520)
+// Landmarks: lips(188,218) teeth(233,194) alveolar(248,188)
+//   palate(360,172) velum(510,220) uvula(520,290)
+//   pharynx(555,340) glottis(560,430)
+//   tongue: tip(248,260) body(320,248) root(445,355)
+// ═══════════════════════════════════════════════════════════
+
+const NEUTRAL = {
+  tongue: 'M248,260 C270,254 295,248 320,248 C345,248 370,254 395,265 C415,275 430,288 440,305 C448,320 450,338 445,355 L435,358 C438,342 435,328 428,315 C418,298 402,288 382,280 C360,272 335,268 312,270 C290,272 268,278 255,285 Z',
+  upperLip: 'M155,208 C170,204 195,200 230,202',
+  lowerLip: 'M155,232 C170,236 195,240 230,238',
+  jawAngle: 0,
+};
+
+const L = {
+  // ── GLOTTAL ──
+  'ء': { name:'هَمْزَة / hamza', zone:'glottal', label:'STOP', color:'#c0392b', pos:{x:560,y:430},
+    tongue: NEUTRAL.tongue,
+    upperLip: 'M155,208 C170,206 195,205 230,207', lowerLip: 'M155,232 C170,233 195,235 230,233', jawAngle: 5,
+    contact:{cx:558,cy:430,rx:12,ry:15},
+    art_tongue:'Neutral — no tongue involvement. Action at glottis.',
+    art_lips:'Slightly open. Lips passive.',
+    art_jaw:'Barely open. Glottis does the work.',
+    art_teeth:'No teeth involvement.',
+    shape:'Hamza (ء) = small hook/catch. Mirrors the abrupt glottal closure. No mouth shaping needed — action entirely at vocal cords.' },
+  'ا': { name:'أَلِف / alif', zone:'glottal', label:'OPENING', color:'#c0392b', pos:{x:560,y:425},
+    tongue: NEUTRAL.tongue,
+    upperLip: 'M155,208 C170,196 195,185 230,187', lowerLip: 'M155,232 C170,243 195,255 230,253', jawAngle: 16,
+    contact:{cx:558,cy:425,rx:10,ry:18},
+    art_tongue:'Flat, neutral. Tongue uninvolved.',
+    art_lips:'Open. The mouth opens for the vowel.',
+    art_jaw:'Open — the jaw drops to create space for the pure ā vowel.',
+    art_teeth:'No teeth involvement.',
+    shape:'Alif (ا) = vertical stroke = THE ONE = the open mouth/airway. Alqarni: "written like number 1, following the opening mouth required for it to be produced." No curve because no articulator contact.' },
+  'ه': { name:'هَاء / hāʾ', zone:'glottal', label:'BREATH', color:'#c0392b', pos:{x:560,y:428},
+    tongue: NEUTRAL.tongue,
+    upperLip: 'M155,208 C170,205 195,202 230,204', lowerLip: 'M155,232 C170,235 195,238 230,236', jawAngle: 6,
+    contact:{cx:556,cy:428,rx:12,ry:12},
+    art_tongue:'Flat, neutral. Pure breath.',
+    art_lips:'Slightly open. Breath escapes freely.',
+    art_jaw:'Slightly open.',
+    art_teeth:'None.',
+    shape:'Hāʾ (ه) = a round opening. The circle mirrors the open glottis/airway. Breath passes through with minimal shaping.' },
+
+  // ── PHARYNGEAL ──
+  'ع': { name:'عَيْن / ʿayn', zone:'pharyngeal', label:'DEPTH', color:'#8e44ad', pos:{x:555,y:345},
+    tongue: 'M248,260 C268,256 295,250 320,245 C350,240 380,240 410,248 C435,258 452,275 462,298 C468,315 468,332 462,348 L454,350 C458,335 456,318 448,302 C438,282 420,268 395,260 C370,252 342,250 318,254 C295,258 275,264 260,270 Z',
+    upperLip: 'M155,208 C170,205 195,202 230,204', lowerLip: 'M155,232 C170,235 195,238 230,236', jawAngle: 7,
+    contact:{cx:555,cy:345,rx:12,ry:25},
+    art_tongue:'ROOT RETRACTS deep into pharynx. Body bunched back. Tip stays forward/low.',
+    art_lips:'Slightly open, passive.',
+    art_jaw:'Slightly open. The constriction is in the THROAT, not the mouth.',
+    art_teeth:'None.',
+    shape:'ʿAyn (ع) = deep curved opening. The curve mirrors the pharynx constricting as the tongue root retracts. The open loop = the remaining airway.' },
+  'ح': { name:'حَاء / ḥāʾ', zone:'pharyngeal', label:'CONSTRICTION', color:'#8e44ad', pos:{x:555,y:338},
+    tongue: 'M248,260 C268,256 295,250 320,245 C350,240 382,240 412,248 C438,258 455,274 465,296 C470,312 470,330 464,346 L456,348 C460,334 458,316 450,300 C440,280 422,266 398,258 C372,250 344,248 320,252 C296,256 276,264 262,270 Z',
+    upperLip: 'M155,208 C170,206 195,205 230,207', lowerLip: 'M155,232 C170,233 195,235 230,233', jawAngle: 5,
+    contact:{cx:555,cy:338,rx:10,ry:22},
+    art_tongue:'Root retracts like ع but TIGHTER constriction.',
+    art_lips:'Minimal opening. Voiceless = less energy.',
+    art_jaw:'Barely open.',
+    art_teeth:'None.',
+    shape:'Ḥāʾ (ح) = similar deep curve to ع but MORE CLOSED. Voiceless partner: same pharyngeal place, tighter constriction reflected in tighter letter form.' },
+
+  // ── UVULAR ──
+  'غ': { name:'غَيْن / ghayn', zone:'uvular', label:'SCRAPE', color:'#e74c3c', pos:{x:522,y:290},
+    tongue: 'M248,260 C268,258 290,254 315,248 C342,240 370,228 400,215 C425,204 445,200 458,205 L456,215 C446,212 430,214 408,224 C380,236 355,248 330,258 C305,266 282,272 262,276 Z',
+    upperLip: 'M155,208 C170,206 195,205 230,207', lowerLip: 'M155,232 C170,233 195,235 230,233', jawAngle: 5,
+    contact:{cx:520,cy:288,rx:14,ry:12},
+    art_tongue:'Back HUMPS UP sharply toward uvula. Tip stays low/forward.',
+    art_lips:'Nearly closed. Back-of-throat sound.',
+    art_jaw:'Slightly open.',
+    art_teeth:'None.',
+    shape:'Ghayn (غ) = dot above the curve. The body = back tongue rising. The dot = the uvula it scrapes against.' },
+  'خ': { name:'خَاء / khāʾ', zone:'uvular', label:'PASSAGE', color:'#e74c3c', pos:{x:522,y:285},
+    tongue: 'M248,260 C268,258 290,254 315,248 C342,240 370,228 400,215 C425,204 445,200 458,205 L456,215 C446,212 430,214 408,224 C380,236 355,248 330,258 C305,266 282,272 262,276 Z',
+    upperLip: 'M155,208 C170,206 195,205 230,207', lowerLip: 'M155,232 C170,233 195,235 230,233', jawAngle: 5,
+    contact:{cx:520,cy:285,rx:14,ry:12},
+    art_tongue:'Same back-hump as غ.',
+    art_lips:'Nearly closed.',
+    art_jaw:'Slightly open.',
+    art_teeth:'None.',
+    shape:'Khāʾ (خ) = same body as غ, different dot. Voiceless partner at uvular position.' },
+
+  // ── VELAR ──
+  'ق': { name:'قَاف / qāf', zone:'velar', label:'STRIKE', color:'#f39c12', pos:{x:505,y:205},
+    tongue: 'M248,260 C268,258 290,252 315,242 C342,230 372,215 405,200 C430,190 450,188 462,195 L458,205 C450,200 436,202 415,210 C385,222 358,236 332,248 C308,258 286,266 265,272 Z',
+    upperLip: 'M155,208 C170,206 195,205 230,207', lowerLip: 'M155,232 C170,233 195,235 230,233', jawAngle: 5,
+    contact:{cx:498,cy:202,rx:15,ry:12},
+    art_tongue:'Back SLAMS up to soft palate/uvula. Full closure. Tip low.',
+    art_lips:'Nearly closed.',
+    art_jaw:'Barely open. Action is deep in the mouth.',
+    art_teeth:'None.',
+    shape:'Qāf (ق) = deep bowl + 2 dots above. Bowl = back tongue cupping against soft palate. Two dots = the point of STRIKE. Deepest plosive.' },
+  'ك': { name:'كَاف / kāf', zone:'velar', label:'TAP', color:'#f39c12', pos:{x:490,y:198},
+    tongue: 'M248,260 C268,258 292,250 320,238 C350,224 382,210 412,198 C432,192 448,192 455,198 L452,208 C446,204 435,204 418,210 C390,220 362,232 336,244 C310,256 288,264 268,270 Z',
+    upperLip: 'M155,208 C170,206 195,205 230,207', lowerLip: 'M155,232 C170,233 195,235 230,233', jawAngle: 5,
+    contact:{cx:482,cy:195,rx:16,ry:12},
+    art_tongue:'Back rises to soft palate — shallower than ق.',
+    art_lips:'Nearly closed.',
+    art_jaw:'Barely open.',
+    art_teeth:'None.',
+    shape:'Kāf (ك) = stroke rises to palate. Shallower contact than ق.' },
+
+  // ── PALATAL ──
+  'ج': { name:'جِيم / jīm', zone:'palatal', label:'PRESS', color:'#1abc9c', pos:{x:360,y:175},
+    tongue: 'M248,265 C258,260 275,248 295,232 C318,212 340,188 365,172 C388,162 410,168 425,188 C436,205 442,228 444,255 L436,260 C434,235 428,215 420,200 C408,182 392,176 375,182 C355,192 335,210 315,232 C298,250 280,262 265,268 Z',
+    upperLip: 'M155,208 C170,204 195,200 230,202', lowerLip: 'M155,232 C170,236 195,240 230,238', jawAngle: 8,
+    contact:{cx:370,cy:175,rx:25,ry:10},
+    art_tongue:'MIDDLE body RISES and PRESSES flat against hard palate. Tip drops.',
+    art_lips:'Slightly spread. Not rounded.',
+    art_jaw:'Slightly open for the affricate release.',
+    art_teeth:'Upper teeth visible but not involved.',
+    shape:'Jīm (ج) = curve + dot below. Curve = middle tongue pressing flat against palate. Dot below = voicing vibration underneath.' },
+  'ش': { name:'شِين / shīn', zone:'palatal', label:'SPREADING', color:'#1abc9c', pos:{x:355,y:173},
+    tongue: 'M248,265 C258,260 275,248 295,232 C318,212 340,188 362,174 C384,164 406,170 422,190 C434,208 440,232 442,258 L434,262 C432,238 426,218 418,204 C406,186 390,180 374,186 C358,194 338,214 318,236 C300,254 282,264 268,270 Z',
+    upperLip: 'M155,208 C170,204 195,200 230,202', lowerLip: 'M155,232 C170,236 195,240 230,238', jawAngle: 8,
+    contact:{cx:365,cy:173,rx:28,ry:10},
+    art_tongue:'Body FLATTENS WIDE against palate. Broad contact zone.',
+    art_lips:'Slightly spread, pushed forward.',
+    art_jaw:'Slightly open.',
+    art_teeth:'Upper teeth frame the air escape.',
+    shape:'Shīn (ش) = 3 dots above wide curve. Tongue FLAT+WIDE on palate. Three dots = broad spread of escaping airflow.' },
+  'ي': { name:'يَاء / yāʾ', zone:'palatal', label:'CONTRACTION', color:'#1abc9c', pos:{x:355,y:182},
+    tongue: 'M248,265 C258,260 278,250 300,238 C325,225 348,208 372,188 C395,172 415,178 430,198 C442,215 448,240 448,268 L440,272 C438,245 432,224 422,210 C412,195 398,190 382,196 C365,205 348,220 330,240 C312,258 290,268 270,274 Z',
+    upperLip: 'M155,208 C170,202 195,196 230,198', lowerLip: 'M155,232 C170,238 195,244 230,242', jawAngle: 10,
+    contact:{cx:365,cy:182,rx:20,ry:10},
+    art_tongue:'Rises TOWARD palate but gap remains. Semivowel = partial closure.',
+    art_lips:'Spread. Alqarni: two dots = two parts of tongue visible when lowered against lower teeth.',
+    art_jaw:'Slightly open.',
+    art_teeth:'Lower teeth visible through open mouth.',
+    shape:'Yāʾ (ي) = 2 dots below. Alqarni: dots = the two visible parts of the tongue when pressed against lower teeth/gum. Written BELOW to distinguish from ت.' },
+
+  // ── ALVEOLAR ──
+  'ل': { name:'لَام / lām', zone:'alveolar', label:'CONNECTION', color:'#9b59b6', pos:{x:248,y:188},
+    tongue: 'M248,188 C250,205 255,235 268,260 C285,290 310,312 345,328 C378,342 412,352 438,362 C450,367 458,372 460,376 L452,380 C450,376 442,372 432,368 C400,358 365,348 332,336 C298,322 272,302 260,278 C250,255 248,225 248,205 Z',
+    upperLip: 'M155,208 C170,203 195,198 230,200', lowerLip: 'M155,232 C170,237 195,242 230,240', jawAngle: 9,
+    contact:{cx:250,cy:192,rx:12,ry:8},
+    art_tongue:'Tip reaches STRAIGHT UP to alveolar ridge. Body SCOOPS down.',
+    art_lips:'Open, neutral.',
+    art_jaw:'Moderately open.',
+    art_teeth:'Upper teeth close to tongue tip but not touching.',
+    shape:'Lām (ل) = vertical stroke curving at top. The letter DRAWS the tongue reaching straight up to the gum ridge. The vertical line = the tongue body scooping down below.' },
+  'ن': { name:'نُون / nūn', zone:'alveolar', label:'CONTINUATION', color:'#9b59b6', pos:{x:248,y:190},
+    tongue: 'M248,188 C250,205 255,235 268,260 C285,290 310,312 345,328 C378,342 412,352 438,362 C450,367 458,372 460,376 L452,380 C450,376 442,372 432,368 C400,358 365,348 332,336 C298,322 272,302 260,278 C250,255 248,225 248,205 Z',
+    upperLip: 'M155,208 C170,203 195,198 230,200', lowerLip: 'M155,232 C170,237 195,242 230,240', jawAngle: 9,
+    contact:{cx:250,cy:192,rx:12,ry:8},
+    art_tongue:'Tip up to ridge (same as ل). Air diverted through NOSE.',
+    art_lips:'Open, neutral.',
+    art_jaw:'Moderately open.',
+    art_teeth:'Upper teeth near tip.',
+    shape:'Nūn (ن) = bowl + dot above. Bowl = tongue curving up. Dot ABOVE = air redirected UP through nasal passage. The dot IS the nasal escape.' },
+  'ر': { name:'رَاء / rāʾ', zone:'alveolar', label:'MOVEMENT', color:'#9b59b6', pos:{x:250,y:195},
+    tongue: 'M248,195 C250,210 255,238 270,262 C288,292 315,314 348,330 C382,344 415,354 440,364 C452,370 460,374 462,378 L454,382 C452,378 444,374 432,370 C402,360 368,350 335,338 C302,324 278,306 265,280 C254,258 250,232 250,212 Z',
+    upperLip: 'M155,208 C170,203 195,198 230,200', lowerLip: 'M155,232 C170,237 195,242 230,240', jawAngle: 9,
+    contact:{cx:252,cy:198,rx:10,ry:8},
+    art_tongue:'Tip FLICKS up then bounces. Trill/tap.',
+    art_lips:'Open.',
+    art_jaw:'Moderately open.',
+    art_teeth:'Near tip.',
+    shape:'Rāʾ (ر) = small flick. Minimal stroke = minimal contact. Tongue tip touches then BOUNCES. Least ink, most movement.' },
+
+  // ── SIBILANT ──
+  'ز': { name:'زَاي / zāy', zone:'sibilant', label:'BUZZ', color:'#16a085', pos:{x:240,y:256},
+    tongue: 'M240,262 C252,258 272,250 298,242 C328,232 362,228 398,232 C432,238 458,252 475,272 C486,286 492,302 494,320 L486,326 C484,310 480,296 470,282 C456,264 436,252 408,244 C376,238 346,240 318,248 C294,256 274,264 260,270 Z',
+    upperLip: 'M155,208 C170,210 195,212 230,214', lowerLip: 'M155,232 C170,230 195,228 230,226', jawAngle: 3,
+    contact:{cx:242,cy:258,rx:10,ry:8},
+    art_tongue:'Tip aims DOWN toward lower teeth. Middle arches up = groove.',
+    art_lips:'Slightly open, neutral.',
+    art_jaw:'Nearly closed — narrow gap for the hiss.',
+    art_teeth:'Upper and lower teeth CLOSE together. Air forced through narrow gap.',
+    shape:'Zāy (ز) = ر body + dot above. Tip down at lower teeth. The narrow teeth gap channels the buzz.' },
+  'س': { name:'سِين / sīn', zone:'sibilant', label:'FLOW', color:'#16a085', pos:{x:240,y:254},
+    tongue: 'M240,262 C252,258 272,250 298,242 C328,232 362,228 398,232 C432,238 458,252 475,272 C486,286 492,302 494,320 L486,326 C484,310 480,296 470,282 C456,264 436,252 408,244 C376,238 346,240 318,248 C294,256 274,264 260,270 Z',
+    upperLip: 'M155,208 C170,210 195,212 230,214', lowerLip: 'M155,232 C170,230 195,228 230,226', jawAngle: 2,
+    contact:{cx:242,cy:256,rx:10,ry:8},
+    art_tongue:'Tip DOWN near lower teeth. Narrow groove channels hiss.',
+    art_lips:'Nearly closed — lips frame the narrow jet of air.',
+    art_jaw:'Nearly closed. Teeth almost touching.',
+    art_teeth:'Upper/lower teeth very close. The sibilant requires a narrow teeth gap.',
+    shape:'Sīn (س) = three cusps/peaks. The serrated shape = the turbulent airflow hissing through the narrow tongue groove and teeth gap.' },
+  'ص': { name:'صَاد / ṣād', zone:'sibilant', label:'HEAVY STREAM', color:'#16a085', pos:{x:240,y:252},
+    tongue: 'M240,262 C252,256 275,246 305,236 C340,224 378,218 418,222 C455,228 482,245 498,270 C508,290 512,314 508,335 L500,340 C502,318 498,298 490,280 C478,260 458,245 430,236 C395,228 362,230 332,240 C305,250 282,262 265,272 Z',
+    upperLip: 'M155,208 C170,210 195,212 230,214', lowerLip: 'M155,232 C170,230 195,228 230,226', jawAngle: 2,
+    contact:{cx:242,cy:254,rx:10,ry:8},
+    art_tongue:'Tip down like س + BACK ALSO RISES (emphatic double action).',
+    art_lips:'Nearly closed. Emphatic = lips slightly more tense.',
+    art_jaw:'Nearly closed.',
+    art_teeth:'Close together.',
+    shape:'Ṣād (ص) = closed loop. The loop = additional volume from the raised back tongue creating the heavy emphatic sound. Fuller than س.' },
+
+  // ── DENTAL ──
+  'ت': { name:'تَاء / tāʾ', zone:'dental', label:'SNAP', color:'#e67e22', pos:{x:235,y:194},
+    tongue: 'M235,194 C240,210 248,240 262,268 C280,300 308,325 345,342 C382,358 418,370 445,380 C456,385 462,390 464,394 L456,398 C454,394 448,390 438,386 C412,376 378,366 342,352 C306,338 280,318 265,295 C252,272 244,242 240,215 Z',
+    upperLip: 'M155,208 C170,205 195,202 230,204', lowerLip: 'M155,232 C170,235 195,238 230,236', jawAngle: 7,
+    contact:{cx:238,cy:196,rx:12,ry:8},
+    art_tongue:'Tip CURLS UP SHARPLY to strike upper teeth roots. Body stays low.',
+    art_lips:'Open, neutral. Lip shape = "boat" (Alqarni).',
+    art_jaw:'Moderately open.',
+    art_teeth:'Upper front teeth = the STRIKE TARGET. Two dots = the two front teeth.',
+    shape:'Tāʾ (ت) = flat boat + 2 dots. Alqarni: boat = lower lip shape. Our analysis: boat = tongue body low, curling up. Two dots above = the TWO FRONT TEETH the tip strikes against.' },
+  'د': { name:'دَال / dāl', zone:'dental', label:'KNOCK', color:'#e67e22', pos:{x:235,y:196},
+    tongue: 'M235,194 C240,210 248,240 262,268 C280,300 308,325 345,342 C382,358 418,370 445,380 C456,385 462,390 464,394 L456,398 C454,394 448,390 438,386 C412,376 378,366 342,352 C306,338 280,318 265,295 C252,272 244,242 240,215 Z',
+    upperLip: 'M155,208 C170,205 195,202 230,204', lowerLip: 'M155,232 C170,235 195,238 230,236', jawAngle: 7,
+    contact:{cx:238,cy:198,rx:12,ry:8},
+    art_tongue:'Tip curls up to upper teeth (like ت). Voiced.',
+    art_lips:'Open.',
+    art_jaw:'Moderately open.',
+    art_teeth:'Upper teeth = target.',
+    shape:'Dāl (د) = single upward curve. Same tip-curl as ت. No dots = voiced.' },
+  'ط': { name:'طَاء / ṭāʾ', zone:'dental', label:'SEAL', color:'#e67e22', pos:{x:235,y:192},
+    tongue: 'M235,192 C240,208 250,235 268,262 C290,296 325,322 368,340 C408,356 442,368 462,378 C474,384 480,390 480,396 L472,400 C472,394 466,390 456,386 C438,378 405,368 370,356 C330,342 298,325 280,300 C264,278 254,248 248,222 Z',
+    upperLip: 'M155,208 C170,205 195,202 230,204', lowerLip: 'M155,232 C170,235 195,238 230,236', jawAngle: 7,
+    contact:{cx:238,cy:194,rx:12,ry:8},
+    art_tongue:'Tip up at teeth + BACK ALSO RISES (emphatic). Thicker profile.',
+    art_lips:'Open.',
+    art_jaw:'Moderately open.',
+    art_teeth:'Full seal against upper teeth.',
+    shape:'Ṭāʾ (ط) = taller enclosed loop. Tip up like ت, but extra height = emphatic back-raising. The SEAL: closure at teeth AND raised body.' },
+
+  // ── INTERDENTAL ──
+  'ث': { name:'ثَاء / thāʾ', zone:'interdental', label:'THINNING', color:'#e74c3c', pos:{x:218,y:222},
+    tongue: 'M218,222 C228,226 248,236 275,248 C308,262 345,276 385,290 C420,302 448,314 462,322 C470,328 474,334 474,340 L466,344 C466,338 462,332 454,326 C440,318 415,308 382,298 C345,286 312,274 280,262 C255,252 235,242 225,236 Z',
+    upperLip: 'M155,208 C170,199 195,191 230,193', lowerLip: 'M155,232 C170,240 195,249 230,247', jawAngle: 12,
+    contact:{cx:225,cy:228,rx:10,ry:15},
+    art_tongue:'Tip PROTRUDES FORWARD between teeth.',
+    art_lips:'Open to allow tongue protrusion. Alqarni: boat shape = lower lip.',
+    art_jaw:'Open enough for tongue to protrude between teeth.',
+    art_teeth:'BOTH upper + lower teeth involved. Tongue passes BETWEEN them. Alqarni: 3 dots = 2 upper teeth + tongue tip (3 articulators).',
+    shape:'Thāʾ (ث) = boat + 3 dots above. Alqarni: boat = lower lip, 3 dots = 2 upper teeth + tongue tip. Three articulators visible in the act of production.' },
+  'ذ': { name:'ذَال / dhāl', zone:'interdental', label:'EXTENSION', color:'#e74c3c', pos:{x:218,y:225},
+    tongue: 'M218,222 C228,226 248,236 275,248 C308,262 345,276 385,290 C420,302 448,314 462,322 C470,328 474,334 474,340 L466,344 C466,338 462,332 454,326 C440,318 415,308 382,298 C345,286 312,274 280,262 C255,252 235,242 225,236 Z',
+    upperLip: 'M155,208 C170,199 195,191 230,193', lowerLip: 'M155,232 C170,240 195,249 230,247', jawAngle: 12,
+    contact:{cx:225,cy:230,rx:10,ry:15},
+    art_tongue:'Protrudes between teeth (voiced).',
+    art_lips:'Open.',
+    art_jaw:'Open for protrusion.',
+    art_teeth:'Both involved.',
+    shape:'Dhāl (ذ) = like د + dot. Tongue EXTENDS between teeth. Letter points FORWARD.' },
+  'ظ': { name:'ظَاء / ẓāʾ', zone:'interdental', label:'HEAVY CONTACT', color:'#e74c3c', pos:{x:218,y:220},
+    tongue: 'M218,220 C228,224 250,232 280,244 C315,258 355,272 398,284 C435,296 462,308 478,318 C488,326 492,334 490,340 L482,344 C482,338 478,332 470,326 C456,318 432,308 398,298 C358,286 322,274 290,262 C262,252 240,242 228,236 Z',
+    upperLip: 'M155,208 C170,199 195,191 230,193', lowerLip: 'M155,232 C170,240 195,249 230,247', jawAngle: 12,
+    contact:{cx:225,cy:226,rx:10,ry:15},
+    art_tongue:'Protrudes + back raises (emphatic).',
+    art_lips:'Open.',
+    art_jaw:'Open.',
+    art_teeth:'Both involved.',
+    shape:'Ẓāʾ (ظ) = like ط + dot. Emphatic interdental: protrusion + back-raising.' },
+
+  // ── LATERAL ──
+  'ض': { name:'ضَاد / ḍād', zone:'lateral', label:'EDGE', color:'#e67e22', pos:{x:380,y:185},
+    tongue: 'M252,262 C268,258 292,250 320,242 C352,234 388,230 420,232 C448,236 470,248 485,268 C494,282 498,298 496,318 L488,324 C490,306 486,290 478,276 C466,258 448,248 425,242 C396,238 365,240 338,248 C312,256 290,264 274,270 Z',
+    upperLip: 'M155,208 C170,204 195,200 230,202', lowerLip: 'M155,232 C170,236 195,240 230,238', jawAngle: 8,
+    contact:{cx:390,cy:188,rx:25,ry:15},
+    art_tongue:'Side presses against MOLARS. Air along the EDGE. The ONLY lateral fricative.',
+    art_lips:'Open.',
+    art_jaw:'Open.',
+    art_teeth:'Molars involved (not front teeth).',
+    shape:'Ḍād (ض) = the letter UNIQUE to AA. Air along the SIDE of the tongue. Shape curves laterally — different axis from all other letters.' },
+
+  // ── LIPS ──
+  'ب': { name:'بَاء / bāʾ', zone:'lips', label:'CLOSURE', color:'#3498db', pos:{x:188,y:218},
+    tongue: NEUTRAL.tongue,
+    upperLip: 'M155,208 C170,211 195,215 230,217', lowerLip: 'M155,232 C170,228 195,225 230,223', jawAngle: 1,
+    contact:{cx:190,cy:220,rx:18,ry:25},
+    art_tongue:'Neutral, flat. Tongue uninvolved.',
+    art_lips:'BOTH LIPS CLOSE then RELEASE. The primary articulators. Alqarni: ب = boat shape = lower lip. Dot below = downward lip movement.',
+    art_jaw:'Nearly closed — lips pressed together.',
+    art_teeth:'Not involved.',
+    shape:'Bāʾ (ب) = boat + dot below. Alqarni: boat = lower lip shape. Dot below = the downward movement of the lip during release. The FIRST articulated consonant — lips are the most external articulator.' },
+  'م': { name:'مِيم / mīm', zone:'lips', label:'ENCLOSURE', color:'#3498db', pos:{x:188,y:215},
+    tongue: NEUTRAL.tongue,
+    upperLip: 'M155,208 C170,212 195,217 230,219', lowerLip: 'M155,232 C170,227 195,223 230,221', jawAngle: 0,
+    contact:{cx:190,cy:218,rx:18,ry:25},
+    art_tongue:'Neutral.',
+    art_lips:'SEALED completely. Tighter than ب. Air forced through nose.',
+    art_jaw:'Closed. Lips firmly sealed.',
+    art_teeth:'Not involved.',
+    shape:'Mīm (م) = closed loop. Lips SEAL completely. The loop = the sealed lip chamber. Air has nowhere to go except through the nose.' },
+  'و': { name:'وَاو / wāw', zone:'lips', label:'ROUNDING', color:'#3498db', pos:{x:185,y:212},
+    tongue: NEUTRAL.tongue,
+    upperLip: 'M155,208 C170,198 195,192 235,194', lowerLip: 'M155,232 C170,242 195,248 235,246', jawAngle: 10,
+    contact:{cx:188,cy:215,rx:18,ry:22},
+    art_tongue:'Mostly neutral, slight back raise.',
+    art_lips:'ROUNDED and PROTRUDED forward. Lips push out into a small O.',
+    art_jaw:'Open for the rounded lip protrusion.',
+    art_teeth:'Not visible — hidden behind protruded lips.',
+    shape:'Wāw (و) = hook/comma. The hook = the lip curving and PROTRUDING forward. The rounding of the lips IS the letter shape.' },
+
+  // ── LABIODENTAL ──
+  'ف': { name:'فَاء / fāʾ', zone:'labiodental', label:'SEPARATION', color:'#2ecc71', pos:{x:210,y:200},
+    tongue: NEUTRAL.tongue,
+    upperLip: 'M155,208 C170,208 195,209 230,211', lowerLip: 'M155,232 C170,225 195,212 225,205', jawAngle: 4,
+    contact:{cx:215,cy:202,rx:14,ry:12},
+    art_tongue:'Neutral.',
+    art_lips:'LOWER LIP curls UP to touch upper teeth. Upper lip passive.',
+    art_jaw:'Slightly open.',
+    art_teeth:'Upper teeth = target. Lower lip meets them from below.',
+    shape:'Fāʾ (ف) = loop + dot above. Loop = lower lip CURVING UP to meet upper teeth. Dot above = friction escaping upward. The lip-teeth gap IS the sound.' },
+};
+
+const ZONES = [
+  { id:'glottal',     name:'حَلْق أَقْصَى — Glottal',      color:'#c0392b', letters:['ء','ا','ه'] },
+  { id:'pharyngeal',  name:'حَلْق — Pharyngeal',             color:'#8e44ad', letters:['ع','ح'] },
+  { id:'uvular',      name:'لَهَوِيَّة — Uvular',             color:'#e74c3c', letters:['غ','خ'] },
+  { id:'velar',       name:'لَهَوِيَّة — Velar',              color:'#f39c12', letters:['ق','ك'] },
+  { id:'palatal',     name:'شَجَرِيَّة — Palatal',             color:'#1abc9c', letters:['ج','ش','ي'] },
+  { id:'alveolar',    name:'ذَلْقِيَّة — Alveolar',            color:'#9b59b6', letters:['ل','ن','ر'] },
+  { id:'sibilant',    name:'صَفِيرِيَّة — Sibilant',           color:'#16a085', letters:['ز','س','ص'] },
+  { id:'dental',      name:'أَسَلِيَّة — Dental',              color:'#e67e22', letters:['ت','د','ط'] },
+  { id:'interdental', name:'لَثَوِيَّة — Interdental',         color:'#e74c3c', letters:['ث','ذ','ظ'] },
+  { id:'lateral',     name:'ضَاد — Lateral',                   color:'#e67e22', letters:['ض'] },
+  { id:'lips',        name:'شَفَتَيْن — Lips',                 color:'#3498db', letters:['ب','م','و'] },
+  { id:'labiodental', name:'شَفَة + ثَنَايَا — Labiodental',   color:'#2ecc71', letters:['ف'] },
+];
+
+// ═══════════════════════════════════════════════════════════
+// SHAPE DIRECTION DATA
+// Categories: LEFT_POINT, RIGHT_POINT, CUP_UP, LOOP, VERTICAL, SERRATED, HOOK
+// dirAngle: arrow angle on SVG (degrees, 0=right, 90=down, 180=left, 270=up)
+// dirMeaning: what the direction means articulatorily
+// ═══════════════════════════════════════════════════════════
+const SHAPE_DIR = {
+  'ء': { cat:'HOOK',        dirAngle:null, meaning:'Small catch — glottal snap. No directional movement.' },
+  'ا': { cat:'VERTICAL',    dirAngle:270,  meaning:'Vertical = OPEN AIRWAY. No articulatory contact — pure opening.' },
+  'ه': { cat:'LOOP',        dirAngle:null, meaning:'Round loop = circular open GLOTTIS. Air passes through the ring.' },
+  'ع': { cat:'RIGHT_POINT', dirAngle:0,    meaning:'Opens/curves RIGHT = tongue root retracts BACKWARD into pharynx.' },
+  'ح': { cat:'RIGHT_POINT', dirAngle:0,    meaning:'Curves RIGHT = pharyngeal constriction BACKWARD. Tighter than ع.' },
+  'غ': { cat:'RIGHT_POINT', dirAngle:0,    meaning:'Curves RIGHT + dot = back tongue rises BACKWARD toward uvula.' },
+  'خ': { cat:'RIGHT_POINT', dirAngle:0,    meaning:'Curves RIGHT + dot = uvular friction BACKWARD. Voiceless partner of غ.' },
+  'ق': { cat:'CUP_UP',      dirAngle:270,  meaning:'Bowl opens UP = back tongue rises UPWARD to strike soft palate. Two dots = strike point.' },
+  'ك': { cat:'RIGHT_POINT', dirAngle:345,  meaning:'Stroke rises RIGHT toward palate = back tongue moving UP-BACK.' },
+  'ج': { cat:'CUP_UP',      dirAngle:270,  meaning:'Curve opens UP + dot below = middle tongue RISES to press palate. Dot = voicing below.' },
+  'ش': { cat:'SERRATED',    dirAngle:270,  meaning:'Three cusps + 3 dots = WIDE palatal spread. Air flows UPWARD over broad tongue surface.' },
+  'ي': { cat:'CUP_UP',      dirAngle:270,  meaning:'Curve UP + 2 dots below = tongue rises toward palate. Dots below = visible tongue parts (Alqarni).' },
+  'ل': { cat:'LEFT_POINT',  dirAngle:180,  meaning:'Vertical curves LEFT at top = tongue tip reaches FORWARD-UP to alveolar ridge.' },
+  'ن': { cat:'CUP_UP',      dirAngle:270,  meaning:'Bowl UP + dot above = tongue curves UP to ridge. Dot above = air escapes UPWARD through nose.' },
+  'ر': { cat:'LEFT_POINT',  dirAngle:180,  meaning:'Small flick LEFT = tongue tip FLICKS FORWARD. Minimal stroke = minimal contact.' },
+  'ز': { cat:'LEFT_POINT',  dirAngle:200,  meaning:'Flick LEFT + dot = tip aims FORWARD-DOWN toward lower teeth.' },
+  'س': { cat:'SERRATED',    dirAngle:180,  meaning:'Three cusps pointing LEFT = turbulent airflow hissing FORWARD through tongue groove.' },
+  'ص': { cat:'LOOP',        dirAngle:null, meaning:'Closed loop = emphatic SEAL. Complete closure — tip down + back raised.' },
+  'ت': { cat:'CUP_UP',      dirAngle:270,  meaning:'Boat/cup UP + 2 dots above = tongue curls UPWARD. Two dots = TWO UPPER TEETH.' },
+  'د': { cat:'LEFT_POINT',  dirAngle:180,  meaning:'Curve opens LEFT = tongue tip moves FORWARD to teeth.' },
+  'ط': { cat:'LOOP',        dirAngle:null, meaning:'Tall loop = emphatic SEAL at teeth + back raised. Complete closure.' },
+  'ث': { cat:'CUP_UP',      dirAngle:270,  meaning:'Boat UP + 3 dots = tongue RISES between teeth. 3 dots = 2 teeth + tip (Alqarni).' },
+  'ذ': { cat:'LEFT_POINT',  dirAngle:200,  meaning:'Curve LEFT = tongue PROTRUDES FORWARD between teeth.' },
+  'ظ': { cat:'LOOP',        dirAngle:null, meaning:'Loop + dot = emphatic SEAL. Interdental + back raised.' },
+  'ض': { cat:'LOOP',        dirAngle:null, meaning:'Loop + dot = LATERAL closure. Side of tongue seals against molars.' },
+  'ب': { cat:'CUP_UP',      dirAngle:270,  meaning:'Boat/cup UP + dot below = lower lip shape (Alqarni). Dot below = downward lip movement.' },
+  'م': { cat:'LOOP',        dirAngle:null, meaning:'Closed circle = lips SEALED. Complete enclosure — air through nose only.' },
+  'و': { cat:'LEFT_POINT',  dirAngle:210,  meaning:'Hook drops LEFT = lips PROTRUDE FORWARD. The rounding pushes outward.' },
+  'ف': { cat:'LOOP',        dirAngle:null, meaning:'Loop + dot above = lower lip CURLS UP to teeth. Dot = friction escaping above.' },
+};
+
+const SHAPE_CATS = {
+  LEFT_POINT:  { label:'← Left (Forward)',   color:'#3498db', desc:'Articulator moves FORWARD toward lips/teeth' },
+  RIGHT_POINT: { label:'→ Right (Backward)',  color:'#e74c3c', desc:'Articulator moves BACKWARD toward throat' },
+  CUP_UP:      { label:'∪ Cup Up (Rising)',   color:'#2ecc71', desc:'Articulator RISES upward to palate/ridge/teeth' },
+  LOOP:        { label:'○ Loop (Seal)',       color:'#f39c12', desc:'Complete CLOSURE or enclosure' },
+  VERTICAL:    { label:'| Vertical (Open)',   color:'#9b59b6', desc:'Open AIRWAY — no contact' },
+  SERRATED:    { label:'∿ Serrated (Flow)',   color:'#1abc9c', desc:'Turbulent AIRFLOW through groove' },
+  HOOK:        { label:'⌐ Hook (Catch)',      color:'#e67e22', desc:'Abrupt action — stop/catch' },
+};
+
+// ═══════════════════════════════════════════════════════════
+// SHAPE GEOMETRY — Layer 3: closure type + dot function
+// ═══════════════════════════════════════════════════════════
+const SHAPE_GEO = {
+  // ── GLOTTAL ──
+  'ء': { closure:'OPEN', voiced:false, emphatic:false, dots:0,
+    body:'Small angular hook — an INTERRUPTION mark. The abrupt shape mirrors the abrupt glottal closure.',
+    dotFn:'None.',
+    diff:'No zone-mates with same articulation. Unique glottal stop.' },
+  'ا': { closure:'OPEN', voiced:true, emphatic:false, dots:0,
+    body:'Vertical line = MAXIMUM OPENNESS. No curves, no closure. Pure airway. The straightest letter = the most open sound.',
+    dotFn:'None.',
+    diff:'vs ء: alif is OPEN (continuous vowel), hamza is INTERRUPTED (stop). Straight vs angular.' },
+  'ه': { closure:'CLOSED', voiced:false, emphatic:false, dots:0,
+    body:'Round loop = the open glottis viewed head-on. A RING of air. The closure of the letter shape = the ring-shape of the glottal opening, not a seal.',
+    dotFn:'None.',
+    diff:'vs ا: hāʾ is shaped (breath shaped through round glottis), alif is unshaped (pure opening).' },
+
+  // ── PHARYNGEAL ──
+  'ع': { closure:'OPEN', voiced:true, emphatic:false, dots:0,
+    body:'Open curve — the pharynx CONSTRICTS but does not SEAL. Air still passes through. The open shape = the remaining airway.',
+    dotFn:'None.',
+    diff:'vs ح: ع is OPEN (voiced, more resonant), ح is more CLOSED (voiceless, tighter constriction). Same position, different aperture.' },
+  'ح': { closure:'PARTIAL', voiced:false, emphatic:false, dots:0,
+    body:'Tighter curve than ع — the constriction is NARROWER. More closed shape = tighter pharyngeal passage. Voiceless = less energy through a smaller gap.',
+    dotFn:'None.',
+    diff:'vs ع: ح has tighter/more enclosed form = voiceless (less opening). ع has more open form = voiced (more resonance).' },
+
+  // ── UVULAR ──
+  'غ': { closure:'PARTIAL', voiced:true, emphatic:false, dots:1,
+    body:'Same base as ج/ح family — a curve. The uvular position is encoded by the body shape curving toward the back.',
+    dotFn:'1 dot ABOVE = the UVULA. The dot marks the specific articulator above the tongue that it scrapes against.',
+    diff:'vs خ: غ is VOICED (dot above = uvula vibrates), خ is VOICELESS (dot above = air passes over uvula). Same shape, same dot position — distinguished by voicing only.' },
+  'خ': { closure:'PARTIAL', voiced:false, emphatic:false, dots:1,
+    body:'Same base as غ.',
+    dotFn:'1 dot ABOVE = the UVULA (same as غ).',
+    diff:'vs غ: voiceless partner. Same form reflects same position. The dot system does NOT encode voicing — it encodes the ARTICULATOR (uvula).' },
+
+  // ── VELAR ──
+  'ق': { closure:'PARTIAL', voiced:false, emphatic:false, dots:2,
+    body:'Deep BOWL = the back tongue CUPPING against the palate. The bowl shape = the concavity of the tongue as it rises to make contact. Deeper than ك.',
+    dotFn:'2 dots ABOVE = the TWO contact surfaces: back-of-tongue and soft-palate. Or: the TWO sides of the closure.',
+    diff:'vs ك: ق has deeper bowl = DEEPER contact (uvular). ك has shallower stroke = SHALLOWER contact (velar). The depth of the letter = the depth of the articulation.' },
+  'ك': { closure:'PARTIAL', voiced:false, emphatic:false, dots:0,
+    body:'Rising stroke — shallower than ق. The stroke reaches up but does not form a deep bowl. Shallower shape = shallower (more forward) contact on the palate.',
+    dotFn:'No dots (has a small hamza-like mark inside in some traditions).',
+    diff:'vs ق: shallower form = more forward contact. ق is uvular (deep), ك is velar (shallower).' },
+
+  // ── PALATAL ──
+  'ج': { closure:'PARTIAL', voiced:true, emphatic:false, dots:1,
+    body:'Curve = tongue body rising to palate. The curve shows the DOME of the tongue approaching the roof.',
+    dotFn:'1 dot BELOW = VOICING. The vibration is UNDERNEATH the tongue — below the point of contact.',
+    diff:'vs ش: ج has 1 dot below (voiced, single release), ش has 3 dots above (voiceless, spread airflow). vs ي: ج makes FULL contact (affricate), ي makes PARTIAL contact (approximant).' },
+  'ش': { closure:'PARTIAL', voiced:false, emphatic:false, dots:3,
+    body:'Same base curve as ج — tongue against palate. The WIDTH of شِين in writing = the SPREAD of the fricative.',
+    dotFn:'3 dots ABOVE = THREE-WAY airflow. The friction SPREADS across the palate. Three dots = the broad, distributed escape of air.',
+    diff:'vs ج: ش has 3 dots ABOVE (air escapes broadly ABOVE), ج has 1 dot BELOW (voicing below). Same palatal contact, opposite energy direction.' },
+  'ي': { closure:'OPEN', voiced:true, emphatic:false, dots:2,
+    body:'Gentle curve — LESS steep than ج/ش. The shallower approach = the tongue does NOT fully reach the palate. Approximant = gap remains.',
+    dotFn:'2 dots BELOW = Alqarni: the two parts of the tongue visible when pressed against lower teeth/gum. Below = the tongue is seen from BELOW (mouth open).',
+    diff:'vs ج: ي is MORE OPEN (approximant, no full contact). Shallower curve = less closure. Dots below vs above.' },
+
+  // ── ALVEOLAR ──
+  'ل': { closure:'OPEN', voiced:true, emphatic:false, dots:0,
+    body:'Vertical stroke curving at top = the tongue reaching UP. The long vertical = the LENGTH of the tongue body from root to tip. OPEN because air flows around the SIDES (lateral).',
+    dotFn:'None. The letter shape itself IS the diagram — no additional markers needed.',
+    diff:'vs ن: ل is OPEN (air passes around sides = lateral), ن is a BOWL (air redirected through nose = nasal). Same tip position, different air routing → different shape. vs ر: ل has LONG stroke (sustained contact), ر has SHORT stroke (momentary tap).' },
+  'ن': { closure:'PARTIAL', voiced:true, emphatic:false, dots:1,
+    body:'Bowl/cup = the tongue forming a CONCAVITY as the tip rises. The bowl = the shape of the tongue surface. More enclosed than ل because air is CHANNELED (into nose).',
+    dotFn:'1 dot ABOVE = air escapes UPWARD through the nasal passage. The dot IS the nasal exit point.',
+    diff:'vs ل: ن has BOWL (enclosed → nasal), ل has VERTICAL (open → lateral). The bowl captures air and sends it up (dot). The vertical lets air pass freely around sides.' },
+  'ر': { closure:'OPEN', voiced:true, emphatic:false, dots:0,
+    body:'Tiny flick = MINIMAL contact. The smallest letter body of all alveolars because the tongue makes the BRIEFEST contact. Trill/tap = touch and release instantly.',
+    dotFn:'None. So little contact that no additional marking is needed.',
+    diff:'vs ل: ر has MINIMAL stroke (momentary), ل has MAXIMAL stroke (sustained). The amount of ink = the amount of contact time.' },
+
+  // ── SIBILANT ──
+  'ز': { closure:'OPEN', voiced:true, emphatic:false, dots:1,
+    body:'Same minimal body as ر — small curve. The narrow shape = the narrow sibilant groove.',
+    dotFn:'1 dot ABOVE = distinguishes from ر. The dot marks the FRICTION element (hissing) absent in the simple tap of ر.',
+    diff:'vs س: ز has simple body + dot (single hiss channel, voiced), س has three cusps (turbulent airflow, voiceless). vs ر: same body shape — the dot is what converts a TAP into a HISS.' },
+  'س': { closure:'OPEN', voiced:false, emphatic:false, dots:0,
+    body:'THREE CUSPS = the SERRATED airflow. The shape draws the turbulence of the sibilant hiss. Three peaks = three waves of friction as air passes through the narrow groove.',
+    dotFn:'None — the body shape itself encodes the friction pattern.',
+    diff:'vs ص: س is OPEN (three cusps, air escapes freely), ص is CLOSED loop (emphatic seal = trapped resonance). Same tip position, but ص adds back-raising which ENCLOSES the cavity.' },
+  'ص': { closure:'CLOSED', voiced:false, emphatic:true, dots:0,
+    body:'CLOSED LOOP = emphatic SEAL. The loop encodes the ADDITIONAL closure from back-tongue raising. The cavity between tip-at-teeth and raised-back is ENCLOSED — the loop IS that cavity.',
+    dotFn:'None.',
+    diff:'vs س: CLOSED vs OPEN. The loop = the emphatic back-raising creates a sealed resonance chamber. س is open (air escapes), ص is enclosed (air resonates inside before escaping).' },
+
+  // ── DENTAL ──
+  'ت': { closure:'OPEN', voiced:false, emphatic:false, dots:2,
+    body:'Flat boat/cup = the tongue body lies LOW while the tip curls up. The open boat = air ESCAPES after the snap release. The flatness = the low tongue body.',
+    dotFn:'2 dots ABOVE = the TWO UPPER FRONT TEETH. The dots mark the TARGET the tip strikes against. Above = the teeth are ABOVE the tongue tip.',
+    diff:'vs د: ت has dots (voiceless, marks the teeth), د has NO dots (voiced — the voicing adds its own signal, no visual marker needed). vs ط: ت is OPEN (simple release), ط is a CLOSED LOOP (emphatic seal — back raised, cavity enclosed).' },
+  'د': { closure:'PARTIAL', voiced:true, emphatic:false, dots:0,
+    body:'Single smooth curve = the tongue tip rising to the teeth. More CLOSED than ت — the voiced dental has more oral pressure. The curve = the approach trajectory of the tip.',
+    dotFn:'None. VOICED letters in the dental zone carry NO dots. The voicing itself is the distinguishing signal — it does not need a visual marker.',
+    diff:'vs ت: د is dotless (voiced), ت has 2 dots (voiceless). The VOICED partner needs no marker because voicing is its own signal. vs ط: د is simple curve (non-emphatic), ط is enclosed loop (emphatic seal).' },
+  'ط': { closure:'CLOSED', voiced:false, emphatic:true, dots:0,
+    body:'TALL CLOSED LOOP = the emphatic SEAL. The loop encloses the resonance chamber created when the back tongue RISES while the tip seals the teeth. The height of the loop = the volume of the enclosed cavity.',
+    dotFn:'None. The CLOSURE of the loop shape itself signals emphasis — no dots needed.',
+    diff:'vs ت: CLOSED loop vs OPEN boat. ط is sealed (emphasis), ت is open (simple). vs د: CLOSED loop vs simple curve. The three dental letters form a PROGRESSION: ت (open+dots) → د (partial, no dots) → ط (closed loop). Open → Partial → Sealed.' },
+
+  // ── INTERDENTAL ──
+  'ث': { closure:'OPEN', voiced:false, emphatic:false, dots:3,
+    body:'Same boat base as ت — the lower lip / low tongue body. Open = air escapes through the teeth gap around the protruding tip.',
+    dotFn:'3 dots ABOVE = Alqarni: 2 upper teeth + tongue tip = 3 articulators visible. The dots count the PARTICIPANTS in the sound.',
+    diff:'vs ذ: ث has 3 dots (voiceless, marks the 3 articulators), ذ has 1 dot (voiced, marks the friction). vs ت: same dot count would imply same structure, but ث has 3 vs ت has 2 — the extra dot = the tongue tip now VISIBLE between teeth (third articulator).' },
+  'ذ': { closure:'PARTIAL', voiced:true, emphatic:false, dots:1,
+    body:'Same curve as د — the voiced partner shares the same base form. The curve = the tongue approaching/protruding.',
+    dotFn:'1 dot ABOVE = the FRICTION point. The air scrapes over the protruding tip.',
+    diff:'vs ث: ذ is voiced (1 dot, simpler), ث is voiceless (3 dots, marks all articulators). vs ظ: ذ is simple curve (non-emphatic), ظ is loop (emphatic seal).' },
+  'ظ': { closure:'CLOSED', voiced:true, emphatic:true, dots:1,
+    body:'CLOSED LOOP = emphatic seal (like ط). The loop = back tongue raised + tip protruding = enclosed cavity.',
+    dotFn:'1 dot ABOVE = the friction point (like ذ).',
+    diff:'vs ذ: CLOSED vs PARTIAL. Loop = emphasis. vs ط: both are emphatic loops, but ظ has a dot (interdental friction) while ط has none (dental stop). The dot = the friction component.' },
+
+  // ── LATERAL ──
+  'ض': { closure:'CLOSED', voiced:true, emphatic:true, dots:1,
+    body:'CLOSED LOOP = emphatic seal. The loop = the lateral enclosure: tongue sides press against molars, creating a sealed channel.',
+    dotFn:'1 dot ABOVE = marks the unique lateral airflow direction (air over the side, not the center).',
+    diff:'Unique — no zone-mates. The only lateral fricative. Loop = emphatic closure at the sides.' },
+
+  // ── LIPS ──
+  'ب': { closure:'OPEN', voiced:true, emphatic:false, dots:1,
+    body:'Flat boat/cup = Alqarni: the lower lip shape. Open = the lips RELEASE after the plosive burst. Air escapes.',
+    dotFn:'1 dot BELOW = Alqarni: the DOWNWARD movement of the lower lip. Below = the action happens BELOW (lower lip drops to release).',
+    diff:'vs م: ب is OPEN (plosive release, air escapes), م is CLOSED loop (nasal seal, air trapped). vs ت: same base boat shape — but ب has dot BELOW (lip action below), ت has dots ABOVE (teeth above).' },
+  'م': { closure:'CLOSED', voiced:true, emphatic:false, dots:0,
+    body:'CLOSED loop/circle = lips SEALED completely. The most enclosed shape of all labials. Air has NOWHERE to go except through the nose.',
+    dotFn:'None. The closure of the shape IS the signal — complete seal needs no additional marker.',
+    diff:'vs ب: CLOSED vs OPEN. م seals completely (nasal), ب releases (plosive). The loop = the sealed lip chamber.' },
+  'و': { closure:'PARTIAL', voiced:true, emphatic:false, dots:0,
+    body:'Hook/comma = the lip PROTRUDING and ROUNDING. Not fully closed (air still passes), not fully open. The hook shape = the curved, protruded lip profile viewed from the side.',
+    dotFn:'None.',
+    diff:'vs ب/م: و is PARTIAL (approximant — lips round but don\'t seal). ب is open (plosive release), م is closed (nasal seal). Three labials = three closure levels.' },
+
+  // ── LABIODENTAL ──
+  'ف': { closure:'CLOSED', voiced:false, emphatic:false, dots:1,
+    body:'Loop = the lower lip CURLING UP to meet the upper teeth. The loop = the enclosed space between curled lip and teeth.',
+    dotFn:'1 dot ABOVE = the friction escaping UPWARD through the lip-teeth gap. The dot = the escape point.',
+    diff:'Unique labiodental — no zone-mates. The loop differentiates from the open labials (ب).' },
+};
+
+
+const JAW_GEO = {
+  'ء': 'SLIGHT OPEN — glottal stop needs minimal jaw opening.',
+  'ا': 'WIDE OPEN — maximum jaw drop for the pure open vowel. The vertical letter shape = the vertical opening of the jaw.',
+  'ه': 'MODERATE — open enough for breath to pass freely.',
+  'ع': 'MODERATE — jaw opens but the constriction is in the THROAT, not the mouth.',
+  'ح': 'SLIGHT — tighter than ع. Less jaw opening = less resonance = voiceless.',
+  'غ': 'SLIGHT — back-of-mouth sound, jaw barely involved.',
+  'خ': 'SLIGHT — same as غ.',
+  'ق': 'SLIGHT — deep plosive, jaw minimal.',
+  'ك': 'SLIGHT — velar, jaw minimal.',
+  'ج': 'MODERATE — affricate needs space for the release burst.',
+  'ش': 'MODERATE — broad fricative needs space for air spread.',
+  'ي': 'MODERATE-OPEN — semivowel, jaw drops more than full palatals.',
+  'ل': 'MODERATE — tongue needs space to reach up to ridge.',
+  'ن': 'MODERATE — same as ل, air through nose.',
+  'ر': 'MODERATE — tongue needs room to trill/tap.',
+  'ز': 'NEARLY CLOSED — teeth close together for sibilant hiss. Narrow gap = narrow airstream.',
+  'س': 'NEARLY CLOSED — teeth ALMOST TOUCHING. The narrowest jaw opening of any fricative. The tight teeth gap IS the sibilant.',
+  'ص': 'NEARLY CLOSED — same as س but emphatic back-raising adds tension.',
+  'ت': 'MODERATE — jaw opens enough for tip to curl up to teeth.',
+  'د': 'MODERATE — same as ت.',
+  'ط': 'MODERATE — same position but emphatic.',
+  'ث': 'WIDE OPEN — jaw must DROP for tongue to PROTRUDE between teeth. The interdentals need the MOST jaw opening of any consonant.',
+  'ذ': 'WIDE OPEN — same as ث. Jaw drops for tongue protrusion.',
+  'ظ': 'WIDE OPEN — emphatic interdental, same wide jaw.',
+  'ض': 'MODERATE — lateral needs space for side-pressing.',
+  'ب': 'NEARLY CLOSED — lips must MEET. Jaw closes to bring lips together.',
+  'م': 'CLOSED — lips SEALED. Jaw fully closed. Zero gap.',
+  'و': 'MODERATE-OPEN — lips protrude forward, jaw drops to round.',
+  'ف': 'SLIGHT — lower lip curls up to teeth, jaw mostly closed.',
+};
+
+const CLOSURE_COLORS = {
+  OPEN:    { label:'OPEN',    color:'#2ecc71', icon:'◯', desc:'Air ESCAPES — release, no seal' },
+  PARTIAL: { label:'PARTIAL', color:'#f39c12', icon:'◐', desc:'NARROWED but not sealed — friction, approximant' },
+  CLOSED:  { label:'CLOSED',  color:'#e74c3c', icon:'●', desc:'SEALED — complete closure, loop, emphasis' },
+};
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+let cur = null;
+const layers = { tongue:true, lips:true, jaw:true, contact:true, labels:true, direction:true };
+
+// ═══════════════════════════════════════════════════════════
+// BUILD UI
+// ═══════════════════════════════════════════════════════════
+function buildPanel() {
+  const p = document.getElementById('letter-panel');
+  let h = '<div style="text-align:center;color:var(--gold);font-size:0.95em;margin-bottom:8px;">الحُرُوف</div>';
+  for (const z of ZONES) {
+    h += `<div class="zone-group"><h3><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${z.color};margin-right:4px;"></span>${z.name}</h3><div class="letters-row">`;
+    for (const l of z.letters) h += `<button class="letter-btn" data-letter="${l}" onclick="sel('${l}')">${l}</button>`;
+    h += '</div></div>';
+  }
+  p.innerHTML = h;
+}
+
+// ═══════════════════════════════════════════════════════════
+// SELECT LETTER
+// ═══════════════════════════════════════════════════════════
+function sel(letter) {
+  cur = letter;
+  const d = L[letter];
+
+  document.querySelectorAll('.letter-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.letter-btn[data-letter="${letter}"]`)?.classList.add('active');
+
+  // Info
+  document.getElementById('info-big-letter').textContent = letter;
+  document.getElementById('info-big-letter').style.color = 'var(--gold)';
+  document.getElementById('info-name').textContent = d.name + ' — ' + d.label;
+
+  // Articulation info
+  const ai = document.getElementById('articulation-info'); ai.style.display = 'block';
+  document.getElementById('art-tongue').innerHTML = '<strong style="color:var(--gold)">Tongue:</strong> ' + d.art_tongue;
+  document.getElementById('art-lips').innerHTML = '<strong style="color:#cc8888">Lips:</strong> ' + d.art_lips;
+  document.getElementById('art-jaw').innerHTML = '<strong style="color:var(--text-dim)">Jaw:</strong> ' + d.art_jaw;
+  document.getElementById('art-teeth').innerHTML = '<strong style="color:#888">Teeth:</strong> ' + d.art_teeth;
+
+  // Shape
+  document.getElementById('shape-analysis').style.display = 'block';
+  document.getElementById('shape-text').textContent = d.shape;
+
+  // ANIMATE: Tongue — hide neutral when active shown
+  const ta = document.getElementById('tongue-active');
+  const tn = document.getElementById('tongue-neutral');
+  ta.setAttribute('d', d.tongue);
+  ta.style.opacity = layers.tongue ? '0.8' : '0';
+  tn.style.opacity = layers.tongue ? '0.15' : '0.5';
+
+  // ANIMATE: Lips
+  document.getElementById('upper-lip').setAttribute('d', d.upperLip);
+  document.getElementById('lower-lip').setAttribute('d', d.lowerLip);
+  document.getElementById('upper-lip').style.opacity = layers.lips ? '1' : '0.2';
+  document.getElementById('lower-lip').style.opacity = layers.lips ? '1' : '0.2';
+
+  // ANIMATE: Jaw — translate DOWN (not rotate) by jawAngle * 2.5px
+  const jawDrop = d.jawAngle * 2.5;
+  document.getElementById('jaw-group').style.transform = `translateY(${jawDrop}px)`;
+  const jl = document.getElementById('jaw-angle-label');
+  const jawDesc = d.jawAngle <= 2 ? 'CLOSED' : d.jawAngle <= 6 ? 'slight' : d.jawAngle <= 10 ? 'moderate' : 'WIDE OPEN';
+  jl.textContent = `jaw: ${jawDesc} (${d.jawAngle}\u00B0)`;
+  jl.style.opacity = layers.jaw ? '0.7' : '0';
+
+  // Contact
+  const cz = document.getElementById('contact-zone');
+  cz.setAttribute('cx', d.contact.cx); cz.setAttribute('cy', d.contact.cy);
+  cz.setAttribute('rx', d.contact.rx); cz.setAttribute('ry', d.contact.ry);
+  cz.classList.toggle('show', layers.contact);
+
+  // Makhraj dot
+  const md = document.getElementById('makhraj-dot');
+  md.setAttribute('cx', d.pos.x); md.setAttribute('cy', d.pos.y);
+  md.classList.add('show');
+
+  // Direction arrow + info
+  const sd = SHAPE_DIR[letter];
+  const sc = SHAPE_CATS[sd.cat];
+  const dag = document.getElementById('dir-arrow-group');
+  const dal = document.getElementById('dir-arrow-line');
+  const dao = document.getElementById('dir-arrow-origin');
+
+  // Direction info panel
+  const di = document.getElementById('dir-info'); di.style.display = 'block';
+  const badge = document.getElementById('dir-cat-badge');
+  badge.textContent = sc.label;
+  badge.style.background = sc.color; badge.style.color = '#000';
+  document.getElementById('dir-meaning').textContent = sd.meaning;
+
+  // Direction arrow on diagram
+  if (sd.dirAngle !== null && layers.direction) {
+    const arrowLen = 50;
+    const rad = sd.dirAngle * Math.PI / 180;
+    const ox = d.pos.x, oy = d.pos.y;
+    const ex = ox + Math.cos(rad) * arrowLen;
+    const ey = oy + Math.sin(rad) * arrowLen;
+    dal.setAttribute('x1', ox); dal.setAttribute('y1', oy);
+    dal.setAttribute('x2', ex); dal.setAttribute('y2', ey);
+    dal.setAttribute('stroke', sc.color);
+    dao.setAttribute('cx', ox); dao.setAttribute('cy', oy);
+    dao.setAttribute('fill', sc.color);
+    dag.style.opacity = '1';
+  } else {
+    dag.style.opacity = '0';
+  }
+
+  // Geometry info (Layer 3)
+  const sg = SHAPE_GEO[letter];
+  const cc = CLOSURE_COLORS[sg.closure];
+  document.getElementById('geo-info').style.display = 'block';
+
+  const cb = document.getElementById('geo-closure-badge');
+  cb.textContent = cc.icon + ' ' + cc.label;
+  cb.style.background = cc.color; cb.style.color = '#000';
+
+  const db = document.getElementById('geo-dots-badge');
+  db.textContent = sg.dots === 0 ? 'No dots' : sg.dots + ' dot' + (sg.dots>1?'s':'') + (sg.dots>0 ? ' ●'.repeat(sg.dots) : '');
+  db.style.color = sg.dots > 0 ? '#d4a843' : '#888';
+
+  const vb = document.getElementById('geo-voiced-badge');
+  vb.textContent = sg.voiced ? '♫ Voiced' : '♩ Voiceless';
+  vb.style.background = sg.voiced ? '#27ae60' : '#555'; vb.style.color = sg.voiced ? '#000' : '#ccc';
+
+  const eb = document.getElementById('geo-emph-badge');
+  if (sg.emphatic) { eb.style.display = 'inline-block'; eb.textContent = '◆ Emphatic'; eb.style.background = '#c0392b'; eb.style.color = '#fff'; }
+  else { eb.style.display = 'none'; }
+
+  document.getElementById('geo-body').innerHTML = '<strong style="color:var(--text)">Body:</strong> ' + sg.body;
+  document.getElementById('geo-dotfn').innerHTML = '<strong style="color:var(--text)">Dots:</strong> ' + sg.dotFn;
+  const jg = JAW_GEO[letter] || '';
+  document.getElementById('geo-jaw').innerHTML = '<strong style="color:var(--text)">Jaw:</strong> ' + jg;
+  document.getElementById('geo-diff').innerHTML = '<strong>Differentiation:</strong> ' + sg.diff;
+
+  // Letter overlay — fixed position (baked from tuning session)
+  const ov = document.getElementById('letter-overlay');
+  ov.textContent = letter;
+  const ox = d.pos.x + 158, oy = d.pos.y + 200;
+  ov.setAttribute('x', ox); ov.setAttribute('y', oy);
+  ov.setAttribute('font-size', '104');
+  ov.style.opacity = '0.99';
+  ov.setAttribute('transform', `translate(${ox},${oy}) rotate(0) scale(1,1) translate(${-ox},${-oy})`);
+
+  document.getElementById('instruction-text').textContent =
+    `${d.zone} — ${d.name}`;
+}
+
+// INIT
+buildPanel();
+</script>
+</body>
+</html>

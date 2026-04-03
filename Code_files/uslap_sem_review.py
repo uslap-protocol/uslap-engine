@@ -16,7 +16,12 @@ Usage:
   python3 uslap_sem_review.py approve_a     # re-score Category A entries
   python3 uslap_sem_review.py stats         # show current state
 """
-import sqlite3, sys, os, json, re
+import sqlite3
+try:
+    from uslap_db_connect import connect as _uslap_connect
+    _HAS_WRAPPER = True
+except ImportError:
+    _HAS_WRAPPER = False, sys, os, json, re
 
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uslap_database_v3.db')
 
@@ -139,7 +144,7 @@ def categorize(conn):
     cat_a, cat_b, cat_c = [], [], []
 
     for row in rows:
-        eid, term, ar_word, root_id, root_letters, qur_meaning, chain, basis = row
+        eid, term, aa_word, root_id, root_letters, qur_meaning, chain, basis = row
         # Extract original score from basis field
         orig_score = None
         m = re.search(r'Score (\d+)/10', basis or '')
@@ -149,7 +154,7 @@ def categorize(conn):
         if eid in SEMANTIC_LOCKS:
             cat, reason = SEMANTIC_LOCKS[eid]
             entry = {
-                'id': eid, 'term': term, 'ar_word': ar_word,
+                'id': eid, 'term': term, 'aa_word': aa_word,
                 'root_id': root_id, 'root_letters': root_letters,
                 'chain': chain, 'orig_score': orig_score,
                 'reason': reason
@@ -163,7 +168,7 @@ def categorize(conn):
         else:
             # Default uncategorized → B
             cat_b.append({
-                'id': eid, 'term': term, 'ar_word': ar_word,
+                'id': eid, 'term': term, 'aa_word': aa_word,
                 'root_id': root_id, 'root_letters': root_letters,
                 'chain': chain, 'orig_score': orig_score,
                 'reason': 'NOT YET CATEGORIZED — needs individual review'
@@ -178,7 +183,7 @@ def print_category(entries, label, show_all=False):
     limit = len(entries) if show_all else min(20, len(entries))
     for e in entries[:limit]:
         orig = f"(was {e['orig_score']}/10)" if e['orig_score'] else ''
-        print(f"  #{e['id']:3d} {e['term']:15s} ← {e['ar_word']:20s} [{e['root_id']}] {orig}")
+        print(f"  #{e['id']:3d} {e['term']:15s} ← {e['aa_word']:20s} [{e['root_id']}] {orig}")
         print(f"        {e['reason']}")
     if len(entries) > limit:
         print(f"\n  ... and {len(entries) - limit} more")
@@ -250,7 +255,8 @@ def stats(conn):
 
 if __name__ == '__main__':
     mode = sys.argv[1] if len(sys.argv) > 1 else 'stats'
-    conn = sqlite3.connect(DB_PATH)
+    conn = _uslap_connect(DB_PATH) if _HAS_WRAPPER else sqlite3.connect(DB_PATH)
+    conn.execute("PRAGMA foreign_keys = ON")
 
     if mode == 'categorize':
         cat_a, cat_b, cat_c = categorize(conn)

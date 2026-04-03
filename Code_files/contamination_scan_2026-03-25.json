@@ -1,0 +1,674 @@
+{
+  "scan_date": "2026-03-25",
+  "tables_scanned": 183,
+  "banned_terms": 40,
+  "hits": [
+    {
+      "table": "a4_derivatives",
+      "term": "proto-indo-european",
+      "count": 1
+    },
+    {
+      "table": "a4_derivatives",
+      "term": "indo-european",
+      "count": 1
+    },
+    {
+      "table": "a4_derivatives",
+      "term": "proto-indo",
+      "count": 1
+    },
+    {
+      "table": "a5_cross_refs",
+      "term": "cognate",
+      "count": 1
+    },
+    {
+      "table": "bitig_a1_entries",
+      "term": "proto-slavic",
+      "count": 1
+    },
+    {
+      "table": "bitig_a1_entries",
+      "term": "derived from",
+      "count": 1
+    },
+    {
+      "table": "bitig_a1_entries",
+      "term": "loan from",
+      "count": 1
+    },
+    {
+      "table": "bitig_corrections",
+      "term": "proto-turkic",
+      "count": 3
+    },
+    {
+      "table": "bitig_dispersal_map",
+      "term": "proto-slavic",
+      "count": 1
+    },
+    {
+      "table": "bitig_protocol",
+      "term": "proto-indo-european",
+      "count": 1
+    },
+    {
+      "table": "bitig_protocol",
+      "term": "proto-turkic",
+      "count": 2
+    },
+    {
+      "table": "bitig_protocol",
+      "term": "indo-european",
+      "count": 1
+    },
+    {
+      "table": "bitig_protocol",
+      "term": "proto-indo",
+      "count": 1
+    },
+    {
+      "table": "body_extraction_intel",
+      "term": "derived from",
+      "count": 1
+    },
+    {
+      "table": "child_entries",
+      "term": "proto-slavic",
+      "count": 1
+    },
+    {
+      "table": "child_entries",
+      "term": "proto-turkic",
+      "count": 1
+    },
+    {
+      "table": "child_entries",
+      "term": "derived from",
+      "count": 1
+    },
+    {
+      "table": "contamination_blacklist",
+      "term": "semitic",
+      "count": 3
+    },
+    {
+      "table": "contamination_blacklist",
+      "term": "loanword",
+      "count": 1
+    },
+    {
+      "table": "contamination_blacklist",
+      "term": "cognate",
+      "count": 1
+    },
+    {
+      "table": "contamination_blacklist",
+      "term": "proto-indo-european",
+      "count": 1
+    },
+    {
+      "table": "contamination_blacklist",
+      "term": "indo-european",
+      "count": 1
+    },
+    {
+      "table": "contamination_blacklist",
+      "term": "proto-indo",
+      "count": 1
+    },
+    {
+      "table": "contamination_blacklist",
+      "term": "borrowed from",
+      "count": 1
+    },
+    {
+      "table": "document_content",
+      "term": "semitic",
+      "count": 3
+    },
+    {
+      "table": "document_content",
+      "term": "loanword",
+      "count": 1
+    },
+    {
+      "table": "document_content",
+      "term": "cognate",
+      "count": 1
+    },
+    {
+      "table": "document_content",
+      "term": "prosthetic vowel",
+      "count": 1
+    },
+    {
+      "table": "document_content",
+      "term": "borrowed from greek",
+      "count": 1
+    },
+    {
+      "table": "document_content",
+      "term": "proto-indo-european",
+      "count": 1
+    },
+    {
+      "table": "document_content",
+      "term": "proto-turkic",
+      "count": 1
+    },
+    {
+      "table": "document_content",
+      "term": "greek origin",
+      "count": 2
+    },
+    {
+      "table": "document_content",
+      "term": "greek source",
+      "count": 1
+    },
+    {
+      "table": "document_content",
+      "term": "greek root",
+      "count": 1
+    },
+    {
+      "table": "document_content",
+      "term": "pre-greek substrate",
+      "count": 1
+    },
+    {
+      "table": "document_content",
+      "term": "indo-european",
+      "count": 1
+    },
+    {
+      "table": "document_content",
+      "term": "proto-indo",
+      "count": 1
+    },
+    {
+      "table": "document_content",
+      "term": "borrowed from",
+      "count": 2
+    },
+    {
+      "table": "document_content",
+      "term": "derived from",
+      "count": 3
+    },
+    {
+      "table": "dp_register",
+      "term": "proto-turkic",
+      "count": 1
+    },
+    {
+      "table": "dp_register",
+      "term": "derived from",
+      "count": 2
+    },
+    {
+      "table": "entries",
+      "term": "semitic",
+      "count": 1
+    },
+    {
+      "table": "entries",
+      "term": "loanword",
+      "count": 5
+    },
+    {
+      "table": "entries",
+      "term": "cognate",
+      "count": 2
+    },
+    {
+      "table": "entries",
+      "term": "borrowed from persian",
+      "count": 1
+    },
+    {
+      "table": "entries",
+      "term": "proto-indo-european",
+      "count": 2
+    },
+    {
+      "table": "entries",
+      "term": "proto-slavic",
+      "count": 3
+    },
+    {
+      "table": "entries",
+      "term": "proto-germanic",
+      "count": 1
+    },
+    {
+      "table": "entries",
+      "term": "proto-turkic",
+      "count": 2
+    },
+    {
+      "table": "entries",
+      "term": "greek origin",
+      "count": 2
+    },
+    {
+      "table": "entries",
+      "term": "latin root",
+      "count": 5
+    },
+    {
+      "table": "entries",
+      "term": "indo-european",
+      "count": 2
+    },
+    {
+      "table": "entries",
+      "term": "proto-indo",
+      "count": 2
+    },
+    {
+      "table": "entries",
+      "term": "borrowed from",
+      "count": 6
+    },
+    {
+      "table": "european_a1_entries",
+      "term": "semitic",
+      "count": 5
+    },
+    {
+      "table": "european_a1_entries",
+      "term": "loanword",
+      "count": 10
+    },
+    {
+      "table": "european_a1_entries",
+      "term": "proto-indo-european",
+      "count": 5
+    },
+    {
+      "table": "european_a1_entries",
+      "term": "proto-germanic",
+      "count": 5
+    },
+    {
+      "table": "european_a1_entries",
+      "term": "proto-turkic",
+      "count": 5
+    },
+    {
+      "table": "european_a1_entries",
+      "term": "greek origin",
+      "count": 5
+    },
+    {
+      "table": "european_a1_entries",
+      "term": "latin root",
+      "count": 15
+    },
+    {
+      "table": "european_a1_entries",
+      "term": "indo-european",
+      "count": 5
+    },
+    {
+      "table": "european_a1_entries",
+      "term": "proto-indo",
+      "count": 5
+    },
+    {
+      "table": "european_a1_entries",
+      "term": "borrowed from",
+      "count": 15
+    },
+    {
+      "table": "european_a1_entries",
+      "term": "derived from",
+      "count": 5
+    },
+    {
+      "table": "excel_data_consolidated",
+      "term": "semitic",
+      "count": 34
+    },
+    {
+      "table": "excel_data_consolidated",
+      "term": "loanword",
+      "count": 4
+    },
+    {
+      "table": "excel_data_consolidated",
+      "term": "borrowed from greek",
+      "count": 3
+    },
+    {
+      "table": "excel_data_consolidated",
+      "term": "proto-indo-european",
+      "count": 6
+    },
+    {
+      "table": "excel_data_consolidated",
+      "term": "proto-slavic",
+      "count": 2
+    },
+    {
+      "table": "excel_data_consolidated",
+      "term": "proto-turkic",
+      "count": 22
+    },
+    {
+      "table": "excel_data_consolidated",
+      "term": "greek origin",
+      "count": 2
+    },
+    {
+      "table": "excel_data_consolidated",
+      "term": "derived from greek",
+      "count": 2
+    },
+    {
+      "table": "excel_data_consolidated",
+      "term": "pre-greek substrate",
+      "count": 6
+    },
+    {
+      "table": "excel_data_consolidated",
+      "term": "indo-european",
+      "count": 8
+    },
+    {
+      "table": "excel_data_consolidated",
+      "term": "proto-indo",
+      "count": 6
+    },
+    {
+      "table": "excel_data_consolidated",
+      "term": "borrowed from",
+      "count": 9
+    },
+    {
+      "table": "excel_data_consolidated",
+      "term": "derived from",
+      "count": 72
+    },
+    {
+      "table": "excel_data_consolidated",
+      "term": "loan from",
+      "count": 2
+    },
+    {
+      "table": "f1_two_originals",
+      "term": "proto-turkic",
+      "count": 1
+    },
+    {
+      "table": "f2_script_downstream",
+      "term": "semitic",
+      "count": 1
+    },
+    {
+      "table": "formula_scholars",
+      "term": "derived from",
+      "count": 1
+    },
+    {
+      "table": "isnad",
+      "term": "semitic",
+      "count": 1
+    },
+    {
+      "table": "isnad",
+      "term": "loanword",
+      "count": 2
+    },
+    {
+      "table": "isnad",
+      "term": "cognate",
+      "count": 2
+    },
+    {
+      "table": "isnad",
+      "term": "proto-slavic",
+      "count": 1
+    },
+    {
+      "table": "isnad",
+      "term": "proto-germanic",
+      "count": 1
+    },
+    {
+      "table": "latin_a1_entries",
+      "term": "loanword",
+      "count": 1
+    },
+    {
+      "table": "latin_a1_entries",
+      "term": "proto-indo-european",
+      "count": 1
+    },
+    {
+      "table": "latin_a1_entries",
+      "term": "proto-turkic",
+      "count": 1
+    },
+    {
+      "table": "latin_a1_entries",
+      "term": "greek origin",
+      "count": 1
+    },
+    {
+      "table": "latin_a1_entries",
+      "term": "latin source",
+      "count": 1
+    },
+    {
+      "table": "latin_a1_entries",
+      "term": "latin root",
+      "count": 2
+    },
+    {
+      "table": "latin_a1_entries",
+      "term": "indo-european",
+      "count": 1
+    },
+    {
+      "table": "latin_a1_entries",
+      "term": "proto-indo",
+      "count": 1
+    },
+    {
+      "table": "latin_a1_entries",
+      "term": "borrowed from",
+      "count": 3
+    },
+    {
+      "table": "phonetic_reversal",
+      "term": "semitic",
+      "count": 1
+    },
+    {
+      "table": "phonetic_reversal",
+      "term": "proto-turkic",
+      "count": 1
+    },
+    {
+      "table": "protocol_immutable",
+      "term": "semitic",
+      "count": 1
+    },
+    {
+      "table": "protocol_immutable",
+      "term": "loanword",
+      "count": 2
+    },
+    {
+      "table": "protocol_immutable",
+      "term": "cognate",
+      "count": 2
+    },
+    {
+      "table": "protocol_immutable",
+      "term": "prosthetic vowel",
+      "count": 1
+    },
+    {
+      "table": "protocol_immutable",
+      "term": "borrowed from greek",
+      "count": 1
+    },
+    {
+      "table": "protocol_immutable",
+      "term": "proto-indo-european",
+      "count": 1
+    },
+    {
+      "table": "protocol_immutable",
+      "term": "proto-slavic",
+      "count": 1
+    },
+    {
+      "table": "protocol_immutable",
+      "term": "proto-germanic",
+      "count": 1
+    },
+    {
+      "table": "protocol_immutable",
+      "term": "proto-turkic",
+      "count": 1
+    },
+    {
+      "table": "protocol_immutable",
+      "term": "native slavic",
+      "count": 1
+    },
+    {
+      "table": "protocol_immutable",
+      "term": "native european",
+      "count": 1
+    },
+    {
+      "table": "protocol_immutable",
+      "term": "european origin",
+      "count": 1
+    },
+    {
+      "table": "protocol_immutable",
+      "term": "pre-greek substrate",
+      "count": 1
+    },
+    {
+      "table": "protocol_immutable",
+      "term": "indo-european",
+      "count": 1
+    },
+    {
+      "table": "protocol_immutable",
+      "term": "proto-indo",
+      "count": 1
+    },
+    {
+      "table": "protocol_immutable",
+      "term": "borrowed from",
+      "count": 1
+    },
+    {
+      "table": "root_explosion_manifest",
+      "term": "semitic",
+      "count": 1
+    },
+    {
+      "table": "root_explosion_manifest",
+      "term": "derived from",
+      "count": 1
+    },
+    {
+      "table": "scholar_warnings",
+      "term": "borrowed from",
+      "count": 1
+    },
+    {
+      "table": "swot_h7",
+      "term": "loanword",
+      "count": 1
+    },
+    {
+      "table": "term_dimensions",
+      "term": "proto-indo-european",
+      "count": 4
+    },
+    {
+      "table": "term_dimensions",
+      "term": "indo-european",
+      "count": 4
+    },
+    {
+      "table": "term_dimensions",
+      "term": "proto-indo",
+      "count": 4
+    },
+    {
+      "table": "term_nodes",
+      "term": "proto-indo-european",
+      "count": 1
+    },
+    {
+      "table": "term_nodes",
+      "term": "indo-european",
+      "count": 1
+    },
+    {
+      "table": "term_nodes",
+      "term": "proto-indo",
+      "count": 1
+    },
+    {
+      "table": "xlsx_child_schema",
+      "term": "proto-slavic",
+      "count": 1
+    },
+    {
+      "table": "xlsx_child_schema",
+      "term": "proto-turkic",
+      "count": 1
+    },
+    {
+      "table": "xlsx_child_schema",
+      "term": "derived from",
+      "count": 1
+    },
+    {
+      "table": "xlsx_dp_register",
+      "term": "proto-turkic",
+      "count": 1
+    },
+    {
+      "table": "xlsx_dp_register",
+      "term": "derived from",
+      "count": 2
+    },
+    {
+      "table": "xlsx_phonetic_reversal",
+      "term": "semitic",
+      "count": 1
+    },
+    {
+      "table": "xlsx_phonetic_reversal",
+      "term": "proto-turkic",
+      "count": 1
+    },
+    {
+      "table": "xlsx_scholar_warnings",
+      "term": "borrowed from",
+      "count": 1
+    },
+    {
+      "table": "xlsx_session_index",
+      "term": "proto-turkic",
+      "count": 1
+    }
+  ],
+  "total_hits": 416,
+  "tables_contaminated": 31
+}

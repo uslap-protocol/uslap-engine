@@ -5,6 +5,11 @@ Phase 5C: Generates audit reports for translation quality.
 """
 
 import sqlite3
+try:
+    from uslap_db_connect import connect as _uslap_connect
+    _HAS_WRAPPER = True
+except ImportError:
+    _HAS_WRAPPER = False
 import os
 import json
 from datetime import datetime
@@ -43,7 +48,9 @@ SURAH_NAMES = {
 
 
 def get_conn():
-    return sqlite3.connect(DB_PATH)
+    conn = _uslap_connect(DB_PATH) if _HAS_WRAPPER else sqlite3.connect(DB_PATH)
+    conn.execute("PRAGMA foreign_keys = ON")
+    return conn
 
 
 def global_stats(conn):
@@ -211,9 +218,9 @@ def print_audit_report():
     print(f"UNROOTED:           {stats['confidence_unrooted']:,}")
     print(f"PARTICLE:           {stats['confidence_particle']:,}")
 
-    print(f"\n--- VERB FORM DISTRIBUTION ---")
+    print(f"\n--- TASRIF PATTERN DISTRIBUTION ---")
     for vf, cnt in sorted(stats['verb_forms'].items(), key=lambda x: -x[1]):
-        print(f"  Form {vf:>4}: {cnt:,}")
+        print(f"  {vf:>14}: {cnt:,}")
 
     print(f"\n--- SURAH COVERAGE SUMMARY ---")
     print(f"{'#':>3} {'Name':<20} {'Cov%':>5} {'Ayat':>5} {'GapFr':>5} {'Flag':>5} {'Unrt':>5}")

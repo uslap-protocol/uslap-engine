@@ -18,6 +18,11 @@ Usage:
 """
 
 import sqlite3
+try:
+    from uslap_db_connect import connect as _uslap_connect
+    _HAS_WRAPPER = True
+except ImportError:
+    _HAS_WRAPPER = False
 import sys
 from collections import defaultdict
 
@@ -25,7 +30,9 @@ DB_PATH = "/Users/mmsetubal/Documents/USLaP workplace/Code_files/uslap_database_
 
 
 def get_db():
-    return sqlite3.connect(DB_PATH)
+    conn = _uslap_connect(DB_PATH) if _HAS_WRAPPER else sqlite3.connect(DB_PATH)
+    conn.execute("PRAGMA foreign_keys = ON")
+    return conn
 
 
 # ═══════════════════════════════════════════════════════════════════════════════

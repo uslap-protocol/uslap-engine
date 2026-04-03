@@ -17,8 +17,18 @@ Modes:
   python3 uslap_backup.py full         # local + iCloud + JSONL (all three)
   python3 uslap_backup.py github       # instructions for GitHub push
 """
-import sqlite3, os, sys, shutil, glob, json
+import os
+import sys
+import shutil
+import glob
+import json
+import sqlite3
 from datetime import datetime
+try:
+    from uslap_db_connect import connect as _uslap_connect
+    _HAS_WRAPPER = True
+except ImportError:
+    _HAS_WRAPPER = False
 
 # ── PATHS ──
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -148,7 +158,8 @@ def export_jsonl():
     os.makedirs(JSONL_DIR, exist_ok=True)
     ts = datetime.now().strftime('%Y%m%d')
 
-    conn = sqlite3.connect(DB_PATH)
+    conn = _uslap_connect(DB_PATH) if _HAS_WRAPPER else sqlite3.connect(DB_PATH)
+    conn.execute("PRAGMA foreign_keys = ON")
     conn.row_factory = sqlite3.Row
     total_rows = 0
     total_files = 0
@@ -232,7 +243,8 @@ def github_instructions():
 
 def print_summary():
     """Print overall SEED layer status."""
-    conn = sqlite3.connect(DB_PATH)
+    conn = _uslap_connect(DB_PATH) if _HAS_WRAPPER else sqlite3.connect(DB_PATH)
+    conn.execute("PRAGMA foreign_keys = ON")
     counts = {}
     for tbl in VERIFY_TABLES:
         try:

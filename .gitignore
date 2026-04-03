@@ -31,3 +31,7 @@ uslap_audit_report.json
 
 # Claude Code internal
 .claude/
+Reference Data/
+backups/
+Prayer_Animations/
+Reports/

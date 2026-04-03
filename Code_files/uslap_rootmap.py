@@ -17,6 +17,11 @@ Usage:
 """
 
 import sqlite3
+try:
+    from uslap_db_connect import connect as _uslap_connect
+    _HAS_WRAPPER = True
+except ImportError:
+    _HAS_WRAPPER = False
 import sys
 import os
 
@@ -24,7 +29,8 @@ DB_PATH = os.path.join(os.path.dirname(__file__), "uslap_database_v3.db")
 
 
 def get_db():
-    conn = sqlite3.connect(DB_PATH)
+    conn = _uslap_connect(DB_PATH) if _HAS_WRAPPER else sqlite3.connect(DB_PATH)
+    conn.execute("PRAGMA foreign_keys = ON")
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -47,7 +53,7 @@ def render_ayah(conn, surah, ayah):
 
     # Layer 1: Arabic
     lines.append(f"  LAYER 1 — ARABIC:")
-    lines.append(f"  {row['arabic_text']}\n")
+    lines.append(f"  {row['aa_text']}\n")
 
     # Layer 2: Root Translation
     lines.append(f"  LAYER 2 — ROOT TRANSLATION:")
@@ -74,7 +80,7 @@ def render_ayah(conn, surah, ayah):
             type_str = w['word_type'] or "—"
             meaning = (w['root_meaning'] or "—")[:38]
             qv = w['qv_ref'] or ""
-            arabic = w['arabic_word']
+            arabic = w['aa_word']
 
             lines.append(
                 f"  {w['word_position']:<3} {arabic:<20} {root_str:<10} {form_str:<5} "
@@ -95,7 +101,7 @@ def render_ayah(conn, surah, ayah):
                 ).fetchone()
                 if qv_info:
                     lines.append(
-                        f"    {w['qv_ref']}: {w['arabic_word']} — "
+                        f"    {w['qv_ref']}: {w['aa_word']} — "
                         f"translators say \"{qv_info['COMMON_MISTRANSLATION']}\" → "
                         f"root says \"{qv_info['CORRECT_TRANSLATION']}\" "
                         f"[{qv_info['CORRUPTION_TYPE']}]"
@@ -201,7 +207,7 @@ def show_stats(conn):
 def show_corrections(conn, surah):
     """Show all QV corrections in a sūrah."""
     rows = conn.execute(
-        "SELECT w.ayah, w.word_position, w.arabic_word, w.qv_ref, w.correct_translation, "
+        "SELECT w.ayah, w.word_position, w.aa_word, w.qv_ref, w.correct_translation, "
         "w.common_translation, qr.CORRUPTION_TYPE, qr.ROOT "
         "FROM quran_word_roots w "
         "JOIN qv_translation_register qr ON w.qv_ref = qr.QV_ID "
@@ -223,7 +229,7 @@ def show_corrections(conn, surah):
         correct = r['correct_translation'] or "—"
         ctype = r['CORRUPTION_TYPE'] or "—"
         print(
-            f"  {r['ayah']:<6} {r['arabic_word']:<18} {r['ROOT']:<10} "
+            f"  {r['ayah']:<6} {r['aa_word']:<18} {r['ROOT']:<10} "
             f"{common:<28} {correct:<32} {ctype}"
         )
 
@@ -244,7 +250,7 @@ def compare_ayah(conn, surah, ayah):
 
     print(f"\n  COMPARISON — {surah}:{ayah}")
     print(f"  {'═' * 70}")
-    print(f"  ARABIC:     {row['arabic_text']}")
+    print(f"  ARABIC:     {row['aa_text']}")
     print(f"  COMMON:     {row['translator_text']}")
     print(f"  ROOT-BASED: {row['root_translation']}")
     print(f"  {'═' * 70}")
@@ -257,7 +263,7 @@ def compare_ayah(conn, surah, ayah):
             common = w['common_translation'] or "—"
             correct = w['correct_translation'] or "—"
             marker = " ⚑" if w['qv_ref'] else ""
-            print(f"  {w['arabic_word']:<18} {common:<25} {correct:<30}{marker}")
+            print(f"  {w['aa_word']:<18} {common:<25} {correct:<30}{marker}")
 
 
 def export_surah(conn, surah):
@@ -280,7 +286,7 @@ def export_surah(conn, surah):
 
     for row in rows:
         lines.append(f"## {surah}:{row['ayah']}\n")
-        lines.append(f"**Arabic:** {row['arabic_text']}\n")
+        lines.append(f"**Arabic:** {row['aa_text']}\n")
         lines.append(f"**Root Translation:** {row['root_translation']}\n")
         lines.append(f"**Common Translation:** {row['translator_text']}\n")
 
@@ -294,7 +300,7 @@ def export_surah(conn, surah):
             lines.append("|---|--------|------|------|------|-------------|---------|--------|----|")
             for w in words:
                 lines.append(
-                    f"| {w['word_position']} | {w['arabic_word']} | {w['root'] or '—'} | "
+                    f"| {w['word_position']} | {w['aa_word']} | {w['root'] or '—'} | "
                     f"{w['verb_form'] or '—'} | {w['word_type'] or '—'} | "
                     f"{(w['root_meaning'] or '—')[:35]} | {w['correct_translation'] or '—'} | "
                     f"{w['common_translation'] or '—'} | {w['qv_ref'] or ''} |"
@@ -312,7 +318,7 @@ def export_surah(conn, surah):
                 ).fetchone()
                 if qv_info:
                     lines.append(
-                        f"- **{w['qv_ref']}** ({w['arabic_word']}): "
+                        f"- **{w['qv_ref']}** ({w['aa_word']}): "
                         f"translators say \"{qv_info['COMMON_MISTRANSLATION']}\" → "
                         f"root says \"{qv_info['CORRECT_TRANSLATION']}\" "
                         f"[{qv_info['CORRUPTION_TYPE']}]"
@@ -383,7 +389,7 @@ def export_full_quran(conn):
     for surah_num in range(1, 115):
         name = SURAH_NAMES.get(surah_num, f"Surah {surah_num}")
         ayat = conn.execute(
-            "SELECT ayah, arabic_text, root_translation FROM quran_ayat WHERE surah=? ORDER BY ayah",
+            "SELECT ayah, aa_text, root_translation FROM quran_ayat WHERE surah=? ORDER BY ayah",
             (surah_num,)
         ).fetchall()
         if not ayat:
@@ -393,7 +399,7 @@ def export_full_quran(conn):
 
         for row in ayat:
             lines.append(f"### {surah_num}:{row['ayah']}\n")
-            lines.append(f"**{row['arabic_text']}**\n")
+            lines.append(f"**{row['aa_text']}**\n")
             lines.append(f"{row['root_translation']}\n")
 
         lines.append("---\n")
@@ -425,7 +431,7 @@ def export_json(conn, surah_num=None):
     for s in surah_range:
         name = SURAH_NAMES.get(s, f"Surah {s}")
         ayat = conn.execute(
-            "SELECT ayah, arabic_text, root_translation, translator_text FROM quran_ayat WHERE surah=? ORDER BY ayah",
+            "SELECT ayah, aa_text, root_translation, translator_text FROM quran_ayat WHERE surah=? ORDER BY ayah",
             (s,)
         ).fetchall()
         if not ayat:
@@ -439,7 +445,7 @@ def export_json(conn, surah_num=None):
 
         for row in ayat:
             words = conn.execute(
-                "SELECT word_position, arabic_word, root, root_meaning, verb_form, word_type, "
+                "SELECT word_position, aa_word, root, root_meaning, verb_form, word_type, "
                 "correct_translation, common_translation, qv_ref, confidence "
                 "FROM quran_word_roots WHERE surah=? AND ayah=? ORDER BY word_position",
                 (s, row['ayah'])
@@ -447,7 +453,7 @@ def export_json(conn, surah_num=None):
 
             ayah_data = {
                 'ayah': row['ayah'],
-                'arabic': row['arabic_text'],
+                'aa_term': row['aa_text'],
                 'root_translation': row['root_translation'],
                 'common_translation': row['translator_text'],
                 'words': []
@@ -456,7 +462,7 @@ def export_json(conn, surah_num=None):
             for w in words:
                 word_data = {
                     'position': w['word_position'],
-                    'arabic': w['arabic_word'],
+                    'aa_term': w['aa_word'],
                     'root': w['root'],
                     'meaning': w['root_meaning'],
                     'verb_form': w['verb_form'],

@@ -17,6 +17,11 @@ Text format (for 'load' or built-in):
 """
 
 import sqlite3
+try:
+    from uslap_db_connect import connect as _uslap_connect
+    _HAS_WRAPPER = True
+except ImportError:
+    _HAS_WRAPPER = False
 import sys
 import os
 import re
@@ -195,6 +200,11 @@ PARTICLES = {
     'لِّمَنْ', 'لِّمَن',
     'وَإِلَى', 'فَإِلَى',
     'فَعَلَى',
+    # MĪZĀN batch: particles previously misclassified as roots
+    'عَلَيْهِمَا', 'لِّكُلِّ', 'لِكُلِّ', 'كُلَّمَآ', 'أَوَلَوْ',
+    'لِكَىْ', 'لَسْتَ', 'لَّسْتَ', 'فِيمَ', 'يَٰذَا',
+    'لِهَٰذَا', 'وَلِمَن', 'وَلَسَوْفَ', 'لَكُنتُ', 'نَكُ',
+    'لِلنَّبِىِّ',
 }
 
 # Diacritics to strip for root matching
@@ -575,7 +585,7 @@ def find_root(word, conn):
         "SELECT k.root_unhyphenated, k.word_type, k.verb_form, "
         "d.root_hyphenated, d.root_meaning, d.qv_ref "
         "FROM quran_known_forms k "
-        "LEFT JOIN quran_root_dictionary d ON k.root_unhyphenated = d.root_unhyphenated "
+        "LEFT JOIN root_translations d ON k.root_unhyphenated = d.root_unhyphenated "
         "WHERE k.bare_form = ?", (bare_norm,)
     ).fetchone()
     if kf:
@@ -588,8 +598,8 @@ def find_root(word, conn):
         "SELECT k.root_unhyphenated, k.word_type, k.verb_form, "
         "d.root_hyphenated, d.root_meaning, d.qv_ref "
         "FROM quran_known_forms k "
-        "LEFT JOIN quran_root_dictionary d ON k.root_unhyphenated = d.root_unhyphenated "
-        "WHERE k.arabic_form = ?", (word,)
+        "LEFT JOIN root_translations d ON k.root_unhyphenated = d.root_unhyphenated "
+        "WHERE k.aa_form = ?", (word,)
     ).fetchone()
     if kf2:
         root_hyph = kf2[3] if kf2[3] else '-'.join(kf2[0]) if kf2[0] else None
@@ -604,7 +614,7 @@ def find_root(word, conn):
         """Try candidate and its hamza variants. Returns (root_hyph, meaning, qv) or None."""
         # Direct lookup
         row = conn.execute(
-            "SELECT root_hyphenated, root_meaning, qv_ref FROM quran_root_dictionary "
+            "SELECT root_hyphenated, root_meaning, qv_ref FROM root_translations "
             "WHERE root_unhyphenated = ?", (candidate,)
         ).fetchone()
         if row and row[1]:  # prefer matches WITH meaning
@@ -614,7 +624,7 @@ def find_root(word, conn):
         # Try ا → أ at start (dictionary uses أ for hamza-initial roots)
         if candidate.startswith('ا'):
             row = conn.execute(
-                "SELECT root_hyphenated, root_meaning, qv_ref FROM quran_root_dictionary "
+                "SELECT root_hyphenated, root_meaning, qv_ref FROM root_translations "
                 "WHERE root_unhyphenated = ?", ('أ' + candidate[1:],)
             ).fetchone()
             if row and row[1]:
@@ -625,7 +635,7 @@ def find_root(word, conn):
         # Try ء → أ anywhere (hamza carriers normalized to ء, dict uses أ)
         if 'ء' in candidate:
             row = conn.execute(
-                "SELECT root_hyphenated, root_meaning, qv_ref FROM quran_root_dictionary "
+                "SELECT root_hyphenated, root_meaning, qv_ref FROM root_translations "
                 "WHERE root_unhyphenated = ?", (candidate.replace('ء', 'أ'),)
             ).fetchone()
             if row and row[1]:
@@ -640,7 +650,7 @@ def find_root(word, conn):
                 # Insert weak letter as middle radical: فل → فول / فيل
                 trial = candidate[0] + weak + candidate[1]
                 row = conn.execute(
-                    "SELECT root_hyphenated, root_meaning, qv_ref FROM quran_root_dictionary "
+                    "SELECT root_hyphenated, root_meaning, qv_ref FROM root_translations "
                     "WHERE root_unhyphenated = ?", (trial,)
                 ).fetchone()
                 if row and row[1]:
@@ -650,7 +660,7 @@ def find_root(word, conn):
                 # Insert weak letter as first radical: فل → وفل / يفل
                 trial2 = weak + candidate
                 row = conn.execute(
-                    "SELECT root_hyphenated, root_meaning, qv_ref FROM quran_root_dictionary "
+                    "SELECT root_hyphenated, root_meaning, qv_ref FROM root_translations "
                     "WHERE root_unhyphenated = ?", (trial2,)
                 ).fetchone()
                 if row and row[1]:
@@ -660,13 +670,24 @@ def find_root(word, conn):
             # Try أ as first radical: فل → أفل
             trial_hamza = 'أ' + candidate
             row = conn.execute(
-                "SELECT root_hyphenated, root_meaning, qv_ref FROM quran_root_dictionary "
+                "SELECT root_hyphenated, root_meaning, qv_ref FROM root_translations "
                 "WHERE root_unhyphenated = ?", (trial_hamza,)
             ).fetchone()
             if row and row[1]:
                 return row
             if not direct_hit and row:
                 direct_hit = row
+            # Try weak letter as FINAL radical: سم → سمو/سمي (defective root pattern)
+            for weak in ('و', 'ي', 'ه'):
+                trial_final = candidate + weak
+                row = conn.execute(
+                    "SELECT root_hyphenated, root_meaning, qv_ref FROM root_translations "
+                    "WHERE root_unhyphenated = ?", (trial_final,)
+                ).fetchone()
+                if row and row[1]:
+                    return row
+                if not direct_hit and row:
+                    direct_hit = row
 
         # Try hollow verb reconstruction for 3-letter candidates with medial ا
         # جاء → جيأ (hollow verb: middle radical ي/و manifests as ا in past tense)
@@ -674,7 +695,7 @@ def find_root(word, conn):
             for weak in ('و', 'ي'):
                 trial = candidate[0] + weak + candidate[2]
                 row = conn.execute(
-                    "SELECT root_hyphenated, root_meaning, qv_ref FROM quran_root_dictionary "
+                    "SELECT root_hyphenated, root_meaning, qv_ref FROM root_translations "
                     "WHERE root_unhyphenated = ?", (trial,)
                 ).fetchone()
                 if row and row[1]:
@@ -685,7 +706,7 @@ def find_root(word, conn):
                 if candidate[2] == 'ء':
                     trial2 = candidate[0] + weak + 'أ'
                     row = conn.execute(
-                        "SELECT root_hyphenated, root_meaning, qv_ref FROM quran_root_dictionary "
+                        "SELECT root_hyphenated, root_meaning, qv_ref FROM root_translations "
                         "WHERE root_unhyphenated = ?", (trial2,)
                     ).fetchone()
                     if row and row[1]:
@@ -700,7 +721,7 @@ def find_root(word, conn):
                 # Try direct and with ء→أ variant (covers ءلا→ألو for ءَالَآءِ)
                 for t in set([trial, trial.replace('ء', 'أ')]):
                     row = conn.execute(
-                        "SELECT root_hyphenated, root_meaning, qv_ref FROM quran_root_dictionary "
+                        "SELECT root_hyphenated, root_meaning, qv_ref FROM root_translations "
                         "WHERE root_unhyphenated = ?", (t,)
                     ).fetchone()
                     if row and row[1]:
@@ -710,21 +731,54 @@ def find_root(word, conn):
 
         return direct_hit  # may be None
 
-    # Try each candidate; prefer matches with meaning
-    best_no_meaning = None
-    for candidate in candidates:
-        hit = try_lookup(candidate)
-        if hit:
-            if hit[1]:  # has meaning → use immediately
-                qv = check_qv_applies(word, hit[2], conn)
-                return (hit[0], hit[1], qv, None, None)
-            elif not best_no_meaning:
-                best_no_meaning = hit  # save first match without meaning
+    # ═══ MORPHOLOGY-AWARE RANKING (2026-03-30) ═══
+    # Collect ALL matches, then rank by:
+    # 1. Has meaning (root_meaning not empty)
+    # 2. Candidate length closer to 3 (triliteral preferred)
+    # 3. Position in candidate list (earlier = less stripping = more conservative)
+    # 4. Token count in quran_word_roots (higher = more attested)
+    #
+    # This prevents misassignment where a word like أُمِرْتُ matches
+    # BOTH أ-م-ر (correct, via standard suffix stripping) AND م-ر-ت
+    # (incorrect, keeps ت as root letter while stripping أ as prefix).
 
-    # Fall back to match without meaning if nothing better found
-    if best_no_meaning:
-        qv = check_qv_applies(word, best_no_meaning[2], conn)
-        return (best_no_meaning[0], best_no_meaning[1], qv, None, None)
+    all_matches = []
+    for idx, candidate in enumerate(candidates):
+        hit = try_lookup(candidate)
+        if hit and hit[0]:  # has root_hyphenated
+            # Count tokens for this root in quran_word_roots
+            token_count = 0
+            try:
+                root_unhyph = candidate
+                tc_row = conn.execute(
+                    "SELECT COUNT(*) FROM quran_word_roots WHERE root = ?",
+                    (hit[0],)
+                ).fetchone()
+                if tc_row:
+                    token_count = tc_row[0]
+            except Exception:
+                pass
+
+            # Score: prefer meaning > triliteral > conservative > attested
+            score = 0
+            if hit[1]:  # has meaning
+                score += 1000
+            # Triliteral bonus (root_hyphenated has 2 hyphens for 3 letters)
+            if hit[0] and hit[0].count('-') == 2:
+                score += 500
+            # Conservative bonus (earlier in candidate list = less stripping)
+            score += max(0, 200 - idx * 5)
+            # Token attestation bonus
+            score += min(token_count, 200)
+
+            all_matches.append((score, hit, idx, token_count))
+
+    if all_matches:
+        # Sort by score descending
+        all_matches.sort(key=lambda x: -x[0])
+        best = all_matches[0][1]
+        qv = check_qv_applies(word, best[2], conn)
+        return (best[0], best[1], qv, None, None)
 
     return (None, None, None, None, None)
 
@@ -759,13 +813,25 @@ def classify_word(word):
     return 'NOUN'  # default
 
 
-def detect_verb_form(word):
+def detect_tasrif(word):
     """
-    Detect Arabic verb form (I-X) from morphological pattern.
-    Uses both diacritics (from original Tanzil text) and consonant patterns.
-    Returns form number as string ('I'-'X') or None if not a detectable verb.
+    Detect تَصْرِيف pattern — what letters the Qur'an ADDS to a root.
+
+    Derived from census of 77,881 Quranic words (uslap_tasrif_census.py).
+    Describes STRUCTURE only (what letters do), never semantics.
+    Root ص-ر-ف appears 29 times in the Qur'an — Allah names this process.
+
+    Returns descriptive code or None (base pattern, no addition detected):
+        ST_PREFIX   — سْتَ prefixed (استفعل pattern)
+        T_INFIX     — ت infixed after first root letter (افتعل pattern)
+        N_PREFIX    — ن prefixed (انفعل pattern)
+        T_PREFIX_DD — ت prefixed + doubled middle (تفعّل pattern)
+        T_PREFIX_A  — ت prefixed + ا extension (تفاعل pattern)
+        HAMZA_PREFIX — أ prefixed with damma (أفعل pattern)
+        DD_MIDDLE   — doubled/shadda on middle radical (فعّل pattern)
+        A_EXTEND    — ا extended after first radical (فاعل pattern)
+        None        — base pattern, no addition detected
     """
-    # Work with the original diacritised text for shadda/vowel detection
     original = word
     bare = prepare_for_root(word)
 
@@ -773,128 +839,69 @@ def detect_verb_form(word):
     if len(bare) > 3 and bare[0] in ('و', 'ف'):
         bare = bare[1:]
 
-    # Strip imperfect prefix (ي ت ن أ) — these are conjugation markers, not form markers
+    # Strip imperfect prefix (ي ت ن أ) — conjugation markers, not tasrif markers
     stem = bare
     has_imperfect_prefix = False
     if len(bare) >= 4 and bare[0] in ('ي', 'ت', 'ن', 'ا'):
         stem = bare[1:]
         has_imperfect_prefix = True
 
-    # ── Form X: استفعل (stem starts with ست, or bare starts with است) ──
+    # ── ST_PREFIX: سْتَ prefixed (stem starts with ست, or bare starts with است) ──
     if stem.startswith('ست') and len(stem) >= 5:
-        return 'X'
+        return 'ST_PREFIX'
     if bare.startswith('است') and len(bare) >= 6:
-        return 'X'
+        return 'ST_PREFIX'
 
-    # ── Form VIII: افتعل — infixed ت after first radical ──
+    # ── T_INFIX: ت infixed after first root letter ──
     # Imperfect: يفتعل → stem = فتعل → stem[1] == ت
     if len(stem) >= 4 and stem[1] == 'ت' and stem[0] not in ('س', 'ا', 'ت'):
-        return 'VIII'
+        return 'T_INFIX'
     # Perfect: افتعل, اكتسب, اشترى → bare[2] == ت
     if bare.startswith('ا') and len(bare) >= 5 and bare[2] == 'ت':
-        return 'VIII'
+        return 'T_INFIX'
 
-    # ── Form VII: انفعل ──
+    # ── N_PREFIX: ن prefixed (انفعل pattern) ──
     if bare.startswith('ان') and len(bare) >= 5:
-        return 'VII'
+        return 'N_PREFIX'
 
-    # ── Form V/VI: تفعّل / تفاعل ──
-    # KEY: Form V/VI has ت as PART OF THE FORM, not as imperfect prefix.
-    # So we look at the ORIGINAL bare form (before imperfect prefix stripping).
-    # Perfect: تَفَعَّلَ / تَفَاعَلَ → bare starts with ت
-    # Imperfect: يَتَفَعَّلُ → bare starts with يت, stem starts with ت
-    is_form_v_vi = False
+    # ── T_PREFIX_DD / T_PREFIX_A: ت prefixed patterns ──
+    is_t_prefix = False
     if has_imperfect_prefix and stem.startswith('ت') and len(stem) >= 4:
-        # Imperfect Form V/VI: يتفعّل / يتفاعل — stem after ي starts with ت
-        is_form_v_vi = True
+        is_t_prefix = True
     elif bare.startswith('ت') and len(bare) >= 5 and not has_imperfect_prefix:
-        # Perfect Form V/VI: تفعّل / تفاعل — bare starts with ت AND is 5+ letters
-        is_form_v_vi = True
+        is_t_prefix = True
 
-    if is_form_v_vi:
-        # Distinguish V from VI: check if medial letter after ت is ا (Form VI: تفاعل)
+    if is_t_prefix:
         v_stem = stem[1:] if stem.startswith('ت') else bare[1:]
         if len(v_stem) >= 3 and v_stem[1] in ('ا', 'و'):
-            return 'VI'
-        return 'V'
+            return 'T_PREFIX_A'   # ت prefix + ا extension
+        return 'T_PREFIX_DD'      # ت prefix + doubled middle
 
-    # ── Form IV: أفعل — causative ──
-    # Perfect: أفعل → bare starts with ا, 4 letters total
+    # ── HAMZA_PREFIX: أ prefixed with damma ──
     if not has_imperfect_prefix and bare.startswith('ا') and len(bare) == 4:
-        return 'IV'
-    # Imperfect Form IV: يُفْعِلُ — detected by damma (ُ) on the imperfect prefix
-    # This distinguishes يُنزِلُ (Form IV) from يَفْعَلُ (Form I)
-    # Also covers perfect passive أُنزِلَ and similar
+        return 'HAMZA_PREFIX'
     if has_imperfect_prefix:
-        # Find the first consonant in original that matches (accounting for alef variants)
         target = bare[0]
         alef_set = set('اأإآٱ')
         for j, ch in enumerate(original):
             match = (ch == target) or (ch in alef_set and target in alef_set)
             if match:
                 if j + 1 < len(original) and original[j + 1] == '\u064F':
-                    return 'IV'
+                    return 'HAMZA_PREFIX'
                 break
 
-    # ── Form II: فعّل — shadda on middle radical ──
+    # ── DD_MIDDLE: doubled/shadda on middle radical ──
     if '\u0651' in original:
-        # Shadda present. Check it's NOT on the first letter (which would be sun-letter assimilation)
-        # and NOT part of a geminate root. Best heuristic: if stem is 3+ letters and form not yet detected
-        # Look for shadda specifically on the position corresponding to the 2nd radical
-        return 'II'
+        return 'DD_MIDDLE'
 
-    # ── Form III: فاعل — alef after first radical ──
-    # Only detect if stem is 4+ letters and second letter is ا
-    # Be careful: many words have ا as a long vowel, not Form III marker
-    # Only apply to perfect tense (no imperfect prefix) where pattern is clear
+    # ── A_EXTEND: ا extended after first radical ──
     if not has_imperfect_prefix and len(bare) >= 4 and bare[1] == 'ا':
-        return 'III'
+        return 'A_EXTEND'
 
-    return None  # Form I or undetectable
-
-
-# ── VERB FORM SEMANTIC MODIFIERS ──
-# Maps verb form to semantic shift applied to the base root meaning
-FORM_MODIFIERS = {
-    'I': '',  # base form
-    'II': 'intensify/cause',   # فَعَّلَ — intensive, causative, denominative
-    'III': 'with/toward',      # فَاعَلَ — associative, attempt, directed action
-    'IV': 'cause',             # أَفْعَلَ — causative, factitive
-    'V': 'self-intensify',     # تَفَعَّلَ — reflexive of II, gradual
-    'VI': 'mutual',            # تَفَاعَلَ — reciprocal, pretend
-    'VII': 'passive',          # اِنْفَعَلَ — medio-passive, submission
-    'VIII': 'self/reflexive',  # اِفْتَعَلَ — reflexive, middle voice
-    'IX': 'become-colored',    # اِفْعَلَّ — colors, defects (rare)
-    'X': 'seek/consider',      # اِسْتَفْعَلَ — estimative, requestive
-}
+    return None  # Base pattern — no addition detected
 
 
-def apply_form_modifier(root_meaning, verb_form):
-    """Apply verb form semantic modifier to root meaning for Layer 2 translation."""
-    if not verb_form or verb_form == 'I' or not root_meaning:
-        return root_meaning
-
-    # Extract base verb — take first meaning, strip "to " prefix
-    base = root_meaning.split(',')[0].split('/')[0].strip()
-    if base.startswith('to '):
-        base = base[3:]
-
-    modifiers = {
-        'II': f'{base}-intensely',
-        'III': f'{base}-together',
-        'IV': f'make-{base}',
-        'V': f'{base}-oneself',
-        'VI': f'{base}-each-other',
-        'VII': f'be-{base}d',
-        'VIII': f'{base}-oneself',
-        'IX': f'become-{base}',
-        'X': f'seek-{base}',
-    }
-
-    return modifiers.get(verb_form, base)
-
-
-def seed_ayah(conn, surah, ayah, arabic_text, force=False):
+def seed_ayah(conn, surah, ayah, aa_text, force=False):
     """
     Auto-seed a single āyah with root mappings.
     Returns (total_words, mapped_words, qv_corrections).
@@ -917,12 +924,12 @@ def seed_ayah(conn, surah, ayah, arabic_text, force=False):
 
     # Insert/update the āyah record
     conn.execute(
-        "INSERT OR REPLACE INTO quran_ayat (surah, ayah, arabic_text, status) VALUES (?, ?, ?, 'AUTO_MAPPED')",
-        (surah, ayah, arabic_text)
+        "INSERT OR REPLACE INTO quran_ayat (surah, ayah, aa_text, status) VALUES (?, ?, ?, 'AUTO_MAPPED')",
+        (surah, ayah, aa_text)
     )
 
     # Tokenize
-    words = arabic_text.split()
+    words = aa_text.split()
     total = len(words)
     mapped = 0
     qv_count = 0
@@ -937,7 +944,7 @@ def seed_ayah(conn, surah, ayah, arabic_text, force=False):
         if word_type == 'PARTICLE':
             # Particles have no root
             conn.execute(
-                "INSERT INTO quran_word_roots (surah, ayah, word_position, arabic_word, word_type, correct_translation, common_translation) "
+                "INSERT INTO quran_word_roots (surah, ayah, word_position, aa_word, word_type, correct_translation, common_translation) "
                 "VALUES (?, ?, ?, ?, 'PARTICLE', ?, ?)",
                 (surah, ayah, pos, word, word, word)
             )
@@ -958,10 +965,10 @@ def seed_ayah(conn, surah, ayah, arabic_text, force=False):
             if kf_form:
                 verb_form = kf_form
             elif word_type == 'VERB':
-                verb_form = detect_verb_form(word)
+                verb_form = detect_tasrif(word)
 
         conn.execute(
-            "INSERT INTO quran_word_roots (surah, ayah, word_position, arabic_word, root, root_meaning, "
+            "INSERT INTO quran_word_roots (surah, ayah, word_position, aa_word, root, root_meaning, "
             "verb_form, word_type, qv_ref) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (surah, ayah, pos, word, root_hyph, root_meaning, verb_form, word_type, qv_ref)
         )
@@ -1090,7 +1097,7 @@ def seed_builtin(conn, surah_num, force=False):
 
     # Show unmapped words
     unmapped = conn.execute(
-        "SELECT DISTINCT arabic_word FROM quran_word_roots "
+        "SELECT DISTINCT aa_word FROM quran_word_roots "
         "WHERE surah=? AND root IS NULL AND word_type != 'PARTICLE'",
         (surah_num,)
     ).fetchall()
@@ -1124,9 +1131,9 @@ def show_status(conn):
     ).fetchone()[0]
 
     # Dictionary
-    dict_size = conn.execute("SELECT COUNT(*) FROM quran_root_dictionary").fetchone()[0]
+    dict_size = conn.execute("SELECT COUNT(*) FROM root_translations").fetchone()[0]
     dict_qv = conn.execute(
-        "SELECT COUNT(*) FROM quran_root_dictionary WHERE qv_ref IS NOT NULL"
+        "SELECT COUNT(*) FROM root_translations WHERE qv_ref IS NOT NULL"
     ).fetchone()[0]
 
     # QV register
@@ -1172,7 +1179,7 @@ def show_status(conn):
 def show_unmapped(conn, surah):
     """Show unmapped words in a sūrah."""
     rows = conn.execute(
-        "SELECT ayah, word_position, arabic_word FROM quran_word_roots "
+        "SELECT ayah, word_position, aa_word FROM quran_word_roots "
         "WHERE surah=? AND root IS NULL AND word_type != 'PARTICLE' "
         "ORDER BY ayah, word_position",
         (surah,)
@@ -1358,10 +1365,9 @@ def get_word_gloss(arabic, root, meaning, wtype, qv_ref, verb_form, conn):
             return qv_row[0].split('/')[0].strip()
 
     if meaning:
+        # Meaning comes from root_translations + qv_translation_register ONLY.
+        # No runtime semantic formula. Structure (tasrif) is stored separately.
         base = meaning.split(',')[0].split('/')[0].strip()
-        # Apply verb form modifier
-        if wtype == 'VERB' and verb_form and verb_form not in ('I', None, ''):
-            base = apply_form_modifier(meaning, verb_form)
         return base
 
     if root:
@@ -1421,7 +1427,7 @@ def translate_ayah(conn, surah, ayah):
     Pass 3: Assemble English with pattern templates
     """
     words = conn.execute(
-        "SELECT arabic_word, root, root_meaning, word_type, qv_ref, verb_form "
+        "SELECT aa_word, root, root_meaning, word_type, qv_ref, verb_form "
         "FROM quran_word_roots WHERE surah=? AND ayah=? ORDER BY word_position",
         (surah, ayah)
     ).fetchall()
@@ -1439,7 +1445,7 @@ def translate_ayah(conn, surah, ayah):
         prefix_gloss, has_prefix = detect_prefix_particle(arabic) if wtype not in ('PARTICLE',) else (None, False)
 
         glosses.append({
-            'arabic': arabic,
+            'aa_term': arabic,
             'gloss': gloss,
             'type': wtype,
             'root': root,
@@ -1561,7 +1567,8 @@ def main():
         return
 
     cmd = sys.argv[1]
-    conn = sqlite3.connect(DB_PATH)
+    conn = _uslap_connect(DB_PATH) if _HAS_WRAPPER else sqlite3.connect(DB_PATH)
+    conn.execute("PRAGMA foreign_keys = ON")
     conn.row_factory = sqlite3.Row
 
     if cmd == "seed":

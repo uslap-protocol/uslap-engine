@@ -1,0 +1,24 @@
+# بَحْث اللَّوْح — Querying the Preserved Tablet
+# Test 3: DB integration — queries uslap_database_v3.db
+
+اُكْتُبْ("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ")
+اُكْتُبْ("")
+
+# List tables in the tablet
+كُنْ جَدَاوِل ← لَوْح("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name LIMIT 10")
+اُكْتُبْ("أَوَّل ١٠ جَدَاوِل فِي اللَّوْح:")
+لِكُلِّ ج فِي جَدَاوِل:
+    اُكْتُبْ(صِلْ("", ["  - ", خُذْ(ج, "name")]))
+
+اُكْتُبْ("")
+
+# Count entries in roots table
+كُنْ عَدَدُالجُذُور ← لَوْح("SELECT COUNT(*) as total FROM roots")
+اُكْتُبْ(صِلْ("", ["عَدَد الجُذُور: ", كَلِمَة(خُذْ(خُذْ(عَدَدُالجُذُور, ٠), "total"))]))
+
+# Search for a specific root
+كُنْ نَتَائِج ← لَوْح("SELECT root_id, root_letters, primary_meaning FROM roots WHERE root_bare LIKE ? LIMIT 5", ("%كتب%",))
+اُكْتُبْ("")
+اُكْتُبْ("بَحْث عَن جَذْر ك-ت-ب:")
+لِكُلِّ ص فِي نَتَائِج:
+    اُكْتُبْ(صِلْ(" | ", [خُذْ(ص, "root_id", ""), خُذْ(ص, "root_letters", ""), خُذْ(ص, "primary_meaning", "")]))

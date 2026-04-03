@@ -18,6 +18,11 @@ Rules:
 """
 
 import sqlite3
+try:
+    from uslap_db_connect import connect as _uslap_connect
+    _HAS_WRAPPER = True
+except ImportError:
+    _HAS_WRAPPER = False
 import sys
 import os
 from datetime import datetime
@@ -27,7 +32,8 @@ STALE_MINUTES = 60  # locks older than this are considered stale
 
 
 def get_db():
-    conn = sqlite3.connect(DB_PATH)
+    conn = _uslap_connect(DB_PATH) if _HAS_WRAPPER else sqlite3.connect(DB_PATH)
+    conn.execute("PRAGMA foreign_keys = ON")
     conn.row_factory = sqlite3.Row
     return conn
 

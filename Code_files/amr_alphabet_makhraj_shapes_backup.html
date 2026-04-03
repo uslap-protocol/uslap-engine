@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مَخْرَج الشَّكْل — Letter Shape vs Articulatory Position</title>
+<style>
+:root {
+  --bg: #0a0a12; --bg2: #12121e; --bg3: #1a1a2e;
+  --gold: #d4a843; --gold-dim: #8a6e2c; --green: #2ecc71;
+  --blue: #3498db; --red: #e74c3c; --text: #e0ddd5;
+  --text-dim: #888; --border: #2a2a3e; --accent: #5b86e5; --radius: 8px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:'Amiri','Scheherazade New','Traditional Arabic',serif; line-height:1.6; overflow-x:hidden; }
+.latin { font-family:'Courier New',monospace; direction:ltr; unicode-bidi:embed; }
+header { text-align:center; padding:16px 20px; border-bottom:1px solid var(--border); background:linear-gradient(180deg,var(--bg2),var(--bg)); }
+header h1 { font-size:1.7em; color:var(--gold); margin-bottom:2px; }
+header .subtitle { color:var(--text-dim); font-size:0.85em; direction:ltr; }
+header .bismillah { font-size:1.2em; color:var(--gold-dim); margin-bottom:6px; }
+.ref-bar { background:var(--bg2); border-bottom:1px solid var(--border); padding:6px 20px; text-align:center; font-size:0.75em; color:var(--text-dim); direction:ltr; }
+.ref-bar a { color:var(--accent); text-decoration:none; }
+.ref-bar a:hover { text-decoration:underline; }
+.hypothesis-bar { background:var(--bg2); border-bottom:1px solid var(--border); padding:8px 20px; text-align:center; font-size:0.85em; color:var(--text-dim); direction:ltr; }
+.hypothesis-bar strong { color:var(--gold); }
+
+.main-layout { display:flex; gap:0; height:calc(100vh - 130px); }
+.letter-panel { width:250px; min-width:250px; background:var(--bg2); border-left:1px solid var(--border); overflow-y:auto; padding:8px; }
+.zone-group { margin-bottom:10px; }
+.zone-group h3 { font-size:0.75em; color:var(--gold-dim); padding:3px 6px; border-bottom:1px solid var(--border); margin-bottom:4px; font-weight:normal; direction:ltr; }
+.zone-group .letters-row { display:flex; flex-wrap:wrap; gap:3px; padding:0 3px; }
+.letter-btn { width:44px; height:44px; background:var(--bg3); border:2px solid var(--border); border-radius:var(--radius); color:var(--text); font-size:1.5em; font-family:inherit; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; }
+.letter-btn:hover { border-color:var(--gold); transform:scale(1.08); }
+.letter-btn.active { border-color:var(--gold); background:var(--bg); box-shadow:0 0 12px rgba(212,168,67,0.4); }
+
+.diagram-panel { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:8px; }
+#sagittal-svg { width:100%; max-width:750px; }
+
+.control-panel { width:310px; min-width:310px; background:var(--bg2); border-right:1px solid var(--border); overflow-y:auto; padding:12px; direction:ltr; }
+.control-panel h3 { color:var(--gold); font-size:0.9em; margin-bottom:6px; font-weight:normal; border-bottom:1px solid var(--border); padding-bottom:4px; }
+.control-row { display:flex; align-items:center; gap:6px; margin-bottom:6px; }
+.control-row label { font-size:0.78em; color:var(--text-dim); min-width:65px; }
+.control-row input[type="range"] { flex:1; accent-color:var(--gold); }
+.control-row .value { font-family:monospace; font-size:0.78em; color:var(--green); min-width:36px; text-align:right; }
+.ctrl-btn { background:var(--bg3); color:var(--text-dim); border:1px solid var(--border); padding:3px 8px; border-radius:var(--radius); cursor:pointer; font-size:0.78em; font-family:'Courier New',monospace; transition:all 0.2s; }
+.ctrl-btn:hover { background:var(--gold); color:var(--bg); }
+.ctrl-btn.active { background:var(--gold); color:var(--bg); }
+.toggle-row { display:flex; gap:4px; flex-wrap:wrap; margin-bottom:8px; }
+.info-card { background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius); padding:10px; margin-top:10px; }
+.info-card h4 { color:var(--gold); font-size:0.82em; margin-bottom:5px; font-weight:normal; }
+.info-card p { font-size:0.78em; color:var(--text-dim); line-height:1.5; }
+.info-card .big-letter { font-size:4.5em; color:var(--gold); text-align:center; line-height:1.1; font-family:'Amiri',serif; direction:rtl; }
+.tag { display:inline-block; background:var(--bg); padding:1px 6px; border-radius:3px; font-size:0.72em; margin:1px; border:1px solid var(--border); }
+
+.tongue-path { fill:#3a2a1e; stroke:#d4a843; stroke-width:2.5; transition:d 0.5s ease; }
+.lip-path { fill:none; stroke:#cc8888; stroke-width:3.5; stroke-linecap:round; transition:d 0.5s ease; }
+.tooth-line { stroke:#888; stroke-linecap:round; transition:all 0.4s ease; }
+.jaw-group { transition:transform 0.5s ease; transform-origin:550px 300px; }
+.contact-marker { fill:none; stroke:#e74c3c; stroke-width:2; stroke-dasharray:4,3; opacity:0; transition:opacity 0.3s; }
+.contact-marker.show { opacity:0.8; }
+.makhraj-dot { fill:#d4a843; opacity:0; transition:opacity 0.3s; }
+.makhraj-dot.show { opacity:0.6; }
+.letter-glyph { font-family:'Amiri','Scheherazade New',serif; fill:rgba(212,168,67,0.7); transition:all 0.3s; pointer-events:none; }
+
+@media (max-width:1100px) {
+  .main-layout { flex-direction:column; height:auto; }
+  .letter-panel,.control-panel { width:100%; min-width:0; }
+  .letter-panel { order:1; } .diagram-panel { order:2; min-height:500px; } .control-panel { order:3; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+  <h1>مَخْرَج الشَّكْل</h1>
+  <div class="subtitle">Does each letter draw its own articulatory position?</div>
+</header>
+
+<div class="ref-bar">
+  Source: Muteb Alqarni, <a href="https://lingbuzz.net/lingbuzz/006566" target="_blank">"The Phonetics of Arabic Alphabet" (2021)</a>
+  &amp; <a href="https://lingbuzz.net/lingbuzz/007970" target="_blank">"From Lip to Script" (2024)</a> — King Khalid University
+</div>
+
+<div class="hypothesis-bar">
+  <strong>HYPOTHESIS (Alqarni):</strong> Each AA letter is drawn based on the angle of the face, movement of the lips,
+  position of the tongue, and participation of teeth/palate/velum. The letter IS the articulatory diagram.
+</div>
+
+<div class="main-layout">
+
+<!-- LEFT: Letters -->
+<div class="letter-panel" id="letter-panel"></div>
+
+<!-- CENTER: Sagittal -->
+<div class="diagram-panel">
+<svg id="sagittal-svg" viewBox="0 0 600 480" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0,0 8,3 0,6" fill="#e67e22"/></marker>
+  </defs>
+
+  <!-- ═══════════════════════════════════════════════════════
+       ANATOMY — from Wikimedia Commons IPA Sagittal Section SVG
+       (CC BY-SA, Patrick J. Lynch / Wikimedia contributors)
+       Original viewBox: 0 0 173 245. Scaled ~2.8x, translated to center.
+       Recolored for dark theme.
+       ═══════════════════════════════════════════════════════ -->
+
+  <!-- Embedded reference anatomy, scaled and repositioned -->
+  <g transform="translate(742,-172) scale(-3.5, 3.5)" opacity="0.55">
+    <!-- path7: Larynx/throat area (left side) -->
+    <path d="m 98.248611,244.47499 0,0 -0.176389,-5.11527 -0.440831,-11.46528 -0.176671,-6.26195 0,-5.64444 0,-2.38111 0.08834,-1.94028 0.176388,-1.49916 0.08805,-0.44112 0.08834,-0.35278 0,0 1.234723,-2.46944 0.793608,-1.49945 0.705561,-1.58721 0.6175,-1.58779 0.44083,-1.49916 0.0883,-0.70556 0,-0.6175 0,-0.61722 -0.17639,-0.52917 0,0 -0.35278,-0.88194 -0.44083,-0.61722 -0.35278,-0.35278 -0.44111,-0.26472 -0.352783,-0.0881 -0.352778,0 -0.705555,0.0881 0,0 -0.176389,0.0881 -0.264724,0.17667 -0.61722,0.79361 -0.705556,1.05833 -0.881944,1.32306 -0.793609,1.49917 -0.705556,1.5875 -0.529449,1.49944 -0.440831,1.49917 0,0 -0.08805,0.79361 -0.08834,1.05833 -0.08834,2.55778 0,3.08666 0.08834,3.35168 0.176389,6.79083 0,2.91027 0,2.38139 0,0 -0.176389,9.87778 -0.08834,5.99722 5.027224,0 z"
+          fill="#2a2a3e" stroke="#555" stroke-width="0.35"/>
+    <!-- path9: Head outline + back of skull + neck -->
+    <path d="m 88.988053,244.47499 0,0 1.499447,-14.19916 1.058333,-11.99445 0.441114,-5.55639 0.352777,-4.58611 0,0 0.264443,-5.7325 0.08834,-5.29166 0,-4.85084 -0.08834,-4.40972 -0.176389,-7.67278 -0.08805,-3.35167 0,-2.91027 0,0 0,-1.49917 -0.08834,-1.58778 -0.264442,-3.70388 -0.352778,-3.96889 -0.441113,-3.9689 -0.881945,-7.31999 -0.352778,-2.82223 -0.08805,-1.94027 0,0 -0.08834,-7.67306 -0.08834,-4.32139 0.08834,-2.02861 0.08834,-1.85194 0,0 0,-0.97028 0,-0.97 -0.08834,-2.46945 -0.08834,-1.32277 0.08834,-1.49945 0.08834,-1.49944 0.176107,-1.58722 0.352777,-1.58778 0.529449,-1.67556 0.705556,-1.67555 0.881662,-1.67584 0.529449,-0.88194 0.61722,-0.79389 0.705556,-0.88166 0.705555,-0.7939 0.881945,-0.88194 0.881944,-0.79361 0.969998,-0.88223 1.058333,-0.7936 0,0 3.792497,-2.82223 2.5575,-2.02861 1.58778,-1.49916 0.52889,-0.52917 0.44111,-0.44111 0.17639,-0.440835 0.17639,-0.264725 0.17639,-0.61722 0.17639,-0.61722 0.17639,-0.352777 0.26472,-0.441114 0,0 0.26444,-0.529166 0.17639,-0.529167 0.35278,-1.146669 0.17639,-1.23444 0.17639,-1.323058 0.26472,-1.146386 0.26444,-1.146669 0.26445,-0.441114 0.26472,-0.440831 0.35278,-0.440831 0.44083,-0.264724 0,0 1.67583,-0.793609 2.91028,-1.058333 3.70445,-1.411112 4.23333,-1.411111 4.145,-1.323057 3.88056,-1.058334 1.76388,-0.440831 1.41112,-0.264724 1.14666,-0.176389 0.88167,0 0,0 1.67583,0.264442 2.11667,0.617502 2.5575,0.881945 2.73417,0.969997 2.64583,1.235005 2.64583,1.322775 1.14639,0.61722 1.05833,0.705556 0.97028,0.617502 0.79361,0.705556 0,0 3.43973,3.086946 3.7925,3.527778 1.58722,1.675554 1.41111,1.499446 0.52945,0.705556 0.35277,0.528884 0.26445,0.529452 0.0883,0.44083 0,0 -0.0883,0.70555 -0.26445,0.70556 -0.35277,0.70555 -0.35278,0.61751 -0.70556,0.96999 -0.35278,0.35278 0,0 0.0881,0.26444 0.0881,0.35278 0.26473,0.26473 0.35277,0.17639 0.61751,0.0883 0.7936,-0.0883 1.14639,-0.35278 0,0 1.14667,-0.52917 0.88194,-0.6175 0.70556,-0.61722 0.52917,-0.61722 0.35277,-0.70556 0.26445,-0.6175 0.17667,-0.6175 0,-0.61722 0,0 -0.0883,-0.17639 -0.0883,-0.35278 -0.61722,-0.970277 -2.29306,-2.998329 -3.175,-3.968891 -3.61583,-4.497776 -7.14389,-8.731391 -2.64583,-3.351389 -0.79361,-1.146669 -0.52945,-0.793609 0,0 -0.26444,-0.617502 -0.17639,-0.61722 -0.0881,-0.705555 -0.0883,-0.793892 0,-1.675553 0.17639,-1.763889 0.35277,-3.880555 0.0881,-2.028331 0,-2.028614 0,0 -0.0881,-0.97028 -0.17638,-1.058333 -0.44112,-1.939996 -0.61722,-1.852224 -0.61722,-1.763889 -0.70555,-1.411111 -0.52945,-1.146669 -0.52889,-0.969998 0,0 -0.17667,-0.705555 -0.70555,-1.940278 -1.14639,-2.910276 -0.79361,-1.852224 -0.97028,-1.940278 -1.05833,-2.20472 -1.23472,-2.205002 -1.41112,-2.381109 -1.5875,-2.469444 -1.76388,-2.55778 -1.94028,-2.557639 -2.11667,-2.557639 -2.38111,-2.557639 -2.55778,-2.469445 -2.73388,-2.38125 -1.49945,-1.146527 -1.49945,-1.146528 -1.58722,-1.146528 -1.58778,-1.058333 -1.67555,-1.0583335 -1.76389,-0.9701389 -1.76389,-0.9701389 -1.85222,-0.9701389 -1.94,-0.79375 L 108.30278,4.6742994 106.27416,3.9687438 104.1575,3.2631883 102.04083,2.6458272 99.748058,2.028466 97.45472,1.5874938 95.073611,1.1465216 92.604167,0.79374382 90.134722,0.52916048 87.576942,0.3527716 84.931391,0.26457715 82.197222,0.17638271 79.375,0.26457715 76.552778,0.44096604 73.642502,0.70554937 70.555556,1.0583272 l -2.998612,0.5291666 -3.175,0.5291667 -3.263335,0.7055555 0,0 -3.175,0.79375 -3.175,0.79375 -2.998329,0.79375 -2.822222,0.9701389 -2.822222,0.8819445 -2.646116,0.9701389 -2.557498,0.9701389 -2.469444,1.0583328 -2.381391,1.058334 -2.20472,1.058333 -2.20472,1.146528 -2.116667,1.146528 -1.940419,1.146527 -1.940278,1.234723 -1.763889,1.234722 -1.763888,1.234722 -1.5875,1.234722 -1.5875,1.322917 -1.499306,1.234722 -1.322917,1.322917 -1.322916,1.322917 -1.322917,1.322916 -1.146528,1.411252 -1.146528,1.322776 -0.970138,1.411111 -0.9701393,1.322776 -0.9701389,1.411111 -0.79375,1.411111 -1.5875,2.734169 -1.2347222,2.822222 -1.1465278,2.734169 -0.8819445,2.822222 -0.79375,2.645551 -0.5291666,2.646116 -0.44097226,2.645551 -0.35277777,2.55778 -0.17638889,2.469444 -0.0881944,2.293056 -0.0881944,2.293055 0.0881944,2.116667 0.17638889,3.880556 0.17638889,3.263335 0.17638889,2.557498 0,0 0.17638889,2.469444 0.44097226,2.998612 0.6173611,3.439442 0.79375,3.880555 1.0583334,4.057227 1.1465277,4.321387 1.4111111,4.409717 1.4993056,4.40973 1.6756944,4.49805 1.7638885,4.23334 1.940278,4.05666 0.970139,1.94056 0.970139,1.85194 1.058333,1.76389 1.058334,1.67584 1.058333,1.49916 1.146528,1.41111 1.058333,1.32306 1.146528,1.14639 1.146528,0.97028 1.146527,0.79361 0,0 1.146528,0.7936 1.146528,0.88223 1.234722,0.88166 1.146528,1.05834 2.381109,2.205 2.381391,2.46944 2.293055,2.64584 2.205003,2.64583 2.116666,2.73389 2.028331,2.82222 1.852225,2.64611 1.675553,2.5575 1.5875,2.38139 1.323058,2.11667 1.851942,3.35111 0.529167,1.05833 0.264442,0.6175 0,0 0.176671,0.44083 0.264442,0.61751 0.793892,1.76388 1.058333,2.29306 0.528884,1.41111 0.529449,1.41111 0.440831,1.5875 0.440831,1.67584 0.352778,1.85194 0.264725,1.85194 0.08805,1.85223 -0.08805,2.02833 -0.176389,2.02861 -0.441114,2.11667 0,0 -1.322775,5.55639 -1.675553,7.76111 -3.880556,18.25611 -4.762782,23.10694 45.155555,0 z"
+          fill="#1a1a2e" stroke="#555" stroke-width="0.35"/>
+    <!-- path11: Teeth region -->
+    <path d="m 101.15917,205.66944 0,0 1.58722,-0.6175 1.94056,-0.52889 2.29277,-0.52945 2.38139,-0.35278 2.38139,-0.35277 2.29278,-0.0881 2.02861,0 0.88194,0.0881 0.70556,0.17667 0,0 -0.61722,0.35278 -0.88223,0.26444 -0.88166,0.26444 -1.14667,0.26472 -2.38111,0.44084 -2.46944,0.35277 -2.55778,0.17667 -2.29306,0.17611 -1.94028,0 -1.32277,-0.088 0,0 z"
+          fill="none" stroke="#888" stroke-width="0.7"/>
+    <!-- path13: PALATE + VELUM + UVULA (roof of mouth + soft palate hanging down) -->
+    <path d="m 151.34167,136.96582 0,0 0.17639,-0.0881 0.17638,-0.0881 0.17639,-0.44112 0.17639,-0.70555 0.17639,-0.88195 0.17639,-2.20472 0.088,-2.64611 0.17667,-4.93889 0.0881,-1.67555 0.0881,-0.44112 0.0883,-0.1761 0,0 0.0883,0 0.0881,0.088 0.0881,0.35278 0.17667,1.49916 0.088,4.41001 0.17639,4.58611 0.17639,1.58722 0.088,0.44111 0.0883,0.26444 0,0 0.88194,0.44111 0.61751,0.35278 0.70555,0.26444 0.79361,0.0883 0.44083,0 0.52945,-0.0883 0.44083,-0.1761 0.44083,-0.17667 0.52945,-0.35278 0.44083,-0.35278 0,0 0.44083,-0.52888 0.35278,-0.52945 0.26473,-0.61722 0.17639,-0.70556 0.0883,-0.61722 0,-0.70555 -0.17667,-1.41111 -0.26444,-1.32306 -0.35278,-1.23472 -0.52917,-1.76389 0,0 -0.44083,-2.11667 -0.6175,-3.61611 -0.26472,-1.94 -0.0881,-1.76389 0,-1.58778 0.0881,-0.61722 0.0883,-0.44111 0,0 0.44111,-0.88167 0.35278,-0.79389 0.88166,-1.5875 0.26473,-0.6175 0.26472,-0.61722 0,-0.52917 -0.0883,-0.26472 -0.17639,-0.17611 0,0 -0.17639,-0.0883 -0.44111,0 -1.58722,0.17639 -2.46945,0.44083 -3.08694,0.70555 -7.67306,1.67584 -8.81944,2.02861 -16.93334,3.96861 -5.99722,1.32306 -2.02833,0.35278 -1.05833,0.1761 0,0 -0.7939,0 -1.05833,0.26473 -1.23444,0.35278 -1.49945,0.44083 -1.5875,0.6175 -1.67583,0.6175 -1.76389,0.88166 -1.763889,0.88223 -1.763889,0.97 -1.587218,1.05833 -1.499446,1.23472 -1.322776,1.23473 -0.617502,0.61722 -0.529167,0.6175 -0.441113,0.70555 -0.352778,0.70556 -0.352778,0.70555 -0.176106,0.70556 -0.176671,0.70556 0,0.7936 0,0 0,1.32306 -0.08805,1.23472 0,0.97 0,0.79389 0.176389,0.52917 0.08834,0.26472 0.176106,0.17611 0.176672,0.17667 0.264442,0.0881 0.705555,0.0881 0,0 0.61722,-0.17611 0.793891,-0.44111 0.969998,-0.61722 1.235005,-0.79389 2.733886,-2.02833 3.086669,-2.38139 3.175,-2.3814 2.91056,-2.20472 1.32277,-0.88194 1.14667,-0.79389 1.05833,-0.52889 0.70556,-0.35277 0,0 1.67555,-0.44112 2.11667,-0.52916 5.11556,-1.05834 4.85055,-0.97028 3.175,-0.52888 0,0 2.99861,-0.35278 2.02862,-0.17667 2.11666,-0.088 2.11667,0 1.85194,0.088 0.79361,0.0883 0.6175,0.17638 0.52917,0.17639 0.35278,0.26445 0,0 0.52916,0.52944 0.61751,0.70556 1.05833,1.49916 0.97,1.41112 0.70555,1.14638 0,0 0.35278,0.44112 0.35278,0.26444 0.44111,0.26472 0.35278,0.17639 0.97,0.26444 1.05833,0.17667 0,0 0.26444,0.0881 0.26473,0.26472 0.17639,0.35278 0.0883,0.52888 0.26444,1.14667 0.0883,1.41111 0.17611,1.32278 0.17667,1.235 0.1761,0.44084 0.17668,0.35277 0.1761,0.26473 0.26473,0.1761 0,0 z"
+          fill="#2a2028" stroke="#666" stroke-width="0.35"/>
+    <!-- path15: TONGUE + JAW (HIDDEN — replaced by interactive animated tongue) -->
+    <path style="opacity:0;" d="m 122.2375,244.47499 0,0 1.23472,-7.67305 0.97028,-6.17333 0.35278,-2.55778 0.17611,-1.94028 0,0 0,-1.5875 0,-1.76389 -0.26445,-3.43944 -0.0883,-1.58778 0,-1.41112 0.0883,-1.14638 0.0883,-0.44083 0.17611,-0.35278 0,0 0.35277,-0.6175 0.35278,-0.79361 0.79389,-1.94056 0.70556,-1.94 0.44111,-0.88222 0.35278,-0.79361 0,0 0.17611,-0.35278 0.0883,-0.44083 0.26444,-1.23501 0.44112,-2.99833 0.26444,-1.58778 0.35278,-1.49916 0.26472,-0.6175 0.26473,-0.61722 0.35277,-0.44112 0.35278,-0.35278 0,0 0.70556,-0.44083 0.97,-0.44083 3.08666,-1.32306 3.96889,-1.67583 4.49778,-2.02833 2.29333,-1.05834 2.29278,-1.05833 2.205,-1.14667 2.02833,-1.23444 1.85223,-1.14667 1.67555,-1.23472 0.70555,-0.52917 0.61751,-0.61722 0.52916,-0.6175 0.44112,-0.6175 0,0 0.44083,-0.70556 0.35278,-0.70555 0.26472,-0.88166 0.17611,-0.88223 0.17667,-0.88166 0.0881,-1.05834 0.17639,-2.02861 -0.0883,-2.20472 -0.26444,-2.38139 -0.26444,-2.29306 -0.35278,-2.29305 -0.97028,-4.49806 -0.79361,-3.88055 -0.6175,-3.08667 -0.17639,-1.05833 0,-0.70556 0,0 0.17639,-1.05833 0.17639,-1.23472 0.0883,-2.5575 0.088,-2.55778 0.0881,-2.11667 0,0 0,-0.44111 -0.0881,-0.44083 -0.26473,-0.88195 -0.44083,-0.96999 -0.70555,-0.7939 -0.79361,-0.70555 -0.88223,-0.61722 -0.52888,-0.26473 -0.44112,-0.17638 -0.52916,-0.0883 -0.52917,-0.0881 0,0 -0.26444,0 -0.17667,0.17639 -0.26444,0.17638 -0.17639,0.26473 -0.26473,0.70555 -0.26444,1.05834 -0.17639,1.14638 -0.0881,1.32306 -0.17667,2.91028 -0.17611,2.91027 -0.17667,2.64612 -0.17611,1.05833 -0.17667,0.79361 -0.26444,0.6175 -0.17639,0.17611 -0.17639,0.0883 0,0 -0.26444,0 -0.26473,-0.0883 -0.0881,-0.26444 -0.0883,-0.44112 -0.0883,-0.44083 0.0883,-0.52916 0.17638,-1.32278 0.52917,-2.64611 0.26444,-1.05834 0.0883,-0.79361 0,0 0,-4.14528 -0.0883,-2.11666 -0.0881,-0.61722 -0.088,-0.17639 -0.0883,0 0,0 -0.17639,0.17639 -0.35278,0.26444 -0.35277,0.44111 -0.35278,0.61722 -0.35278,0.79389 -0.35278,0.88195 -0.35277,1.05833 -0.35278,1.14639 0,0 -0.26473,1.235 -0.35277,1.23444 -0.79361,2.38139 -0.61751,2.29306 -0.26444,1.05833 -0.17639,1.05834 0,0 0,1.23472 0,1.5875 0.0881,3.52778 -0.0881,1.76388 -0.17639,1.41112 -0.0883,0.52916 -0.17611,0.44083 -0.17667,0.26473 -0.26444,0.0881 0,0 -0.26444,0 -0.26473,0 -0.17639,-0.0881 -0.26444,-0.17639 -0.26472,-0.26444 -0.17639,-0.26473 -0.44112,-0.79361 -0.26444,-1.14667 -0.17639,-1.41111 -0.0881,-1.76389 0.0881,-2.11666 0,0 0.17639,-1.23472 0.26444,-1.23473 0.35278,-1.32277 0.35278,-1.41111 0.97028,-2.82223 1.05833,-2.82222 2.02862,-4.85083 0.70555,-1.76389 0.17611,-0.70556 0.0883,-0.52916 0,0 0,-0.26445 0,-0.26472 -0.26444,-0.6175 -0.52945,-0.70556 -0.79361,-0.88166 -0.97028,-0.79389 -1.23444,-0.88195 -1.49944,-0.88194 -1.67556,-0.70556 -1.85222,-0.70555 -2.205,-0.61722 -2.29278,-0.44112 -1.32305,-0.0883 -1.23473,-0.17611 -1.41111,0 -1.41111,0 -1.49944,0.0881 -1.49917,0.0881 -1.5875,0.26472 -1.67555,0.26473 -1.67584,0.35278 -1.76389,0.44083 0,0 -1.67583,0.52916 -1.67556,0.61722 -1.49944,0.70556 -1.49917,0.79389 -1.32305,0.88194 -1.32278,0.97028 -1.14667,1.05834 -1.14639,1.05833 -1.05833,1.14639 -0.97028,1.14638 -0.88166,1.23501 -0.79389,1.32277 -0.79389,1.32278 -0.70556,1.32306 -0.61722,1.32306 -0.52917,1.41111 -0.44083,1.41111 -0.44111,1.41111 -0.441113,1.41111 -0.264443,1.32278 -0.529166,2.82222 -0.264725,2.64583 -0.08805,2.5575 0,2.38139 0.264724,2.11667 0.264443,1.94027 0,0 0.529166,1.67556 0.529164,1.41111 0.61722,1.235 0.70556,1.05834 0.79389,0.96999 0.88194,0.70556 0.88195,0.61722 0.88194,0.44111 0.97028,0.35278 0.97,0.26444 0.88194,0.0883 0.88195,0.0883 0.88194,0 0.88195,-0.0883 0.70555,-0.17639 0.70556,-0.17639 0,0 0.52916,-0.0883 0.17639,0 0,0 -0.0883,0.17667 -0.35278,0.26444 -0.52889,0.35278 -0.79389,0.44111 -0.88194,0.35278 -1.05833,0.35278 -1.14639,0.26444 -1.32306,0.17639 -1.32306,0.0881 -1.32277,-0.0881 -1.32278,-0.26473 -0.70555,-0.1761 -0.61751,-0.26473 -0.6175,-0.35278 -0.617215,-0.44083 -0.61722,-0.44111 -0.617502,-0.52917 0,0 1.234722,2.11667 1.322775,2.29305 1.76389,2.64584 1.05833,1.41111 1.05833,1.32306 1.23501,1.32277 1.23444,1.32278 1.32306,1.14667 1.32305,1.05833 1.32278,0.79389 0.70555,0.35278 0.70556,0.26444 0,0 2.55778,0.97 1.94,0.88223 0.70555,0.44083 0.70556,0.44083 0.52945,0.44111 0.44083,0.44111 0.35277,0.44084 0.26473,0.44083 0.17611,0.44111 0.0883,0.52917 0.17639,0.88194 0,1.05833 0,0 0,0.52917 -0.17639,0.6175 -0.17639,0.61722 -0.35278,0.61722 -0.70555,1.32306 -0.97028,1.49917 -0.88166,1.58778 -0.88223,1.67555 -0.35278,0.79389 -0.35278,0.88166 -0.26444,0.97028 -0.17639,0.88195 0,0 -0.44083,2.73389 -0.79389,4.05722 -2.29305,10.40666 -2.29306,9.87778 -0.88194,3.61612 -0.52917,1.94027 14.11111,0 z"
+          fill="#2a2028" stroke="#555" stroke-width="0.35"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════
+       INTERACTIVE ELEMENTS — positioned to match Wikimedia reference
+       Landmarks (from computed transform):
+         lips(140,225) upper_teeth(149,187) lower_teeth(149,247)
+         alveolar(174,155) palate_mid(261,114) velum(406,162)
+         uvula(416,241) tongue_tip(164,263) tongue_body(285,273)
+         tongue_root(406,320) pharynx(440,336) glottis(421,463)
+       ═══════════════════════════════════════════════════════ -->
+
+  <!-- ═══════════════════════════════════════════════════════
+       INTERACTIVE ORGANS — matched EXACTLY to reference anatomy
+       Landmarks verified with grid overlay:
+         lips_open(218,290) UT(228,268) LT(228,308)
+         alveolar(255,235) palate(300,218)-(360,208)-(420,215)
+         velum(442,240) uvula(450,280)
+         tongue: tip(240,318) blade(310,300) dorsum(370,310) root(430,345)
+         pharynx(480,340) floor(280,380)
+       ═══════════════════════════════════════════════════════ -->
+
+  <!-- JAW GROUP — lower lip + lower teeth, pivot at TMJ ~(480,310) -->
+  <g id="jaw-group" class="jaw-group">
+    <!-- Lower lip — at landmark lower_teeth(206,308), lips(200,283) -->
+    <path id="lower-lip" class="lip-path"
+          d="M192,300 C196,312 200,318 206,316 C210,314 213,308 215,302"
+          fill="none" stroke="#998" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+    <!-- Lower front teeth — thin edge just inside -->
+    <path d="M206,298 C210,296 214,295 218,297"
+          fill="none" stroke="#aaa" stroke-width="1" stroke-linecap="round" opacity="0.35"/>
+    <text id="jaw-angle-label" x="220" y="460" fill="#6a5a4a" font-size="9" font-family="monospace" opacity="0"></text>
+  </g>
+
+  <!-- Upper lip — at landmark upper_teeth(206,241), lips(200,283) -->
+  <path id="upper-lip" class="lip-path"
+        d="M192,268 C196,258 200,252 206,254 C210,256 213,262 215,268"
+        fill="none" stroke="#998" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+  <!-- Upper front teeth — thin edge just inside -->
+  <path d="M206,272 C210,274 214,275 218,273"
+        fill="none" stroke="#aaa" stroke-width="1" stroke-linecap="round" opacity="0.35"/>
+
+  <!-- TONGUE — neutral, matched to reference tongue mass surface
+       tip(240,318) → blade(310,300) → dorsum(370,310) → root(430,345)
+       Bottom: follows mouth floor ~(280,380) -->
+  <!-- TONGUE neutral: tip(217,325) body(304,336) root(392,388) -->
+  <path id="tongue-neutral"
+        d="M217,325 C235,318 265,312 295,310
+           C330,308 360,315 385,330
+           C400,342 410,360 415,380
+           C418,395 415,408 410,418
+           L400,415
+           C404,405 406,392 402,378
+           C396,358 382,342 365,332
+           C342,320 315,316 295,318
+           C268,322 242,330 225,335 Z"
+        fill="#2a2028" stroke="#555" stroke-width="1.5" opacity="0.5"/>
+
+  <!-- TONGUE (active — animated per letter) -->
+  <path id="tongue-active" class="tongue-path"
+        d="M217,325 C235,318 265,312 295,310
+           C330,308 360,315 385,330
+           C400,342 410,360 415,380
+           C418,395 415,408 410,418
+           L400,415
+           C404,405 406,392 402,378
+           C396,358 382,342 365,332
+           C342,320 315,316 295,318
+           C268,322 242,330 225,335 Z"
+        style="opacity:0;"/>
+
+  <!-- Contact zone -->
+  <ellipse id="contact-zone" class="contact-marker" cx="200" cy="200" rx="15" ry="10"/>
+  <!-- Makhraj dot -->
+  <circle id="makhraj-dot" class="makhraj-dot" cx="200" cy="200" r="8"/>
+
+  <!-- Direction arrow -->
+  <g id="dir-arrow-group" style="opacity:0;">
+    <line id="dir-arrow-line" x1="0" y1="0" x2="0" y2="0" stroke="#3498db" stroke-width="3" marker-end="url(#arr)"/>
+    <circle id="dir-arrow-origin" cx="0" cy="0" r="4" fill="#3498db" opacity="0.6"/>
+  </g>
+
+  <!-- Letter overlay -->
+  <g id="letter-overlay-group">
+    <text id="letter-overlay" class="letter-glyph" x="250" y="250" text-anchor="middle" dominant-baseline="central" font-size="120" opacity="0"></text>
+  </g>
+
+  <!-- Zone labels — at uniform-scale landmarks -->
+  <g id="zone-labels" opacity="0.3" font-family="monospace" font-size="8">
+    <text x="180" y="285" text-anchor="end" fill="#3498db">lips</text>
+    <text x="188" y="252" text-anchor="end" fill="#2ecc71">labiodental</text>
+    <text x="208" y="235" fill="#e67e22">dental</text>
+    <text x="228" y="200" fill="#9b59b6">alveolar</text>
+    <text x="300" y="150" fill="#1abc9c">palatal</text>
+    <text x="378" y="150" fill="#f39c12">velar</text>
+    <text x="408" y="275" fill="#e74c3c">uvular</text>
+    <text x="430" y="380" fill="#8e44ad">pharyngeal</text>
+    <text x="420" y="460" fill="#c0392b">glottal</text>
+  </g>
+
+  <text id="instruction-text" x="300" y="475" text-anchor="middle" fill="#555" font-size="10" font-family="monospace">Select a letter to see its full articulatory position</text>
+</svg>
+</div>
+
+<!-- RIGHT: Controls -->
+<div class="control-panel">
+  <div class="info-card">
+    <div class="big-letter" id="info-big-letter" style="color:var(--text-dim);">؟</div>
+    <h4 id="info-name" style="text-align:center;">Select a letter</h4>
+  </div>
+
+  <div style="margin-top:12px;">
+    <h3>Overlay Controls</h3>
+    <div class="control-row"><label>Opacity</label><input type="range" id="ctrl-opacity" min="0" max="100" value="60" oninput="updateOverlay()"><span class="value" id="val-opacity">60%</span></div>
+    <div class="control-row"><label>Size</label><input type="range" id="ctrl-size" min="40" max="400" value="140" oninput="updateOverlay()"><span class="value" id="val-size">140</span></div>
+    <div class="control-row"><label>Rotate</label><input type="range" id="ctrl-rotate" min="-180" max="180" value="0" oninput="updateOverlay()"><span class="value" id="val-rotate">0°</span></div>
+    <div class="control-row"><label>X Offset</label><input type="range" id="ctrl-x" min="-200" max="200" value="0" oninput="updateOverlay()"><span class="value" id="val-x">0</span></div>
+    <div class="control-row"><label>Y Offset</label><input type="range" id="ctrl-y" min="-200" max="200" value="0" oninput="updateOverlay()"><span class="value" id="val-y">0</span></div>
+    <div class="toggle-row">
+      <button class="ctrl-btn" id="btn-flip-h" onclick="toggleFlip('h')">Flip H</button>
+      <button class="ctrl-btn" id="btn-flip-v" onclick="toggleFlip('v')">Flip V</button>
+      <button class="ctrl-btn" id="btn-reset" onclick="resetControls()">Reset</button>
+    </div>
+    <div class="toggle-row">
+      <button class="ctrl-btn active" id="btn-tongue" onclick="toggleLayer('tongue')">Tongue</button>
+      <button class="ctrl-btn active" id="btn-lips" onclick="toggleLayer('lips')">Lips</button>
+      <button class="ctrl-btn active" id="btn-jaw" onclick="toggleLayer('jaw')">Jaw</button>
+      <button class="ctrl-btn active" id="btn-contact" onclick="toggleLayer('contact')">Contact</button>
+      <button class="ctrl-btn" id="btn-labels" onclick="toggleLayer('labels')">Labels</button>
+      <button class="ctrl-btn active" id="btn-direction" onclick="toggleLayer('direction')">Dir ←→</button>
+    </div>
+  </div>
+
+  <div class="info-card" id="articulation-info" style="display:none;">
+    <h4>Articulatory Profile</h4>
+    <p id="art-tongue"></p>
+    <p id="art-lips" style="margin-top:4px;"></p>
+    <p id="art-jaw" style="margin-top:4px;"></p>
+    <p id="art-teeth" style="margin-top:4px;"></p>
+  </div>
+
+  <div class="info-card" id="dir-info" style="display:none;">
+    <h4>Shape Direction</h4>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+      <span id="dir-cat-badge" style="padding:2px 8px;border-radius:3px;font-size:0.8em;font-family:monospace;"></span>
+    </div>
+    <p id="dir-meaning" style="font-size:0.78em;color:var(--text-dim);"></p>
+  </div>
+
+  <div class="info-card" id="geo-info" style="display:none;">
+    <h4>Shape Geometry</h4>
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap;">
+      <span id="geo-closure-badge" style="padding:2px 8px;border-radius:3px;font-size:0.8em;font-family:monospace;"></span>
+      <span id="geo-dots-badge" style="padding:2px 8px;border-radius:3px;font-size:0.8em;font-family:monospace;background:var(--bg);border:1px solid var(--border);"></span>
+      <span id="geo-voiced-badge" style="padding:2px 8px;border-radius:3px;font-size:0.8em;font-family:monospace;"></span>
+      <span id="geo-emph-badge" style="padding:2px 8px;border-radius:3px;font-size:0.8em;font-family:monospace;display:none;"></span>
+    </div>
+    <p id="geo-body" style="font-size:0.78em;color:var(--text-dim);margin-bottom:4px;"></p>
+    <p id="geo-dotfn" style="font-size:0.78em;color:var(--text-dim);margin-bottom:4px;"></p>
+    <p id="geo-jaw" style="font-size:0.78em;color:var(--text-dim);margin-bottom:4px;"></p>
+    <p id="geo-diff" style="font-size:0.78em;color:var(--gold-dim);font-style:italic;"></p>
+  </div>
+
+  <div class="info-card" id="shape-analysis" style="display:none;">
+    <h4>Shape ↔ Articulation (Alqarni)</h4>
+    <p id="shape-text"></p>
+  </div>
+
+  <div class="info-card" style="margin-top:10px;">
+    <h4>Keys</h4>
+    <p>Arrows: move | [ ] rotate | + - size | h v flip | r reset</p>
+  </div>
+</div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// LETTER DATA — 28 letters, 5 articulators per letter
+// Articulators: tongue, upperLip, lowerLip, jaw, contact
+// ═══════════════════════════════════════════════════════════
+
+// Lip paths: upper = "M170,Y1 C180,Y2 190,Y3 200,Y4"  lower = "M170,Y5 C180,Y6 190,Y7 200,Y8"
+// Jaw: rotation angle in degrees (0=closed, positive=open)
+// Neutral lips: upper "M170,210 C180,195 190,188 200,192" lower "M170,250 C180,265 190,272 200,268"
+
+const NEUTRAL = {
+  tongue: 'M217,325 C235,318 265,312 295,310 C330,308 360,315 385,330 C400,342 410,360 415,380 C418,395 415,408 410,418 L400,415 C404,405 406,392 402,378 C396,358 382,342 365,332 C342,320 315,316 295,318 C268,322 242,330 225,335 Z',
+  upperLip: 'M192,268 C196,258 200,252 206,254',
+  lowerLip: 'M192,300 C196,312 200,318 206,316',
+  jawAngle: 0,
+};
+
+const L = {
+  // ── GLOTTAL ──
+  'ء': { name:'هَمْزَة / hamza', zone:'glottal', label:'STOP', color:'#c0392b', pos:{x:415,y:375},
+    tongue: NEUTRAL.tongue,
+    upperLip: 'M125,198 C130,188 138,182 150,182', lowerLip: 'M125,232 C130,244 138,252 150,252', jawAngle: 5,
+    contact:{cx:390,cy:375,rx:12,ry:15},
+    art_tongue:'Neutral — no tongue involvement. Action at glottis.',
+    art_lips:'Slightly open. Lips passive.',
+    art_jaw:'Barely open. Glottis does the work.',
+    art_teeth:'No teeth involvement.',
+    shape:'Hamza (ء) = small hook/catch. Mirrors the abrupt glottal closure. No mouth shaping needed — action entirely at vocal cords.' },
+  'ا': { name:'أَلِف / alif', zone:'glottal', label:'OPENING', color:'#c0392b', pos:{x:415,y:360},
+    tongue: NEUTRAL.tongue,
+    upperLip: 'M125,202 C130,192 138,186 150,186', lowerLip: 'M125,228 C130,238 138,244 150,244', jawAngle: 16,
+    contact:{cx:390,cy:360,rx:10,ry:18},
+    art_tongue:'Flat, neutral. Tongue uninvolved.',
+    art_lips:'Open. The mouth opens for the vowel.',
+    art_jaw:'Open — the jaw drops to create space for the pure ā vowel.',
+    art_teeth:'No teeth involvement.',
+    shape:'Alif (ا) = vertical stroke = THE ONE = the open mouth/airway. Alqarni: "written like number 1, following the opening mouth required for it to be produced." No curve because no articulator contact.' },
+  'ه': { name:'هَاء / hāʾ', zone:'glottal', label:'BREATH', color:'#c0392b', pos:{x:415,y:365},
+    tongue: NEUTRAL.tongue,
+    upperLip: 'M125,200 C130,190 138,184 150,184', lowerLip: 'M125,230 C130,242 138,250 150,250', jawAngle: 6,
+    contact:{cx:388,cy:368,rx:12,ry:12},
+    art_tongue:'Flat, neutral. Pure breath.',
+    art_lips:'Slightly open. Breath escapes freely.',
+    art_jaw:'Slightly open.',
+    art_teeth:'None.',
+    shape:'Hāʾ (ه) = a round opening. The circle mirrors the open glottis/airway. Breath passes through with minimal shaping.' },
+
+  // ── PHARYNGEAL ──
+  'ع': { name:'عَيْن / ʿayn', zone:'pharyngeal', label:'DEPTH', color:'#8e44ad', pos:{x:440,y:250},
+    tongue: 'M155,232 C162,230 180,228 205,225 C240,222 280,222 325,228 C365,236 395,252 412,275 C420,290 422,305 418,318 L410,322 C412,308 410,292 402,278 C388,258 360,244 330,238 C290,230 250,228 215,230 C185,232 168,236 162,238 Z',
+    upperLip: 'M125,198 C130,188 138,182 150,182', lowerLip: 'M125,232 C130,244 138,252 150,252', jawAngle: 7,
+    contact:{cx:410,cy:270,rx:12,ry:25},
+    art_tongue:'ROOT RETRACTS deep into pharynx. Body bunched back. Tip stays forward/low.',
+    art_lips:'Slightly open, passive.',
+    art_jaw:'Slightly open. The constriction is in the THROAT, not the mouth.',
+    art_teeth:'None.',
+    shape:'ʿAyn (ع) = deep curved opening. The curve mirrors the pharynx constricting as the tongue root retracts. The open loop = the remaining airway.' },
+  'ح': { name:'حَاء / ḥāʾ', zone:'pharyngeal', label:'CONSTRICTION', color:'#8e44ad', pos:{x:442,y:240},
+    tongue: 'M155,232 C162,230 180,228 205,225 C240,222 280,222 328,228 C368,236 398,250 415,272 C422,288 424,304 420,316 L412,320 C414,306 412,290 405,275 C392,255 365,242 332,236 C292,230 252,228 218,230 C188,232 168,236 162,238 Z',
+    upperLip: 'M125,198 C130,188 138,182 150,182', lowerLip: 'M125,232 C130,244 138,252 150,252', jawAngle: 5,
+    contact:{cx:412,cy:258,rx:10,ry:22},
+    art_tongue:'Root retracts like ع but TIGHTER constriction.',
+    art_lips:'Minimal opening. Voiceless = less energy.',
+    art_jaw:'Barely open.',
+    art_teeth:'None.',
+    shape:'Ḥāʾ (ح) = similar deep curve to ع but MORE CLOSED. Voiceless partner: same pharyngeal place, tighter constriction reflected in tighter letter form.' },
+
+  // ── UVULAR ──
+  'غ': { name:'غَيْن / ghayn', zone:'uvular', label:'SCRAPE', color:'#e74c3c', pos:{x:418,y:180},
+    tongue: 'M155,232 C162,230 178,228 198,226 C218,224 238,220 260,212 C288,202 320,188 355,175 C380,168 398,168 408,178 L405,188 C398,180 385,180 362,186 C330,196 298,208 268,218 C242,226 222,230 202,232 C182,234 168,236 162,238 Z',
+    upperLip: 'M125,198 C130,188 138,182 150,182', lowerLip: 'M125,232 C130,244 138,252 150,252', jawAngle: 5,
+    contact:{cx:390,cy:195,rx:14,ry:12},
+    art_tongue:'Back HUMPS UP sharply toward uvula. Tip stays low/forward.',
+    art_lips:'Nearly closed. Back-of-throat sound.',
+    art_jaw:'Slightly open.',
+    art_teeth:'None.',
+    shape:'Ghayn (غ) = dot above the curve. The body = back tongue rising. The dot = the uvula it scrapes against.' },
+  'خ': { name:'خَاء / khāʾ', zone:'uvular', label:'PASSAGE', color:'#e74c3c', pos:{x:418,y:175},
+    tongue: 'M155,232 C162,230 178,228 198,226 C218,224 238,220 260,212 C288,202 320,188 355,175 C380,168 398,168 408,178 L405,188 C398,180 385,180 362,186 C330,196 298,208 268,218 C242,226 222,230 202,232 C182,234 168,236 162,238 Z',
+    upperLip: 'M125,198 C130,188 138,182 150,182', lowerLip: 'M125,232 C130,244 138,252 150,252', jawAngle: 5,
+    contact:{cx:390,cy:192,rx:14,ry:12},
+    art_tongue:'Same back-hump as غ.',
+    art_lips:'Nearly closed.',
+    art_jaw:'Slightly open.',
+    art_teeth:'None.',
+    shape:'Khāʾ (خ) = same body as غ, different dot. Voiceless partner at uvular position.' },
+
+  // ── VELAR ──
+  'ق': { name:'قَاف / qāf', zone:'velar', label:'STRIKE', color:'#f39c12', pos:{x:395,y:148},
+    tongue: 'M155,232 C162,230 178,228 198,225 C220,220 245,210 275,195 C310,178 345,158 375,142 C392,134 405,138 408,148 L402,158 C400,150 392,148 380,154 C352,168 320,185 288,200 C258,214 235,224 210,230 C188,234 170,236 162,238 Z',
+    upperLip: 'M125,197 C130,187 138,181 150,181', lowerLip: 'M125,233 C130,245 138,253 150,253', jawAngle: 5,
+    contact:{cx:375,cy:160,rx:15,ry:12},
+    art_tongue:'Back SLAMS up to soft palate/uvula. Full closure. Tip low.',
+    art_lips:'Nearly closed.',
+    art_jaw:'Barely open. Action is deep in the mouth.',
+    art_teeth:'None.',
+    shape:'Qāf (ق) = deep bowl + 2 dots above. Bowl = back tongue cupping against soft palate. Two dots = the point of STRIKE. Deepest plosive.' },
+  'ك': { name:'كَاف / kāf', zone:'velar', label:'TAP', color:'#f39c12', pos:{x:380,y:142},
+    tongue: 'M155,232 C162,230 178,228 200,224 C225,218 252,206 282,190 C315,174 345,158 368,145 C382,138 392,140 395,148 L390,158 C388,152 380,150 370,156 C348,168 320,182 292,196 C262,212 238,224 212,230 C190,234 170,236 162,238 Z',
+    upperLip: 'M125,197 C130,187 138,181 150,181', lowerLip: 'M125,233 C130,245 138,253 150,253', jawAngle: 5,
+    contact:{cx:355,cy:148,rx:16,ry:12},
+    art_tongue:'Back rises to soft palate — shallower than ق.',
+    art_lips:'Nearly closed.',
+    art_jaw:'Barely open.',
+    art_teeth:'None.',
+    shape:'Kāf (ك) = stroke rises to palate. Shallower contact than ق.' },
+
+  // ── PALATAL ──
+  'ج': { name:'جِيم / jīm', zone:'palatal', label:'PRESS', color:'#1abc9c', pos:{x:280,y:118},
+    tongue: 'M158,238 C165,235 180,228 198,218 C218,206 240,170 270,130 C295,108 330,115 360,145 C378,165 390,198 395,240 L388,248 C385,210 375,178 358,158 C335,130 308,122 285,138 C262,155 245,180 228,210 C210,232 190,242 172,244 Z',
+    upperLip: 'M125,197 C130,187 138,180 150,180', lowerLip: 'M125,233 C130,246 138,254 150,254', jawAngle: 8,
+    contact:{cx:300,cy:125,rx:25,ry:10},
+    art_tongue:'MIDDLE body RISES and PRESSES flat against hard palate. Tip drops.',
+    art_lips:'Slightly spread. Not rounded.',
+    art_jaw:'Slightly open for the affricate release.',
+    art_teeth:'Upper teeth visible but not involved.',
+    shape:'Jīm (ج) = curve + dot below. Curve = middle tongue pressing flat against palate. Dot below = voicing vibration underneath.' },
+  'ش': { name:'شِين / shīn', zone:'palatal', label:'SPREADING', color:'#1abc9c', pos:{x:275,y:116},
+    tongue: 'M158,238 C165,235 180,228 198,218 C218,206 238,172 268,132 C298,110 335,118 358,148 C375,170 388,205 392,245 L385,250 C382,215 372,182 356,160 C338,132 312,126 290,140 C268,158 250,182 232,215 C215,236 192,244 175,246 Z',
+    upperLip: 'M125,197 C130,187 138,180 150,180', lowerLip: 'M125,233 C130,246 138,254 150,254', jawAngle: 8,
+    contact:{cx:295,cy:125,rx:28,ry:10},
+    art_tongue:'Body FLATTENS WIDE against palate. Broad contact zone.',
+    art_lips:'Slightly spread, pushed forward.',
+    art_jaw:'Slightly open.',
+    art_teeth:'Upper teeth frame the air escape.',
+    shape:'Shīn (ش) = 3 dots above wide curve. Tongue FLAT+WIDE on palate. Three dots = broad spread of escaping airflow.' },
+  'ي': { name:'يَاء / yāʾ', zone:'palatal', label:'CONTRACTION', color:'#1abc9c', pos:{x:275,y:140},
+    tongue: 'M158,238 C165,235 180,228 200,218 C222,208 245,185 272,152 C302,125 335,132 358,160 C375,182 388,215 392,252 L385,258 C382,222 372,195 358,172 C340,148 316,140 296,155 C275,172 258,195 240,222 C222,242 198,250 178,248 Z',
+    upperLip: 'M125,197 C130,187 138,180 150,180', lowerLip: 'M125,233 C130,246 138,254 150,254', jawAngle: 10,
+    contact:{cx:295,cy:140,rx:20,ry:10},
+    art_tongue:'Rises TOWARD palate but gap remains. Semivowel = partial closure.',
+    art_lips:'Spread. Alqarni: two dots = two parts of tongue visible when lowered against lower teeth.',
+    art_jaw:'Slightly open.',
+    art_teeth:'Lower teeth visible through open mouth.',
+    shape:'Yāʾ (ي) = 2 dots below. Alqarni: dots = the two visible parts of the tongue when pressed against lower teeth/gum. Written BELOW to distinguish from ت.' },
+
+  // ── ALVEOLAR ──
+  'ل': { name:'لَام / lām', zone:'alveolar', label:'CONNECTION', color:'#9b59b6', pos:{x:180,y:95},
+    tongue: 'M178,95 C176,108 174,135 180,170 C188,210 215,240 255,260 C295,278 340,292 380,305 C395,310 405,315 408,318 L400,322 C398,318 390,314 375,308 C338,296 295,282 258,268 C220,252 195,230 188,200 C180,165 178,130 180,105 Z',
+    upperLip: 'M125,197 C130,186 138,180 150,180', lowerLip: 'M125,233 C130,246 138,254 150,254', jawAngle: 9,
+    contact:{cx:238,cy:142,rx:12,ry:8},
+    art_tongue:'Tip reaches STRAIGHT UP to alveolar ridge. Body SCOOPS down.',
+    art_lips:'Open, neutral.',
+    art_jaw:'Moderately open.',
+    art_teeth:'Upper teeth close to tongue tip but not touching.',
+    shape:'Lām (ل) = vertical stroke curving at top. The letter DRAWS the tongue reaching straight up to the gum ridge. The vertical line = the tongue body scooping down below.' },
+  'ن': { name:'نُون / nūn', zone:'alveolar', label:'CONTINUATION', color:'#9b59b6', pos:{x:180,y:97},
+    tongue: 'M178,95 C176,108 174,135 180,170 C188,210 215,240 255,260 C295,278 340,292 380,305 C395,310 405,315 408,318 L400,322 C398,318 390,314 375,308 C338,296 295,282 258,268 C220,252 195,230 188,200 C180,165 178,130 180,105 Z',
+    upperLip: 'M125,197 C130,186 138,180 150,180', lowerLip: 'M125,233 C130,246 138,254 150,254', jawAngle: 9,
+    contact:{cx:238,cy:142,rx:12,ry:8},
+    art_tongue:'Tip up to ridge (same as ل). Air diverted through NOSE.',
+    art_lips:'Open, neutral.',
+    art_jaw:'Moderately open.',
+    art_teeth:'Upper teeth near tip.',
+    shape:'Nūn (ن) = bowl + dot above. Bowl = tongue curving up. Dot ABOVE = air redirected UP through nasal passage. The dot IS the nasal escape.' },
+  'ر': { name:'رَاء / rāʾ', zone:'alveolar', label:'MOVEMENT', color:'#9b59b6', pos:{x:178,y:108},
+    tongue: 'M178,105 C176,115 175,140 180,175 C188,215 215,242 255,262 C295,280 340,294 382,306 C396,312 406,316 408,318 L400,322 C398,318 390,314 375,310 C340,298 298,284 260,270 C222,255 198,235 190,205 C182,172 180,142 180,118 Z',
+    upperLip: 'M125,197 C130,186 138,180 150,180', lowerLip: 'M125,233 C130,246 138,254 150,254', jawAngle: 9,
+    contact:{cx:238,cy:150,rx:10,ry:8},
+    art_tongue:'Tip FLICKS up then bounces. Trill/tap.',
+    art_lips:'Open.',
+    art_jaw:'Moderately open.',
+    art_teeth:'Near tip.',
+    shape:'Rāʾ (ر) = small flick. Minimal stroke = minimal contact. Tongue tip touches then BOUNCES. Least ink, most movement.' },
+
+  // ── SIBILANT ──
+  'ز': { name:'زَاي / zāy', zone:'sibilant', label:'BUZZ', color:'#16a085', pos:{x:155,y:252},
+    tongue: 'M150,252 C158,248 175,238 198,228 C228,215 262,208 300,212 C338,218 368,232 388,252 C400,266 408,282 410,300 L402,308 C400,290 394,274 382,260 C365,242 340,230 308,224 C272,218 240,222 210,234 C185,244 165,254 158,258 Z',
+    upperLip: 'M125,196 C130,188 138,183 150,183', lowerLip: 'M125,234 C130,244 138,250 150,250', jawAngle: 3,
+    contact:{cx:205,cy:278,rx:10,ry:8},
+    art_tongue:'Tip aims DOWN toward lower teeth. Middle arches up = groove.',
+    art_lips:'Slightly open, neutral.',
+    art_jaw:'Nearly closed — narrow gap for the hiss.',
+    art_teeth:'Upper and lower teeth CLOSE together. Air forced through narrow gap.',
+    shape:'Zāy (ز) = ر body + dot above. Tip down at lower teeth. The narrow teeth gap channels the buzz.' },
+  'س': { name:'سِين / sīn', zone:'sibilant', label:'FLOW', color:'#16a085', pos:{x:155,y:254},
+    tongue: 'M150,252 C158,248 175,238 198,228 C228,215 262,208 300,212 C338,218 368,232 388,252 C400,266 408,282 410,300 L402,308 C400,290 394,274 382,260 C365,242 340,230 308,224 C272,218 240,222 210,234 C185,244 165,254 158,258 Z',
+    upperLip: 'M125,195 C130,188 138,184 150,184', lowerLip: 'M125,235 C130,244 138,248 150,248', jawAngle: 2,
+    contact:{cx:205,cy:278,rx:10,ry:8},
+    art_tongue:'Tip DOWN near lower teeth. Narrow groove channels hiss.',
+    art_lips:'Nearly closed — lips frame the narrow jet of air.',
+    art_jaw:'Nearly closed. Teeth almost touching.',
+    art_teeth:'Upper/lower teeth very close. The sibilant requires a narrow teeth gap.',
+    shape:'Sīn (س) = three cusps/peaks. The serrated shape = the turbulent airflow hissing through the narrow tongue groove and teeth gap.' },
+  'ص': { name:'صَاد / ṣād', zone:'sibilant', label:'HEAVY STREAM', color:'#16a085', pos:{x:155,y:250},
+    tongue: 'M150,252 C158,246 175,234 200,222 C232,208 270,198 315,198 C358,200 392,215 410,242 C422,262 428,288 424,310 L416,316 C418,292 414,270 404,252 C390,230 362,215 325,210 C282,206 245,214 215,228 C190,240 168,252 160,258 Z',
+    upperLip: 'M125,195 C130,188 138,184 150,184', lowerLip: 'M125,235 C130,244 138,248 150,248', jawAngle: 2,
+    contact:{cx:205,cy:276,rx:10,ry:8},
+    art_tongue:'Tip down like س + BACK ALSO RISES (emphatic double action).',
+    art_lips:'Nearly closed. Emphatic = lips slightly more tense.',
+    art_jaw:'Nearly closed.',
+    art_teeth:'Close together.',
+    shape:'Ṣād (ص) = closed loop. The loop = additional volume from the raised back tongue creating the heavy emphatic sound. Fuller than س.' },
+
+  // ── DENTAL ──
+  'ت': { name:'تَاء / tāʾ', zone:'dental', label:'SNAP', color:'#e67e22', pos:{x:152,y:110},
+    tongue: 'M152,110 C155,125 162,165 178,205 C198,248 230,275 272,292 C315,308 362,318 396,328 C408,332 415,336 416,340 L408,344 C406,340 400,336 388,332 C355,322 312,312 272,298 C232,282 202,260 185,230 C170,200 160,160 156,130 Z',
+    upperLip: 'M125,197 C130,186 138,180 150,180', lowerLip: 'M125,233 C130,246 138,254 150,254', jawAngle: 7,
+    contact:{cx:210,cy:162,rx:12,ry:8},
+    art_tongue:'Tip CURLS UP SHARPLY to strike upper teeth roots. Body stays low.',
+    art_lips:'Open, neutral. Lip shape = "boat" (Alqarni).',
+    art_jaw:'Moderately open.',
+    art_teeth:'Upper front teeth = the STRIKE TARGET. Two dots = the two front teeth.',
+    shape:'Tāʾ (ت) = flat boat + 2 dots. Alqarni: boat = lower lip shape. Our analysis: boat = tongue body low, curling up. Two dots above = the TWO FRONT TEETH the tip strikes against.' },
+  'د': { name:'دَال / dāl', zone:'dental', label:'KNOCK', color:'#e67e22', pos:{x:152,y:113},
+    tongue: 'M152,110 C155,125 162,165 178,205 C198,248 230,275 272,292 C315,308 362,318 396,328 C408,332 415,336 416,340 L408,344 C406,340 400,336 388,332 C355,322 312,312 272,298 C232,282 202,260 185,230 C170,200 160,160 156,130 Z',
+    upperLip: 'M125,197 C130,186 138,180 150,180', lowerLip: 'M125,233 C130,246 138,254 150,254', jawAngle: 7,
+    contact:{cx:210,cy:165,rx:12,ry:8},
+    art_tongue:'Tip curls up to upper teeth (like ت). Voiced.',
+    art_lips:'Open.',
+    art_jaw:'Moderately open.',
+    art_teeth:'Upper teeth = target.',
+    shape:'Dāl (د) = single upward curve. Same tip-curl as ت. No dots = voiced.' },
+  'ط': { name:'طَاء / ṭāʾ', zone:'dental', label:'SEAL', color:'#e67e22', pos:{x:152,y:108},
+    tongue: 'M152,108 C155,122 164,158 182,198 C205,240 242,268 290,282 C335,296 378,308 405,320 C418,326 425,332 425,340 L418,344 C418,338 412,332 400,326 C375,316 335,304 292,292 C248,278 215,258 195,230 C178,202 165,162 158,130 Z',
+    upperLip: 'M125,197 C130,186 138,180 150,180', lowerLip: 'M125,233 C130,246 138,254 150,254', jawAngle: 7,
+    contact:{cx:210,cy:160,rx:12,ry:8},
+    art_tongue:'Tip up at teeth + BACK ALSO RISES (emphatic). Thicker profile.',
+    art_lips:'Open.',
+    art_jaw:'Moderately open.',
+    art_teeth:'Full seal against upper teeth.',
+    shape:'Ṭāʾ (ط) = taller enclosed loop. Tip up like ت, but extra height = emphatic back-raising. The SEAL: closure at teeth AND raised body.' },
+
+  // ── INTERDENTAL ──
+  'ث': { name:'ثَاء / thāʾ', zone:'interdental', label:'THINNING', color:'#e74c3c', pos:{x:138,y:215},
+    tongue: 'M138,215 C145,218 162,225 185,235 C215,248 252,262 295,275 C338,288 375,300 400,312 C412,318 418,324 418,330 L410,334 C410,328 405,322 395,316 C372,306 338,294 298,282 C255,270 220,258 192,246 C168,236 152,228 145,224 Z',
+    upperLip: 'M125,200 C130,190 138,184 150,184', lowerLip: 'M125,230 C130,240 138,246 150,246', jawAngle: 12,
+    contact:{cx:192,cy:228,rx:10,ry:15},
+    art_tongue:'Tip PROTRUDES FORWARD between teeth.',
+    art_lips:'Open to allow tongue protrusion. Alqarni: boat shape = lower lip.',
+    art_jaw:'Open enough for tongue to protrude between teeth.',
+    art_teeth:'BOTH upper + lower teeth involved. Tongue passes BETWEEN them. Alqarni: 3 dots = 2 upper teeth + tongue tip (3 articulators).',
+    shape:'Thāʾ (ث) = boat + 3 dots above. Alqarni: boat = lower lip, 3 dots = 2 upper teeth + tongue tip. Three articulators visible in the act of production.' },
+  'ذ': { name:'ذَال / dhāl', zone:'interdental', label:'EXTENSION', color:'#e74c3c', pos:{x:138,y:218},
+    tongue: 'M138,215 C145,218 162,225 185,235 C215,248 252,262 295,275 C338,288 375,300 400,312 C412,318 418,324 418,330 L410,334 C410,328 405,322 395,316 C372,306 338,294 298,282 C255,270 220,258 192,246 C168,236 152,228 145,224 Z',
+    upperLip: 'M125,200 C130,190 138,184 150,184', lowerLip: 'M125,230 C130,240 138,246 150,246', jawAngle: 12,
+    contact:{cx:192,cy:230,rx:10,ry:15},
+    art_tongue:'Protrudes between teeth (voiced).',
+    art_lips:'Open.',
+    art_jaw:'Open for protrusion.',
+    art_teeth:'Both involved.',
+    shape:'Dhāl (ذ) = like د + dot. Tongue EXTENDS between teeth. Letter points FORWARD.' },
+  'ظ': { name:'ظَاء / ẓāʾ', zone:'interdental', label:'HEAVY CONTACT', color:'#e74c3c', pos:{x:138,y:212},
+    tongue: 'M138,212 C145,215 165,222 190,232 C222,245 260,258 305,270 C348,282 382,296 408,310 C420,318 425,326 424,334 L416,336 C416,330 412,324 402,316 C380,304 348,292 308,280 C265,268 230,255 200,244 C175,234 158,226 148,222 Z',
+    upperLip: 'M125,200 C130,190 138,184 150,184', lowerLip: 'M125,230 C130,240 138,246 150,246', jawAngle: 12,
+    contact:{cx:192,cy:226,rx:10,ry:15},
+    art_tongue:'Protrudes + back raises (emphatic).',
+    art_lips:'Open.',
+    art_jaw:'Open.',
+    art_teeth:'Both involved.',
+    shape:'Ẓāʾ (ظ) = like ط + dot. Emphatic interdental: protrusion + back-raising.' },
+
+  // ── LATERAL ──
+  'ض': { name:'ضَاد / ḍād', zone:'lateral', label:'EDGE', color:'#e67e22', pos:{x:310,y:202},
+    tongue: 'M160,236 C168,232 185,224 210,216 C240,208 275,202 315,202 C352,204 380,214 398,232 C410,245 415,262 412,282 L405,288 C406,270 402,254 392,242 C378,226 355,216 325,212 C290,210 258,214 230,224 C205,232 185,240 172,244 Z',
+    upperLip: 'M125,197 C130,186 138,180 150,180', lowerLip: 'M125,233 C130,246 138,254 150,254', jawAngle: 8,
+    contact:{cx:320,cy:205,rx:25,ry:15},
+    art_tongue:'Side presses against MOLARS. Air along the EDGE. The ONLY lateral fricative.',
+    art_lips:'Open.',
+    art_jaw:'Open.',
+    art_teeth:'Molars involved (not front teeth).',
+    shape:'Ḍād (ض) = the letter UNIQUE to AA. Air along the SIDE of the tongue. Shape curves laterally — different axis from all other letters.' },
+
+  // ── LIPS ──
+  'ب': { name:'بَاء / bāʾ', zone:'lips', label:'CLOSURE', color:'#3498db', pos:{x:130,y:218},
+    tongue: NEUTRAL.tongue,
+    upperLip: 'M125,208 C130,202 138,200 150,202', lowerLip: 'M125,222 C130,228 138,230 150,228', jawAngle: 1,
+    contact:{cx:172,cy:230,rx:18,ry:25},
+    art_tongue:'Neutral, flat. Tongue uninvolved.',
+    art_lips:'BOTH LIPS CLOSE then RELEASE. The primary articulators. Alqarni: ب = boat shape = lower lip. Dot below = downward lip movement.',
+    art_jaw:'Nearly closed — lips pressed together.',
+    art_teeth:'Not involved.',
+    shape:'Bāʾ (ب) = boat + dot below. Alqarni: boat = lower lip shape. Dot below = the downward movement of the lip during release. The FIRST articulated consonant — lips are the most external articulator.' },
+  'م': { name:'مِيم / mīm', zone:'lips', label:'ENCLOSURE', color:'#3498db', pos:{x:130,y:215},
+    tongue: NEUTRAL.tongue,
+    upperLip: 'M125,210 C130,206 138,205 150,207', lowerLip: 'M125,220 C130,224 138,225 150,223', jawAngle: 0,
+    contact:{cx:172,cy:228,rx:18,ry:25},
+    art_tongue:'Neutral.',
+    art_lips:'SEALED completely. Tighter than ب. Air forced through nose.',
+    art_jaw:'Closed. Lips firmly sealed.',
+    art_teeth:'Not involved.',
+    shape:'Mīm (م) = closed loop. Lips SEAL completely. The loop = the sealed lip chamber. Air has nowhere to go except through the nose.' },
+  'و': { name:'وَاو / wāw', zone:'lips', label:'ROUNDING', color:'#3498db', pos:{x:130,y:212},
+    tongue: NEUTRAL.tongue,
+    upperLip: 'M118,205 C124,196 132,192 140,198', lowerLip: 'M118,225 C124,234 132,238 140,232', jawAngle: 10,
+    contact:{cx:172,cy:225,rx:18,ry:22},
+    art_tongue:'Mostly neutral, slight back raise.',
+    art_lips:'ROUNDED and PROTRUDED forward. Lips push out into a small O.',
+    art_jaw:'Open for the rounded lip protrusion.',
+    art_teeth:'Not visible — hidden behind protruded lips.',
+    shape:'Wāw (و) = hook/comma. The hook = the lip curving and PROTRUDING forward. The rounding of the lips IS the letter shape.' },
+
+  // ── LABIODENTAL ──
+  'ف': { name:'فَاء / fāʾ', zone:'labiodental', label:'SEPARATION', color:'#2ecc71', pos:{x:145,y:168},
+    tongue: NEUTRAL.tongue,
+    upperLip: 'M125,195 C130,185 138,178 150,178', lowerLip: 'M125,228 C130,218 138,212 148,216', jawAngle: 4,
+    contact:{cx:190,cy:185,rx:14,ry:12},
+    art_tongue:'Neutral.',
+    art_lips:'LOWER LIP curls UP to touch upper teeth. Upper lip passive.',
+    art_jaw:'Slightly open.',
+    art_teeth:'Upper teeth = target. Lower lip meets them from below.',
+    shape:'Fāʾ (ف) = loop + dot above. Loop = lower lip CURVING UP to meet upper teeth. Dot above = friction escaping upward. The lip-teeth gap IS the sound.' },
+};
+
+const ZONES = [
+  { id:'glottal',     name:'حَلْق أَقْصَى — Glottal',      color:'#c0392b', letters:['ء','ا','ه'] },
+  { id:'pharyngeal',  name:'حَلْق — Pharyngeal',             color:'#8e44ad', letters:['ع','ح'] },
+  { id:'uvular',      name:'لَهَوِيَّة — Uvular',             color:'#e74c3c', letters:['غ','خ'] },
+  { id:'velar',       name:'لَهَوِيَّة — Velar',              color:'#f39c12', letters:['ق','ك'] },
+  { id:'palatal',     name:'شَجَرِيَّة — Palatal',             color:'#1abc9c', letters:['ج','ش','ي'] },
+  { id:'alveolar',    name:'ذَلْقِيَّة — Alveolar',            color:'#9b59b6', letters:['ل','ن','ر'] },
+  { id:'sibilant',    name:'صَفِيرِيَّة — Sibilant',           color:'#16a085', letters:['ز','س','ص'] },
+  { id:'dental',      name:'أَسَلِيَّة — Dental',              color:'#e67e22', letters:['ت','د','ط'] },
+  { id:'interdental', name:'لَثَوِيَّة — Interdental',         color:'#e74c3c', letters:['ث','ذ','ظ'] },
+  { id:'lateral',     name:'ضَاد — Lateral',                   color:'#e67e22', letters:['ض'] },
+  { id:'lips',        name:'شَفَتَيْن — Lips',                 color:'#3498db', letters:['ب','م','و'] },
+  { id:'labiodental', name:'شَفَة + ثَنَايَا — Labiodental',   color:'#2ecc71', letters:['ف'] },
+];
+
+// ═══════════════════════════════════════════════════════════
+// SHAPE DIRECTION DATA
+// Categories: LEFT_POINT, RIGHT_POINT, CUP_UP, LOOP, VERTICAL, SERRATED, HOOK
+// dirAngle: arrow angle on SVG (degrees, 0=right, 90=down, 180=left, 270=up)
+// dirMeaning: what the direction means articulatorily
+// ═══════════════════════════════════════════════════════════
+const SHAPE_DIR = {
+  'ء': { cat:'HOOK',        dirAngle:null, meaning:'Small catch — glottal snap. No directional movement.' },
+  'ا': { cat:'VERTICAL',    dirAngle:270,  meaning:'Vertical = OPEN AIRWAY. No articulatory contact — pure opening.' },
+  'ه': { cat:'LOOP',        dirAngle:null, meaning:'Round loop = circular open GLOTTIS. Air passes through the ring.' },
+  'ع': { cat:'RIGHT_POINT', dirAngle:0,    meaning:'Opens/curves RIGHT = tongue root retracts BACKWARD into pharynx.' },
+  'ح': { cat:'RIGHT_POINT', dirAngle:0,    meaning:'Curves RIGHT = pharyngeal constriction BACKWARD. Tighter than ع.' },
+  'غ': { cat:'RIGHT_POINT', dirAngle:0,    meaning:'Curves RIGHT + dot = back tongue rises BACKWARD toward uvula.' },
+  'خ': { cat:'RIGHT_POINT', dirAngle:0,    meaning:'Curves RIGHT + dot = uvular friction BACKWARD. Voiceless partner of غ.' },
+  'ق': { cat:'CUP_UP',      dirAngle:270,  meaning:'Bowl opens UP = back tongue rises UPWARD to strike soft palate. Two dots = strike point.' },
+  'ك': { cat:'RIGHT_POINT', dirAngle:345,  meaning:'Stroke rises RIGHT toward palate = back tongue moving UP-BACK.' },
+  'ج': { cat:'CUP_UP',      dirAngle:270,  meaning:'Curve opens UP + dot below = middle tongue RISES to press palate. Dot = voicing below.' },
+  'ش': { cat:'SERRATED',    dirAngle:270,  meaning:'Three cusps + 3 dots = WIDE palatal spread. Air flows UPWARD over broad tongue surface.' },
+  'ي': { cat:'CUP_UP',      dirAngle:270,  meaning:'Curve UP + 2 dots below = tongue rises toward palate. Dots below = visible tongue parts (Alqarni).' },
+  'ل': { cat:'LEFT_POINT',  dirAngle:180,  meaning:'Vertical curves LEFT at top = tongue tip reaches FORWARD-UP to alveolar ridge.' },
+  'ن': { cat:'CUP_UP',      dirAngle:270,  meaning:'Bowl UP + dot above = tongue curves UP to ridge. Dot above = air escapes UPWARD through nose.' },
+  'ر': { cat:'LEFT_POINT',  dirAngle:180,  meaning:'Small flick LEFT = tongue tip FLICKS FORWARD. Minimal stroke = minimal contact.' },
+  'ز': { cat:'LEFT_POINT',  dirAngle:200,  meaning:'Flick LEFT + dot = tip aims FORWARD-DOWN toward lower teeth.' },
+  'س': { cat:'SERRATED',    dirAngle:180,  meaning:'Three cusps pointing LEFT = turbulent airflow hissing FORWARD through tongue groove.' },
+  'ص': { cat:'LOOP',        dirAngle:null, meaning:'Closed loop = emphatic SEAL. Complete closure — tip down + back raised.' },
+  'ت': { cat:'CUP_UP',      dirAngle:270,  meaning:'Boat/cup UP + 2 dots above = tongue curls UPWARD. Two dots = TWO UPPER TEETH.' },
+  'د': { cat:'LEFT_POINT',  dirAngle:180,  meaning:'Curve opens LEFT = tongue tip moves FORWARD to teeth.' },
+  'ط': { cat:'LOOP',        dirAngle:null, meaning:'Tall loop = emphatic SEAL at teeth + back raised. Complete closure.' },
+  'ث': { cat:'CUP_UP',      dirAngle:270,  meaning:'Boat UP + 3 dots = tongue RISES between teeth. 3 dots = 2 teeth + tip (Alqarni).' },
+  'ذ': { cat:'LEFT_POINT',  dirAngle:200,  meaning:'Curve LEFT = tongue PROTRUDES FORWARD between teeth.' },
+  'ظ': { cat:'LOOP',        dirAngle:null, meaning:'Loop + dot = emphatic SEAL. Interdental + back raised.' },
+  'ض': { cat:'LOOP',        dirAngle:null, meaning:'Loop + dot = LATERAL closure. Side of tongue seals against molars.' },
+  'ب': { cat:'CUP_UP',      dirAngle:270,  meaning:'Boat/cup UP + dot below = lower lip shape (Alqarni). Dot below = downward lip movement.' },
+  'م': { cat:'LOOP',        dirAngle:null, meaning:'Closed circle = lips SEALED. Complete enclosure — air through nose only.' },
+  'و': { cat:'LEFT_POINT',  dirAngle:210,  meaning:'Hook drops LEFT = lips PROTRUDE FORWARD. The rounding pushes outward.' },
+  'ف': { cat:'LOOP',        dirAngle:null, meaning:'Loop + dot above = lower lip CURLS UP to teeth. Dot = friction escaping above.' },
+};
+
+const SHAPE_CATS = {
+  LEFT_POINT:  { label:'← Left (Forward)',   color:'#3498db', desc:'Articulator moves FORWARD toward lips/teeth' },
+  RIGHT_POINT: { label:'→ Right (Backward)',  color:'#e74c3c', desc:'Articulator moves BACKWARD toward throat' },
+  CUP_UP:      { label:'∪ Cup Up (Rising)',   color:'#2ecc71', desc:'Articulator RISES upward to palate/ridge/teeth' },
+  LOOP:        { label:'○ Loop (Seal)',       color:'#f39c12', desc:'Complete CLOSURE or enclosure' },
+  VERTICAL:    { label:'| Vertical (Open)',   color:'#9b59b6', desc:'Open AIRWAY — no contact' },
+  SERRATED:    { label:'∿ Serrated (Flow)',   color:'#1abc9c', desc:'Turbulent AIRFLOW through groove' },
+  HOOK:        { label:'⌐ Hook (Catch)',      color:'#e67e22', desc:'Abrupt action — stop/catch' },
+};
+
+// ═══════════════════════════════════════════════════════════
+// SHAPE GEOMETRY — Layer 3: closure type + dot function
+// What the letter SHAPE encodes beyond position and direction
+// Three variables: BODY (open/partial/closed), DOTS (function), VOICING/EMPHASIS
+// ═══════════════════════════════════════════════════════════
+const SHAPE_GEO = {
+  // ── GLOTTAL ──
+  'ء': { closure:'OPEN', voiced:false, emphatic:false, dots:0,
+    body:'Small angular hook — an INTERRUPTION mark. The abrupt shape mirrors the abrupt glottal closure.',
+    dotFn:'None.',
+    diff:'No zone-mates with same articulation. Unique glottal stop.' },
+  'ا': { closure:'OPEN', voiced:true, emphatic:false, dots:0,
+    body:'Vertical line = MAXIMUM OPENNESS. No curves, no closure. Pure airway. The straightest letter = the most open sound.',
+    dotFn:'None.',
+    diff:'vs ء: alif is OPEN (continuous vowel), hamza is INTERRUPTED (stop). Straight vs angular.' },
+  'ه': { closure:'CLOSED', voiced:false, emphatic:false, dots:0,
+    body:'Round loop = the open glottis viewed head-on. A RING of air. The closure of the letter shape = the ring-shape of the glottal opening, not a seal.',
+    dotFn:'None.',
+    diff:'vs ا: hāʾ is shaped (breath shaped through round glottis), alif is unshaped (pure opening).' },
+
+  // ── PHARYNGEAL ──
+  'ع': { closure:'OPEN', voiced:true, emphatic:false, dots:0,
+    body:'Open curve — the pharynx CONSTRICTS but does not SEAL. Air still passes through. The open shape = the remaining airway.',
+    dotFn:'None.',
+    diff:'vs ح: ع is OPEN (voiced, more resonant), ح is more CLOSED (voiceless, tighter constriction). Same position, different aperture.' },
+  'ح': { closure:'PARTIAL', voiced:false, emphatic:false, dots:0,
+    body:'Tighter curve than ع — the constriction is NARROWER. More closed shape = tighter pharyngeal passage. Voiceless = less energy through a smaller gap.',
+    dotFn:'None.',
+    diff:'vs ع: ح has tighter/more enclosed form = voiceless (less opening). ع has more open form = voiced (more resonance).' },
+
+  // ── UVULAR ──
+  'غ': { closure:'PARTIAL', voiced:true, emphatic:false, dots:1,
+    body:'Same base as ج/ح family — a curve. The uvular position is encoded by the body shape curving toward the back.',
+    dotFn:'1 dot ABOVE = the UVULA. The dot marks the specific articulator above the tongue that it scrapes against.',
+    diff:'vs خ: غ is VOICED (dot above = uvula vibrates), خ is VOICELESS (dot above = air passes over uvula). Same shape, same dot position — distinguished by voicing only.' },
+  'خ': { closure:'PARTIAL', voiced:false, emphatic:false, dots:1,
+    body:'Same base as غ.',
+    dotFn:'1 dot ABOVE = the UVULA (same as غ).',
+    diff:'vs غ: voiceless partner. Same form reflects same position. The dot system does NOT encode voicing — it encodes the ARTICULATOR (uvula).' },
+
+  // ── VELAR ──
+  'ق': { closure:'PARTIAL', voiced:false, emphatic:false, dots:2,
+    body:'Deep BOWL = the back tongue CUPPING against the palate. The bowl shape = the concavity of the tongue as it rises to make contact. Deeper than ك.',
+    dotFn:'2 dots ABOVE = the TWO contact surfaces: back-of-tongue and soft-palate. Or: the TWO sides of the closure.',
+    diff:'vs ك: ق has deeper bowl = DEEPER contact (uvular). ك has shallower stroke = SHALLOWER contact (velar). The depth of the letter = the depth of the articulation.' },
+  'ك': { closure:'PARTIAL', voiced:false, emphatic:false, dots:0,
+    body:'Rising stroke — shallower than ق. The stroke reaches up but does not form a deep bowl. Shallower shape = shallower (more forward) contact on the palate.',
+    dotFn:'No dots (has a small hamza-like mark inside in some traditions).',
+    diff:'vs ق: shallower form = more forward contact. ق is uvular (deep), ك is velar (shallower).' },
+
+  // ── PALATAL ──
+  'ج': { closure:'PARTIAL', voiced:true, emphatic:false, dots:1,
+    body:'Curve = tongue body rising to palate. The curve shows the DOME of the tongue approaching the roof.',
+    dotFn:'1 dot BELOW = VOICING. The vibration is UNDERNEATH the tongue — below the point of contact.',
+    diff:'vs ش: ج has 1 dot below (voiced, single release), ش has 3 dots above (voiceless, spread airflow). vs ي: ج makes FULL contact (affricate), ي makes PARTIAL contact (approximant).' },
+  'ش': { closure:'PARTIAL', voiced:false, emphatic:false, dots:3,
+    body:'Same base curve as ج — tongue against palate. The WIDTH of شِين in writing = the SPREAD of the fricative.',
+    dotFn:'3 dots ABOVE = THREE-WAY airflow. The friction SPREADS across the palate. Three dots = the broad, distributed escape of air.',
+    diff:'vs ج: ش has 3 dots ABOVE (air escapes broadly ABOVE), ج has 1 dot BELOW (voicing below). Same palatal contact, opposite energy direction.' },
+  'ي': { closure:'OPEN', voiced:true, emphatic:false, dots:2,
+    body:'Gentle curve — LESS steep than ج/ش. The shallower approach = the tongue does NOT fully reach the palate. Approximant = gap remains.',
+    dotFn:'2 dots BELOW = Alqarni: the two parts of the tongue visible when pressed against lower teeth/gum. Below = the tongue is seen from BELOW (mouth open).',
+    diff:'vs ج: ي is MORE OPEN (approximant, no full contact). Shallower curve = less closure. Dots below vs above.' },
+
+  // ── ALVEOLAR ──
+  'ل': { closure:'OPEN', voiced:true, emphatic:false, dots:0,
+    body:'Vertical stroke curving at top = the tongue reaching UP. The long vertical = the LENGTH of the tongue body from root to tip. OPEN because air flows around the SIDES (lateral).',
+    dotFn:'None. The letter shape itself IS the diagram — no additional markers needed.',
+    diff:'vs ن: ل is OPEN (air passes around sides = lateral), ن is a BOWL (air redirected through nose = nasal). Same tip position, different air routing → different shape. vs ر: ل has LONG stroke (sustained contact), ر has SHORT stroke (momentary tap).' },
+  'ن': { closure:'PARTIAL', voiced:true, emphatic:false, dots:1,
+    body:'Bowl/cup = the tongue forming a CONCAVITY as the tip rises. The bowl = the shape of the tongue surface. More enclosed than ل because air is CHANNELED (into nose).',
+    dotFn:'1 dot ABOVE = air escapes UPWARD through the nasal passage. The dot IS the nasal exit point.',
+    diff:'vs ل: ن has BOWL (enclosed → nasal), ل has VERTICAL (open → lateral). The bowl captures air and sends it up (dot). The vertical lets air pass freely around sides.' },
+  'ر': { closure:'OPEN', voiced:true, emphatic:false, dots:0,
+    body:'Tiny flick = MINIMAL contact. The smallest letter body of all alveolars because the tongue makes the BRIEFEST contact. Trill/tap = touch and release instantly.',
+    dotFn:'None. So little contact that no additional marking is needed.',
+    diff:'vs ل: ر has MINIMAL stroke (momentary), ل has MAXIMAL stroke (sustained). The amount of ink = the amount of contact time.' },
+
+  // ── SIBILANT ──
+  'ز': { closure:'OPEN', voiced:true, emphatic:false, dots:1,
+    body:'Same minimal body as ر — small curve. The narrow shape = the narrow sibilant groove.',
+    dotFn:'1 dot ABOVE = distinguishes from ر. The dot marks the FRICTION element (hissing) absent in the simple tap of ر.',
+    diff:'vs س: ز has simple body + dot (single hiss channel, voiced), س has three cusps (turbulent airflow, voiceless). vs ر: same body shape — the dot is what converts a TAP into a HISS.' },
+  'س': { closure:'OPEN', voiced:false, emphatic:false, dots:0,
+    body:'THREE CUSPS = the SERRATED airflow. The shape draws the turbulence of the sibilant hiss. Three peaks = three waves of friction as air passes through the narrow groove.',
+    dotFn:'None — the body shape itself encodes the friction pattern.',
+    diff:'vs ص: س is OPEN (three cusps, air escapes freely), ص is CLOSED loop (emphatic seal = trapped resonance). Same tip position, but ص adds back-raising which ENCLOSES the cavity.' },
+  'ص': { closure:'CLOSED', voiced:false, emphatic:true, dots:0,
+    body:'CLOSED LOOP = emphatic SEAL. The loop encodes the ADDITIONAL closure from back-tongue raising. The cavity between tip-at-teeth and raised-back is ENCLOSED — the loop IS that cavity.',
+    dotFn:'None.',
+    diff:'vs س: CLOSED vs OPEN. The loop = the emphatic back-raising creates a sealed resonance chamber. س is open (air escapes), ص is enclosed (air resonates inside before escaping).' },
+
+  // ── DENTAL ──
+  'ت': { closure:'OPEN', voiced:false, emphatic:false, dots:2,
+    body:'Flat boat/cup = the tongue body lies LOW while the tip curls up. The open boat = air ESCAPES after the snap release. The flatness = the low tongue body.',
+    dotFn:'2 dots ABOVE = the TWO UPPER FRONT TEETH. The dots mark the TARGET the tip strikes against. Above = the teeth are ABOVE the tongue tip.',
+    diff:'vs د: ت has dots (voiceless, marks the teeth), د has NO dots (voiced — the voicing adds its own signal, no visual marker needed). vs ط: ت is OPEN (simple release), ط is a CLOSED LOOP (emphatic seal — back raised, cavity enclosed).' },
+  'د': { closure:'PARTIAL', voiced:true, emphatic:false, dots:0,
+    body:'Single smooth curve = the tongue tip rising to the teeth. More CLOSED than ت — the voiced dental has more oral pressure. The curve = the approach trajectory of the tip.',
+    dotFn:'None. VOICED letters in the dental zone carry NO dots. The voicing itself is the distinguishing signal — it does not need a visual marker.',
+    diff:'vs ت: د is dotless (voiced), ت has 2 dots (voiceless). The VOICED partner needs no marker because voicing is its own signal. vs ط: د is simple curve (non-emphatic), ط is enclosed loop (emphatic seal).' },
+  'ط': { closure:'CLOSED', voiced:false, emphatic:true, dots:0,
+    body:'TALL CLOSED LOOP = the emphatic SEAL. The loop encloses the resonance chamber created when the back tongue RISES while the tip seals the teeth. The height of the loop = the volume of the enclosed cavity.',
+    dotFn:'None. The CLOSURE of the loop shape itself signals emphasis — no dots needed.',
+    diff:'vs ت: CLOSED loop vs OPEN boat. ط is sealed (emphasis), ت is open (simple). vs د: CLOSED loop vs simple curve. The three dental letters form a PROGRESSION: ت (open+dots) → د (partial, no dots) → ط (closed loop). Open → Partial → Sealed.' },
+
+  // ── INTERDENTAL ──
+  'ث': { closure:'OPEN', voiced:false, emphatic:false, dots:3,
+    body:'Same boat base as ت — the lower lip / low tongue body. Open = air escapes through the teeth gap around the protruding tip.',
+    dotFn:'3 dots ABOVE = Alqarni: 2 upper teeth + tongue tip = 3 articulators visible. The dots count the PARTICIPANTS in the sound.',
+    diff:'vs ذ: ث has 3 dots (voiceless, marks the 3 articulators), ذ has 1 dot (voiced, marks the friction). vs ت: same dot count would imply same structure, but ث has 3 vs ت has 2 — the extra dot = the tongue tip now VISIBLE between teeth (third articulator).' },
+  'ذ': { closure:'PARTIAL', voiced:true, emphatic:false, dots:1,
+    body:'Same curve as د — the voiced partner shares the same base form. The curve = the tongue approaching/protruding.',
+    dotFn:'1 dot ABOVE = the FRICTION point. The air scrapes over the protruding tip.',
+    diff:'vs ث: ذ is voiced (1 dot, simpler), ث is voiceless (3 dots, marks all articulators). vs ظ: ذ is simple curve (non-emphatic), ظ is loop (emphatic seal).' },
+  'ظ': { closure:'CLOSED', voiced:true, emphatic:true, dots:1,
+    body:'CLOSED LOOP = emphatic seal (like ط). The loop = back tongue raised + tip protruding = enclosed cavity.',
+    dotFn:'1 dot ABOVE = the friction point (like ذ).',
+    diff:'vs ذ: CLOSED vs PARTIAL. Loop = emphasis. vs ط: both are emphatic loops, but ظ has a dot (interdental friction) while ط has none (dental stop). The dot = the friction component.' },
+
+  // ── LATERAL ──
+  'ض': { closure:'CLOSED', voiced:true, emphatic:true, dots:1,
+    body:'CLOSED LOOP = emphatic seal. The loop = the lateral enclosure: tongue sides press against molars, creating a sealed channel.',
+    dotFn:'1 dot ABOVE = marks the unique lateral airflow direction (air over the side, not the center).',
+    diff:'Unique — no zone-mates. The only lateral fricative. Loop = emphatic closure at the sides.' },
+
+  // ── LIPS ──
+  'ب': { closure:'OPEN', voiced:true, emphatic:false, dots:1,
+    body:'Flat boat/cup = Alqarni: the lower lip shape. Open = the lips RELEASE after the plosive burst. Air escapes.',
+    dotFn:'1 dot BELOW = Alqarni: the DOWNWARD movement of the lower lip. Below = the action happens BELOW (lower lip drops to release).',
+    diff:'vs م: ب is OPEN (plosive release, air escapes), م is CLOSED loop (nasal seal, air trapped). vs ت: same base boat shape — but ب has dot BELOW (lip action below), ت has dots ABOVE (teeth above).' },
+  'م': { closure:'CLOSED', voiced:true, emphatic:false, dots:0,
+    body:'CLOSED loop/circle = lips SEALED completely. The most enclosed shape of all labials. Air has NOWHERE to go except through the nose.',
+    dotFn:'None. The closure of the shape IS the signal — complete seal needs no additional marker.',
+    diff:'vs ب: CLOSED vs OPEN. م seals completely (nasal), ب releases (plosive). The loop = the sealed lip chamber.' },
+  'و': { closure:'PARTIAL', voiced:true, emphatic:false, dots:0,
+    body:'Hook/comma = the lip PROTRUDING and ROUNDING. Not fully closed (air still passes), not fully open. The hook shape = the curved, protruded lip profile viewed from the side.',
+    dotFn:'None.',
+    diff:'vs ب/م: و is PARTIAL (approximant — lips round but don\'t seal). ب is open (plosive release), م is closed (nasal seal). Three labials = three closure levels.' },
+
+  // ── LABIODENTAL ──
+  'ف': { closure:'CLOSED', voiced:false, emphatic:false, dots:1,
+    body:'Loop = the lower lip CURLING UP to meet the upper teeth. The loop = the enclosed space between curled lip and teeth.',
+    dotFn:'1 dot ABOVE = the friction escaping UPWARD through the lip-teeth gap. The dot = the escape point.',
+    diff:'Unique labiodental — no zone-mates. The loop differentiates from the open labials (ب).' },
+};
+
+
+const JAW_GEO = {
+  'ء': 'SLIGHT OPEN — glottal stop needs minimal jaw opening.',
+  'ا': 'WIDE OPEN — maximum jaw drop for the pure open vowel. The vertical letter shape = the vertical opening of the jaw.',
+  'ه': 'MODERATE — open enough for breath to pass freely.',
+  'ع': 'MODERATE — jaw opens but the constriction is in the THROAT, not the mouth.',
+  'ح': 'SLIGHT — tighter than ع. Less jaw opening = less resonance = voiceless.',
+  'غ': 'SLIGHT — back-of-mouth sound, jaw barely involved.',
+  'خ': 'SLIGHT — same as غ.',
+  'ق': 'SLIGHT — deep plosive, jaw minimal.',
+  'ك': 'SLIGHT — velar, jaw minimal.',
+  'ج': 'MODERATE — affricate needs space for the release burst.',
+  'ش': 'MODERATE — broad fricative needs space for air spread.',
+  'ي': 'MODERATE-OPEN — semivowel, jaw drops more than full palatals.',
+  'ل': 'MODERATE — tongue needs space to reach up to ridge.',
+  'ن': 'MODERATE — same as ل, air through nose.',
+  'ر': 'MODERATE — tongue needs room to trill/tap.',
+  'ز': 'NEARLY CLOSED — teeth close together for sibilant hiss. Narrow gap = narrow airstream.',
+  'س': 'NEARLY CLOSED — teeth ALMOST TOUCHING. The narrowest jaw opening of any fricative. The tight teeth gap IS the sibilant.',
+  'ص': 'NEARLY CLOSED — same as س but emphatic back-raising adds tension.',
+  'ت': 'MODERATE — jaw opens enough for tip to curl up to teeth.',
+  'د': 'MODERATE — same as ت.',
+  'ط': 'MODERATE — same position but emphatic.',
+  'ث': 'WIDE OPEN — jaw must DROP for tongue to PROTRUDE between teeth. The interdentals need the MOST jaw opening of any consonant.',
+  'ذ': 'WIDE OPEN — same as ث. Jaw drops for tongue protrusion.',
+  'ظ': 'WIDE OPEN — emphatic interdental, same wide jaw.',
+  'ض': 'MODERATE — lateral needs space for side-pressing.',
+  'ب': 'NEARLY CLOSED — lips must MEET. Jaw closes to bring lips together.',
+  'م': 'CLOSED — lips SEALED. Jaw fully closed. Zero gap.',
+  'و': 'MODERATE-OPEN — lips protrude forward, jaw drops to round.',
+  'ف': 'SLIGHT — lower lip curls up to teeth, jaw mostly closed.',
+};
+
+const CLOSURE_COLORS = {
+  OPEN:    { label:'OPEN',    color:'#2ecc71', icon:'◯', desc:'Air ESCAPES — release, no seal' },
+  PARTIAL: { label:'PARTIAL', color:'#f39c12', icon:'◐', desc:'NARROWED but not sealed — friction, approximant' },
+  CLOSED:  { label:'CLOSED',  color:'#e74c3c', icon:'●', desc:'SEALED — complete closure, loop, emphasis' },
+};
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+let cur = null, flipH = false, flipV = false;
+let layers = { tongue:true, lips:true, jaw:true, contact:true, labels:false, direction:true };
+
+// ═══════════════════════════════════════════════════════════
+// BUILD UI
+// ═══════════════════════════════════════════════════════════
+function buildPanel() {
+  const p = document.getElementById('letter-panel');
+  let h = '<div style="text-align:center;color:var(--gold);font-size:0.95em;margin-bottom:8px;">الحُرُوف</div>';
+  for (const z of ZONES) {
+    h += `<div class="zone-group"><h3><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${z.color};margin-right:4px;"></span>${z.name}</h3><div class="letters-row">`;
+    for (const l of z.letters) h += `<button class="letter-btn" data-letter="${l}" onclick="sel('${l}')">${l}</button>`;
+    h += '</div></div>';
+  }
+  p.innerHTML = h;
+}
+
+// ═══════════════════════════════════════════════════════════
+// SELECT LETTER
+// ═══════════════════════════════════════════════════════════
+function sel(letter) {
+  cur = letter;
+  const d = L[letter];
+
+  document.querySelectorAll('.letter-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.letter-btn[data-letter="${letter}"]`)?.classList.add('active');
+
+  // Info
+  document.getElementById('info-big-letter').textContent = letter;
+  document.getElementById('info-big-letter').style.color = 'var(--gold)';
+  document.getElementById('info-name').textContent = d.name + ' — ' + d.label;
+
+  // Articulation info
+  const ai = document.getElementById('articulation-info'); ai.style.display = 'block';
+  document.getElementById('art-tongue').innerHTML = '<strong style="color:var(--gold)">Tongue:</strong> ' + d.art_tongue;
+  document.getElementById('art-lips').innerHTML = '<strong style="color:#cc8888">Lips:</strong> ' + d.art_lips;
+  document.getElementById('art-jaw').innerHTML = '<strong style="color:var(--text-dim)">Jaw:</strong> ' + d.art_jaw;
+  document.getElementById('art-teeth').innerHTML = '<strong style="color:#888">Teeth:</strong> ' + d.art_teeth;
+
+  // Shape
+  document.getElementById('shape-analysis').style.display = 'block';
+  document.getElementById('shape-text').textContent = d.shape;
+
+  // ANIMATE: Tongue
+  const ta = document.getElementById('tongue-active');
+  ta.setAttribute('d', d.tongue);
+  ta.style.opacity = layers.tongue ? '0.8' : '0';
+
+  // ANIMATE: Lips
+  document.getElementById('upper-lip').setAttribute('d', d.upperLip);
+  document.getElementById('lower-lip').setAttribute('d', d.lowerLip);
+  document.getElementById('upper-lip').style.opacity = layers.lips ? '1' : '0.2';
+  document.getElementById('lower-lip').style.opacity = layers.lips ? '1' : '0.2';
+
+  // ANIMATE: Jaw
+  document.getElementById('jaw-group').style.transform = `rotate(${d.jawAngle}deg)`;
+  const jl = document.getElementById('jaw-angle-label');
+  const jawDesc = d.jawAngle <= 2 ? 'CLOSED' : d.jawAngle <= 6 ? 'slight' : d.jawAngle <= 10 ? 'moderate' : 'WIDE OPEN';
+  jl.textContent = `jaw: ${jawDesc} (${d.jawAngle}\u00B0)`;
+  jl.style.opacity = layers.jaw ? '0.7' : '0';
+
+  // Contact
+  const cz = document.getElementById('contact-zone');
+  cz.setAttribute('cx', d.contact.cx); cz.setAttribute('cy', d.contact.cy);
+  cz.setAttribute('rx', d.contact.rx); cz.setAttribute('ry', d.contact.ry);
+  cz.classList.toggle('show', layers.contact);
+
+  // Makhraj dot
+  const md = document.getElementById('makhraj-dot');
+  md.setAttribute('cx', d.pos.x); md.setAttribute('cy', d.pos.y);
+  md.classList.add('show');
+
+  // Direction arrow + info
+  const sd = SHAPE_DIR[letter];
+  const sc = SHAPE_CATS[sd.cat];
+  const dag = document.getElementById('dir-arrow-group');
+  const dal = document.getElementById('dir-arrow-line');
+  const dao = document.getElementById('dir-arrow-origin');
+
+  // Direction info panel
+  const di = document.getElementById('dir-info'); di.style.display = 'block';
+  const badge = document.getElementById('dir-cat-badge');
+  badge.textContent = sc.label;
+  badge.style.background = sc.color; badge.style.color = '#000';
+  document.getElementById('dir-meaning').textContent = sd.meaning;
+
+  // Direction arrow on diagram
+  if (sd.dirAngle !== null && layers.direction) {
+    const arrowLen = 50;
+    const rad = sd.dirAngle * Math.PI / 180;
+    const ox = d.pos.x, oy = d.pos.y;
+    const ex = ox + Math.cos(rad) * arrowLen;
+    const ey = oy + Math.sin(rad) * arrowLen;
+    dal.setAttribute('x1', ox); dal.setAttribute('y1', oy);
+    dal.setAttribute('x2', ex); dal.setAttribute('y2', ey);
+    dal.setAttribute('stroke', sc.color);
+    dao.setAttribute('cx', ox); dao.setAttribute('cy', oy);
+    dao.setAttribute('fill', sc.color);
+    dag.style.opacity = '1';
+  } else {
+    dag.style.opacity = '0';
+  }
+
+  // Geometry info (Layer 3)
+  const sg = SHAPE_GEO[letter];
+  const cc = CLOSURE_COLORS[sg.closure];
+  document.getElementById('geo-info').style.display = 'block';
+
+  const cb = document.getElementById('geo-closure-badge');
+  cb.textContent = cc.icon + ' ' + cc.label;
+  cb.style.background = cc.color; cb.style.color = '#000';
+
+  const db = document.getElementById('geo-dots-badge');
+  db.textContent = sg.dots === 0 ? 'No dots' : sg.dots + ' dot' + (sg.dots>1?'s':'') + (sg.dots>0 ? ' ●'.repeat(sg.dots) : '');
+  db.style.color = sg.dots > 0 ? '#d4a843' : '#888';
+
+  const vb = document.getElementById('geo-voiced-badge');
+  vb.textContent = sg.voiced ? '♫ Voiced' : '♩ Voiceless';
+  vb.style.background = sg.voiced ? '#27ae60' : '#555'; vb.style.color = sg.voiced ? '#000' : '#ccc';
+
+  const eb = document.getElementById('geo-emph-badge');
+  if (sg.emphatic) { eb.style.display = 'inline-block'; eb.textContent = '◆ Emphatic'; eb.style.background = '#c0392b'; eb.style.color = '#fff'; }
+  else { eb.style.display = 'none'; }
+
+  document.getElementById('geo-body').innerHTML = '<strong style="color:var(--text)">Body:</strong> ' + sg.body;
+  document.getElementById('geo-dotfn').innerHTML = '<strong style="color:var(--text)">Dots:</strong> ' + sg.dotFn;
+  const jg = JAW_GEO[letter] || '';
+  document.getElementById('geo-jaw').innerHTML = '<strong style="color:var(--text)">Jaw:</strong> ' + jg;
+  document.getElementById('geo-diff').innerHTML = '<strong>Differentiation:</strong> ' + sg.diff;
+
+  // Letter overlay
+  const ov = document.getElementById('letter-overlay');
+  ov.textContent = letter; ov.style.opacity = '1';
+
+  // Reset overlay controls
+  document.getElementById('ctrl-x').value = 0; document.getElementById('ctrl-y').value = 0;
+  document.getElementById('ctrl-rotate').value = 0;
+  flipH = false; flipV = false;
+  document.getElementById('btn-flip-h').classList.remove('active');
+  document.getElementById('btn-flip-v').classList.remove('active');
+  updateOverlay();
+
+  document.getElementById('instruction-text').textContent =
+    `${d.zone} — ${d.name} — move/rotate/flip to compare shape with articulatory position`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// UPDATE OVERLAY
+// ═══════════════════════════════════════════════════════════
+function updateOverlay() {
+  if (!cur) return;
+  const d = L[cur];
+  const op = document.getElementById('ctrl-opacity').value / 100;
+  const sz = document.getElementById('ctrl-size').value;
+  const rot = document.getElementById('ctrl-rotate').value;
+  const dx = +document.getElementById('ctrl-x').value;
+  const dy = +document.getElementById('ctrl-y').value;
+
+  document.getElementById('val-opacity').textContent = Math.round(op*100)+'%';
+  document.getElementById('val-size').textContent = sz;
+  document.getElementById('val-rotate').textContent = rot+'°';
+  document.getElementById('val-x').textContent = dx;
+  document.getElementById('val-y').textContent = dy;
+
+  const ov = document.getElementById('letter-overlay');
+  const cx = d.pos.x + dx, cy = d.pos.y + dy;
+  ov.setAttribute('x', cx); ov.setAttribute('y', cy);
+  ov.setAttribute('font-size', sz); ov.style.opacity = op;
+  const sx = flipH?-1:1, sy = flipV?-1:1;
+  ov.setAttribute('transform', `translate(${cx},${cy}) rotate(${rot}) scale(${sx},${sy}) translate(${-cx},${-cy})`);
+}
+
+function toggleFlip(a) {
+  if (a==='h') { flipH=!flipH; document.getElementById('btn-flip-h').classList.toggle('active'); }
+  else { flipV=!flipV; document.getElementById('btn-flip-v').classList.toggle('active'); }
+  updateOverlay();
+}
+
+function resetControls() {
+  ['ctrl-opacity','ctrl-size','ctrl-rotate','ctrl-x','ctrl-y'].forEach((id,i) =>
+    document.getElementById(id).value = [60,140,0,0,0][i]);
+  flipH=false; flipV=false;
+  document.getElementById('btn-flip-h').classList.remove('active');
+  document.getElementById('btn-flip-v').classList.remove('active');
+  updateOverlay();
+}
+
+function toggleLayer(name) {
+  layers[name] = !layers[name];
+  const btn = document.getElementById('btn-'+name);
+  btn.classList.toggle('active', layers[name]);
+  if (name==='tongue') document.getElementById('tongue-active').style.opacity = layers.tongue && cur ? '0.8' : '0';
+  if (name==='lips') {
+    document.getElementById('upper-lip').style.opacity = layers.lips ? '1' : '0.2';
+    document.getElementById('lower-lip').style.opacity = layers.lips ? '1' : '0.2';
+  }
+  if (name==='contact') document.getElementById('contact-zone').classList.toggle('show', layers.contact && !!cur);
+  if (name==='labels') document.getElementById('zone-labels').style.opacity = layers.labels ? '0.35' : '0';
+  if (name==='direction') {
+    if (cur) {
+      const sd = SHAPE_DIR[cur];
+      document.getElementById('dir-arrow-group').style.opacity = (layers.direction && sd.dirAngle !== null) ? '1' : '0';
+    }
+  }
+}
+
+// Keyboard
+document.addEventListener('keydown', e => {
+  if (!cur) return;
+  const s = e.shiftKey?10:2;
+  const ctrl = id => document.getElementById(id);
+  switch(e.key) {
+    case 'ArrowLeft': e.preventDefault(); ctrl('ctrl-x').value=+ctrl('ctrl-x').value-s; updateOverlay(); break;
+    case 'ArrowRight': e.preventDefault(); ctrl('ctrl-x').value=+ctrl('ctrl-x').value+s; updateOverlay(); break;
+    case 'ArrowUp': e.preventDefault(); ctrl('ctrl-y').value=+ctrl('ctrl-y').value-s; updateOverlay(); break;
+    case 'ArrowDown': e.preventDefault(); ctrl('ctrl-y').value=+ctrl('ctrl-y').value+s; updateOverlay(); break;
+    case 'h': toggleFlip('h'); break; case 'v': toggleFlip('v'); break; case 'r': resetControls(); break;
+    case '[': ctrl('ctrl-rotate').value=+ctrl('ctrl-rotate').value-5; updateOverlay(); break;
+    case ']': ctrl('ctrl-rotate').value=+ctrl('ctrl-rotate').value+5; updateOverlay(); break;
+    case '-': ctrl('ctrl-size').value=+ctrl('ctrl-size').value-10; updateOverlay(); break;
+    case '=': case '+': ctrl('ctrl-size').value=+ctrl('ctrl-size').value+10; updateOverlay(); break;
+  }
+});
+
+// INIT
+buildPanel();
+document.getElementById('btn-labels').classList.remove('active');
+</script>
+</body>
+</html>

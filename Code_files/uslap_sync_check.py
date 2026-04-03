@@ -4,7 +4,12 @@ USLaP DB/XLSX Sync Checker
 Run at start of any session to detect drift between master xlsx and sqlite DB.
 Usage: python3 uslap_sync_check.py [--fix]
 """
-import sqlite3, openpyxl, os, sys, shutil
+import sqlite3
+try:
+    from uslap_db_connect import connect as _uslap_connect
+    _HAS_WRAPPER = True
+except ImportError:
+    _HAS_WRAPPER = False, openpyxl, os, sys, shutil
 from datetime import datetime
 
 DB_PATH = os.path.join(os.path.dirname(__file__), 'uslap_database_v3.db')
@@ -59,7 +64,8 @@ def check_sync():
     print()
 
     wb = openpyxl.load_workbook(XLSX_PATH, read_only=True, data_only=True)
-    conn = sqlite3.connect(DB_PATH)
+    conn = _uslap_connect(DB_PATH) if _HAS_WRAPPER else sqlite3.connect(DB_PATH)
+    conn.execute("PRAGMA foreign_keys = ON")
     
     drifted = []
     synced = []

@@ -1,0 +1,78 @@
+# بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+# مَسْح اللَّوْح — Full Schema Contamination Scan (LAWḤ API)
+# Scans ALL tables, ALL text columns for 40 banned terms
+
+اُكْتُبْ("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ")
+اُكْتُبْ("═══ مَسْح اللَّوْح — CONTAMINATION SCAN ═══")
+اُكْتُبْ("")
+
+# 40 banned terms (33 trigger-level + 7 pattern-level)
+كُنْ مَحْظُورَات ← ["semitic", "loanword", "cognate", "prosthetic vowel", "borrowed from greek", "borrowed from latin", "borrowed from persian", "borrowed from french", "borrowed from german", "borrowed from sanskrit", "proto-indo-european", "proto-slavic", "proto-germanic", "proto-turkic", "proto-uralic", "greek origin", "latin origin", "greek source", "latin source", "greek root", "latin root", "derived from greek", "derived from latin", "derived from french", "derived from old french", "derived from sanskrit", "native slavic", "native european", "european origin", "just slavic", "just european", "pre-greek substrate", "indo-european", "proto-indo", "borrowed from", "derived from", "cognate with", "loan from", "adoption from", "loaned from"]
+
+اُكْتُبْ(صِلْ("", ["مُصْطَلَحَات مَحْظُورَة: ", كَلِمَة(طُول(مَحْظُورَات))]))
+اُكْتُبْ("")
+
+# Get all tables from the real tablet
+كُنْ جَدَاوِل ← اللَّوْح.جَدَاوِل()
+اُكْتُبْ(صِلْ("", ["جَدَاوِل: ", كَلِمَة(طُول(جَدَاوِل))]))
+اُكْتُبْ("")
+
+كُنْ إِجْمَالِي ← ٠
+كُنْ جَدَاوِل_مُلَوَّثَة ← ٠
+كُنْ تَفَاصِيل ← []
+
+لِكُلِّ جَدْوَل فِي جَدَاوِل:
+    # Get text columns
+    كُنْ أَعْمِدَة ← اللَّوْح.أَعْمِدَة(جَدْوَل)
+    كُنْ نَصِّيَّة ← []
+    لِكُلِّ ع فِي أَعْمِدَة:
+        إِنْ اِبْحَثْ(كَلِمَة(خُذْ(ع, "type", "")), "TEXT"):
+            نَصِّيَّة ← نَصِّيَّة + [خُذْ(ع, "name")]
+
+    إِنْ طُول(نَصِّيَّة) سَوَاء ٠:
+        اِبْدَأْ
+    وَإِلَّا:
+        # Build concatenation for all text columns
+        كُنْ أَجْزَاء ← []
+        لِكُلِّ عَمُود فِي نَصِّيَّة:
+            أَجْزَاء ← أَجْزَاء + [صِلْ("", ["COALESCE([", عَمُود, "],'')"])]
+        كُنْ نَصّ ← صِلْ(" || ' ' || ", أَجْزَاء)
+
+        # Check for ANY banned term (fast pre-filter)
+        كُنْ شُرُوط ← []
+        لِكُلِّ م فِي مَحْظُورَات:
+            شُرُوط ← شُرُوط + [صِلْ("", ["LOWER(", نَصّ, ") LIKE '%", م, "%'"])]
+        كُنْ فِلْتَر ← صِلْ(" OR ", شُرُوط)
+
+        قِ:
+            كُنْ نَتَائِج ← اللَّوْح.نَفِّذْ(صِلْ("", ["SELECT COUNT(*) as cnt FROM [", جَدْوَل, "] WHERE ", فِلْتَر]))
+            كُنْ مَجْمُوع ← خُذْ(خُذْ(نَتَائِج, ٠), "cnt", ٠)
+
+            إِنْ مَجْمُوع فَوْقَ ٠:
+                جَدَاوِل_مُلَوَّثَة ← جَدَاوِل_مُلَوَّثَة + ١
+
+                # Find WHICH terms hit
+                لِكُلِّ م فِي مَحْظُورَات:
+                    قِ:
+                        كُنْ ن ← اللَّوْح.نَفِّذْ(صِلْ("", ["SELECT COUNT(*) as cnt FROM [", جَدْوَل, "] WHERE LOWER(", نَصّ, ") LIKE '%", م, "%'"]))
+                        كُنْ عَدّ ← خُذْ(خُذْ(ن, ٠), "cnt", ٠)
+                        إِنْ عَدّ فَوْقَ ٠:
+                            إِجْمَالِي ← إِجْمَالِي + عَدّ
+                            تَفَاصِيل ← تَفَاصِيل + [صِلْ(" | ", [جَدْوَل, م, كَلِمَة(عَدّ)])]
+                            اُكْتُبْ(صِلْ("", ["  ⛔ ", جَدْوَل, " | ", م, " | ", كَلِمَة(عَدّ)]))
+                    أَنْذِرْ خ:
+                        اِبْدَأْ
+        أَنْذِرْ خ:
+            اِبْدَأْ
+
+اُكْتُبْ("")
+اُكْتُبْ("═══════════════════════════════════════")
+اُكْتُبْ("تَقْرِير المَسْح")
+اُكْتُبْ("═══════════════════════════════════════")
+اُكْتُبْ(صِلْ("", ["جَدَاوِل: ", كَلِمَة(طُول(جَدَاوِل))]))
+اُكْتُبْ(صِلْ("", ["مُلَوَّثَة: ", كَلِمَة(جَدَاوِل_مُلَوَّثَة)]))
+اُكْتُبْ(صِلْ("", ["إِصَابَات: ", كَلِمَة(إِجْمَالِي)]))
+
+إِنْ إِجْمَالِي سَوَاء ٠:
+    اُكْتُبْ("")
+    اُكْتُبْ("الْحَمْدُ لِلَّهِ — لَا تَلَوُّث")

@@ -1,0 +1,2277 @@
+{
+  "ا": {
+    "name": "أَلِف",
+    "transliteration": "alif",
+    "abjad": 1,
+    "top_roots": [
+      {
+        "root": "ا-ج-ج",
+        "amr": "ا(1)=ORIGIN | ج(3)=GATHERING | ج(3)=GATHERING [=7]"
+      },
+      {
+        "root": "ا-ز-ر",
+        "amr": "ا(1)=ORIGIN | ز(7)=PAIRING | ر(200)=MOVEMENT [=208]"
+      },
+      {
+        "root": "ا-ل-س",
+        "amr": "ا(1)=ORIGIN | ل(30)=CONNECTION | س(60)=FLOW [=91]"
+      },
+      {
+        "root": "ا-ن-س",
+        "amr": "ا(1)=ORIGIN | ن(50)=CONTINUATION | س(60)=FLOW [=111]"
+      },
+      {
+        "root": "ا-و-ب",
+        "amr": "ا(1)=ORIGIN | و(6)=CONNECTION | ب(2)=BUILDING [=9]"
+      }
+    ],
+    "en": [],
+    "ru": [],
+    "de": [],
+    "uz": []
+  },
+  "ب": {
+    "name": "بَاء",
+    "transliteration": "bāʾ",
+    "abjad": 2,
+    "top_roots": [
+      {
+        "root": "ب-ش-ر",
+        "amr": "ب(2)=BUILDING | ش(300)=SPREADING | ر(200)=MOVEMENT [=502]"
+      },
+      {
+        "root": "ب-ص-ر",
+        "amr": "ب(2)=BUILDING | ص(90)=TRUTH | ر(200)=MOVEMENT [=292]"
+      },
+      {
+        "root": "ب-ع-د",
+        "amr": "ب(2)=BUILDING | ع(70)=DEPTH | د(4)=CALLING [=76]"
+      },
+      {
+        "root": "ب-ن-ي",
+        "amr": "ب(2)=BUILDING | ن(50)=CONTINUATION | ي(10)=EXTENSION [=62]"
+      },
+      {
+        "root": "ب-ي-ن",
+        "amr": "ب(2)=BUILDING | ي(10)=EXTENSION | ن(50)=CONTINUATION [=62]"
+      }
+    ],
+    "en": [
+      "BASHER",
+      "VISOR",
+      "BESIEGE",
+      "BAD",
+      "BONE",
+      "BAN",
+      "BANNER",
+      "BANE",
+      "TAB",
+      "RABBI",
+      "REBAR",
+      "SABLE",
+      "SYMBOL",
+      "ABODE",
+      "ADEPT"
+    ],
+    "ru": [
+      "БИСЕР",
+      "БЕСИЕГЕ",
+      "ВИЗИР",
+      "ВОЙНА",
+      "БАНЕ",
+      "ТАБУН",
+      "РЕБАР",
+      "РАВВИН",
+      "САБЛЯ",
+      "КУПОЛ",
+      "КАБЛУК",
+      "КАБАЛА",
+      "КОБЕЛЬ",
+      "ГОЛОВА",
+      "КЛУБ"
+    ],
+    "de": [
+      "SCHLÄGER",
+      "VISIER",
+      "BESIEGE",
+      "BANNER",
+      "VERBANNEN",
+      "BANE",
+      "REITER",
+      "RABBINER",
+      "REBÄR",
+      "SABEL",
+      "SYMBOL",
+      "WOHNSTÄTTE",
+      "ADEPT",
+      "ADAPT",
+      "ADOPT"
+    ],
+    "uz": [
+      "qalb",
+      "kitob",
+      "kotib",
+      "maktab",
+      "maktub",
+      "kutubxona",
+      "badan",
+      "bozor"
+    ]
+  },
+  "ت": {
+    "name": "تَاء",
+    "transliteration": "tāʾ",
+    "abjad": 400,
+    "top_roots": [
+      {
+        "root": "ء-ت-ي",
+        "amr": "ء(1)=ORIGIN | ت(400)=SUCCESSION | ي(10)=EXTENSION [=411]"
+      },
+      {
+        "root": "أ-ت-ي",
+        "amr": "ء(1)=ORIGIN | ت(400)=SUCCESSION | ي(10)=EXTENSION [=411]"
+      },
+      {
+        "root": "ب-ي-ت",
+        "amr": "ب(2)=BUILDING | ي(10)=EXTENSION | ت(400)=SUCCESSION [=412]"
+      },
+      {
+        "root": "ت-ب-ع",
+        "amr": "ت(400)=SUCCESSION | ب(2)=BUILDING | ع(70)=DEPTH [=472]"
+      },
+      {
+        "root": "ت-ج-ر",
+        "amr": "ت(400)=SUCCESSION | ج(3)=GATHERING | ر(200)=MOVEMENT [=603]"
+      }
+    ],
+    "en": [
+      "OUTTA",
+      "ATE",
+      "BAIT",
+      "BITE",
+      "BEAT",
+      "TAB",
+      "TACIT",
+      "TIGHT",
+      "TELL",
+      "TALE",
+      "TRIBE",
+      "TUBE",
+      "CATTLE",
+      "CUTLASS",
+      "KILL"
+    ],
+    "ru": [
+      "АТЕ",
+      "БИТЕ",
+      "БЕАТ",
+      "ТАБУН",
+      "ТАХТА",
+      "СПРАВЕДЛИВОСТЬ",
+      "ТУБЕ",
+      "КОТЁЛ",
+      "КИЛЛ",
+      "КЕТТЛЕ",
+      "КИТАБ",
+      "СКРИПТ",
+      "МУТЕ",
+      "СМЕРТЬ",
+      "МЁРТВЫЙ"
+    ],
+    "de": [
+      "OUTTA",
+      "AT",
+      "BAIT",
+      "BITE",
+      "BEAT",
+      "REITER",
+      "TACIT",
+      "TIGHT",
+      "TELL",
+      "TALE",
+      "STAMM",
+      "TUBE",
+      "CATTLE",
+      "CUTLASS",
+      "KILL"
+    ],
+    "uz": [
+      "kitob",
+      "kotib",
+      "maktab",
+      "maktub",
+      "kutubxona"
+    ]
+  },
+  "ث": {
+    "name": "ثَاء",
+    "transliteration": "thāʾ",
+    "abjad": 500,
+    "top_roots": [
+      {
+        "root": "أ-ث-ر",
+        "amr": "ء(1)=ORIGIN | ث(500)=MULTIPLICATION | ر(200)=MOVEMENT [=701]"
+      },
+      {
+        "root": "أ-ث-م",
+        "amr": "ء(1)=ORIGIN | ث(500)=MULTIPLICATION | م(40)=ENCLOSURE [=541]"
+      },
+      {
+        "root": "ب-ع-ث",
+        "amr": "ب(2)=BUILDING | ع(70)=DEPTH | ث(500)=MULTIPLICATION [=572]"
+      },
+      {
+        "root": "ث-ق-ل",
+        "amr": "ث(500)=MULTIPLICATION | ق(100)=SPEECH | ل(30)=CONNECTION [=630]"
+      },
+      {
+        "root": "ث-ل-ث",
+        "amr": "ث(500)=MULTIPLICATION | ل(30)=CONNECTION | ث(500)=MULTIPLICATION [=1030]"
+      }
+    ],
+    "en": [
+      "ETHER",
+      "ATOM",
+      "BOOST",
+      "BATH",
+      "TACKLE",
+      "TICKLE",
+      "HEALTH",
+      "FILTH",
+      "THAW",
+      "DAMMIT",
+      "TIMBER",
+      "THAWB",
+      "HADITH",
+      "HEADY",
+      "ACCRUE"
+    ],
+    "ru": [
+      "УТРО",
+      "БАТХ",
+      "ТИККЛЕ",
+      "ХЕАЛТХ",
+      "ФИЛТХ",
+      "ТХАВ",
+      "ДАММИТ",
+      "ТХАВБ",
+      "ХАДИТХ",
+      "ХЕАДИ",
+      "КАТХЕТЕР",
+      "ЛАБИРИНТХ",
+      "ЛОАТХЕ",
+      "АПТЕКА",
+      "ВОУКХ"
+    ],
+    "de": [
+      "ÄTHER",
+      "ATOM",
+      "VERSTÄRKEN",
+      "BATH",
+      "ANPACKEN",
+      "TICKLE",
+      "HEALTH",
+      "FILTH",
+      "THAW",
+      "DAMMIT",
+      "HOLZ",
+      "THAWB",
+      "HADITH",
+      "HEADY",
+      "ANWACHSEN"
+    ],
+    "uz": []
+  },
+  "ج": {
+    "name": "جِيم",
+    "transliteration": "jīm",
+    "abjad": 3,
+    "top_roots": [
+      {
+        "root": "أ-ج-ر",
+        "amr": "ء(1)=ORIGIN | ج(3)=GATHERING | ر(200)=MOVEMENT [=204]"
+      },
+      {
+        "root": "ج-ع-ل",
+        "amr": "ج(3)=GATHERING | ع(70)=DEPTH | ل(30)=CONNECTION [=103]"
+      },
+      {
+        "root": "ج-م-ع",
+        "amr": "ج(3)=GATHERING | م(40)=ENCLOSURE | ع(70)=DEPTH [=113]"
+      },
+      {
+        "root": "ج-ن-ن",
+        "amr": "ج(3)=GATHERING | ن(50)=CONTINUATION | ن(50)=CONTINUATION [=103]"
+      },
+      {
+        "root": "ج-ي-ء",
+        "amr": "ج(3)=GATHERING | ي(10)=EXTENSION | ء(1)=ORIGIN [=14]"
+      }
+    ],
+    "en": [
+      "ACRE",
+      "JEWEL",
+      "JELL",
+      "GAME",
+      "JAM",
+      "JUMBLE",
+      "GEM",
+      "GUM",
+      "JAMBOREE",
+      "Genie",
+      "GENE",
+      "GENIUS",
+      "JINNI",
+      "JAW",
+      "JOY"
+    ],
+    "ru": [
+      "ДжЕЛЛ",
+      "ГЕНЕ",
+      "ГЕНИУС",
+      "ДжИННИ",
+      "ДЖИНН",
+      "ДжОИ",
+      "ХИРУРГИЯ",
+      "ДРУГ",
+      "ИОКЕ",
+      "ДжОУСТ",
+      "МЕЧЕТЬ",
+      "МАСДЖИД",
+      "ВОЖДЬ",
+      "ВИДГЕТ",
+      "ВОГУЕ"
+    ],
+    "de": [
+      "ACKER",
+      "JUWEL",
+      "JELL",
+      "DSCHINN",
+      "GENE",
+      "GENIUS",
+      "JINNI",
+      "KIEFER",
+      "JOY",
+      "CHARGE",
+      "CARGO",
+      "DEGRADE",
+      "GRAT",
+      "BELAGERUNG",
+      "YOKE"
+    ],
+    "uz": [
+      "juma",
+      "jamoa",
+      "masjid",
+      "jihod"
+    ]
+  },
+  "ح": {
+    "name": "حَاء",
+    "transliteration": "ḥāʾ",
+    "abjad": 8,
+    "top_roots": [
+      {
+        "root": "أ-ح-د",
+        "amr": "ء(1)=ORIGIN | ح(8)=TRUTH | د(4)=CALLING [=13]"
+      },
+      {
+        "root": "ح-س-ب",
+        "amr": "ح(8)=TRUTH | س(60)=FLOW | ب(2)=BUILDING [=70]"
+      },
+      {
+        "root": "ح-س-ن",
+        "amr": "ح(8)=TRUTH | س(60)=FLOW | ن(50)=CONTINUATION [=118]"
+      },
+      {
+        "root": "ح-ق-ق",
+        "amr": "ح(8)=TRUTH | ق(100)=SPEECH | ق(100)=SPEECH [=208]"
+      },
+      {
+        "root": "ح-ك-م",
+        "amr": "ح(8)=TRUTH | ك(20)=BEING | م(40)=ENCLOSURE [=68]"
+      }
+    ],
+    "en": [
+      "EACH",
+      "HOPE",
+      "HESB",
+      "HASTY",
+      "HONEST",
+      "CHECK",
+      "HACK",
+      "HOKUM",
+      "HIGH",
+      "HIVE",
+      "RHYME",
+      "ROOM",
+      "Racket",
+      "RUSH",
+      "SPACE"
+    ],
+    "ru": [
+      "ЕАКХ",
+      "ХАСТИ",
+      "ХАКИ",
+      "ХОКУМ",
+      "ХИВЕ",
+      "РООМ",
+      "РИФМА",
+      "РУСХ",
+      "РАКЕТКА",
+      "СПАН",
+      "СОАП",
+      "СОПХОС",
+      "СЛАБ",
+      "СУЛК",
+      "НОАХ"
+    ],
+    "de": [
+      "EACH",
+      "HOPE",
+      "HESB",
+      "HASTY",
+      "SCHACH",
+      "HACKEN",
+      "HOKUM",
+      "HOCH",
+      "HIV",
+      "REIM",
+      "ROOM",
+      "RAKETT",
+      "RUSH",
+      "RAUM",
+      "SPAN"
+    ],
+    "uz": [
+      "haq",
+      "haqiqat",
+      "huquq",
+      "hukm",
+      "hakim",
+      "hikmat",
+      "hukumat",
+      "mahkama",
+      "rahm",
+      "rahmat",
+      "ramazon",
+      "ruh",
+      "haram",
+      "halol"
+    ]
+  },
+  "خ": {
+    "name": "خَاء",
+    "transliteration": "khāʾ",
+    "abjad": 600,
+    "top_roots": [
+      {
+        "root": "ء-خ-ذ",
+        "amr": "ء(1)=ORIGIN | خ(600)=CREATION | ذ(700)=REMEMBRANCE [=1301]"
+      },
+      {
+        "root": "أ-خ-ذ",
+        "amr": "ء(1)=ORIGIN | خ(600)=CREATION | ذ(700)=REMEMBRANCE [=1301]"
+      },
+      {
+        "root": "أ-خ-ر",
+        "amr": "ء(1)=ORIGIN | خ(600)=CREATION | ر(200)=MOVEMENT [=801]"
+      },
+      {
+        "root": "أ-خ-و",
+        "amr": "ء(1)=ORIGIN | خ(600)=CREATION | و(6)=CONNECTION [=607]"
+      },
+      {
+        "root": "خ-ر-ج",
+        "amr": "خ(600)=CREATION | ر(200)=MOVEMENT | ج(3)=GATHERING [=803]"
+      }
+    ],
+    "en": [
+      "ACHE",
+      "ACHIEVE",
+      "OCHRE",
+      "OGRE",
+      "ECHO",
+      "CHARGE",
+      "CARGO",
+      "Caliphate",
+      "CALF",
+      "CALIPH",
+      "CHALK",
+      "COWARD",
+      "COW",
+      "HERO",
+      "CHOIR"
+    ],
+    "ru": [
+      "АКХИЕВЕ",
+      "ХИРУРГИЯ",
+      "ХЛОПОК",
+      "ХОЛОП",
+      "КАЛФ",
+      "КАЛИПХ",
+      "ШЁЛК",
+      "КХОИР",
+      "МИТКАЛЬ",
+      "ШАЙКА",
+      "ЗЕРКАЛО",
+      "МАСКА"
+    ],
+    "de": [
+      "SCHMERZ",
+      "ACHIEVE",
+      "OCHRE",
+      "OGRE",
+      "ECHO",
+      "CHARGE",
+      "CARGO",
+      "KALIFAT",
+      "CALF",
+      "CALIPH",
+      "KREIDE",
+      "HELD",
+      "CHOIR",
+      "DOCIL",
+      "MASKE"
+    ],
+    "uz": []
+  },
+  "د": {
+    "name": "دَال",
+    "transliteration": "dāl",
+    "abjad": 4,
+    "top_roots": [
+      {
+        "root": "ب-ع-د",
+        "amr": "ب(2)=BUILDING | ع(70)=DEPTH | د(4)=CALLING [=76]"
+      },
+      {
+        "root": "د-خ-ل",
+        "amr": "د(4)=CALLING | خ(600)=CREATION | ل(30)=CONNECTION [=634]"
+      },
+      {
+        "root": "د-ع-و",
+        "amr": "د(4)=CALLING | ع(70)=DEPTH | و(6)=CONNECTION [=80]"
+      },
+      {
+        "root": "د-ن-ي",
+        "amr": "د(4)=CALLING | ن(50)=CONTINUATION | ي(10)=EXTENSION [=64]"
+      },
+      {
+        "root": "د-و-ن",
+        "amr": "د(4)=CALLING | و(6)=CONNECTION | ن(50)=CONTINUATION [=60]"
+      }
+    ],
+    "en": [
+      "BAD",
+      "DOCILE",
+      "DUE",
+      "DAW",
+      "DAWN",
+      "DEAN",
+      "DIN",
+      "DINE",
+      "ROD",
+      "SERVANT",
+      "SHUDDER",
+      "SHAD",
+      "SHED",
+      "SHADOW",
+      "SHADE"
+    ],
+    "ru": [
+      "МИТКАЛЬ",
+      "ДАВ",
+      "ДИВАН",
+      "ДЕНЬ",
+      "ДИН",
+      "ДИНЕ",
+      "ПРАВДА",
+      "СТРАЖА",
+      "ЩИТ",
+      "СХАД",
+      "ШАХТА",
+      "СХАДЕ",
+      "ГЕОМЕТРИЯ",
+      "КЕДР",
+      "КАДРЕ"
+    ],
+    "de": [
+      "DOCIL",
+      "FÄLLIG",
+      "DAW",
+      "MORGENDÄMMERUNG",
+      "DIN",
+      "DIENER",
+      "SHUDDER",
+      "SHAD",
+      "SHED",
+      "SHADOW",
+      "SHADE",
+      "SYNDISCH",
+      "WOHNSTÄTTE",
+      "KADER",
+      "CADRE"
+    ],
+    "uz": [
+      "dunyo",
+      "dehqonchilik",
+      "dasturxon"
+    ]
+  },
+  "ذ": {
+    "name": "ذَال",
+    "transliteration": "dhāl",
+    "abjad": 700,
+    "top_roots": [
+      {
+        "root": "ء-خ-ذ",
+        "amr": "ء(1)=ORIGIN | خ(600)=CREATION | ذ(700)=REMEMBRANCE [=1301]"
+      },
+      {
+        "root": "أ-خ-ذ",
+        "amr": "ء(1)=ORIGIN | خ(600)=CREATION | ذ(700)=REMEMBRANCE [=1301]"
+      },
+      {
+        "root": "أ-ذ-ن",
+        "amr": "ء(1)=ORIGIN | ذ(700)=REMEMBRANCE | ن(50)=CONTINUATION [=751]"
+      },
+      {
+        "root": "أ-ذ-ي",
+        "amr": "ء(1)=ORIGIN | ذ(700)=REMEMBRANCE | ي(10)=EXTENSION [=711]"
+      },
+      {
+        "root": "ذ-ر-ر",
+        "amr": "ذ(700)=REMEMBRANCE | ر(200)=MOVEMENT | ر(200)=MOVEMENT [=1100]"
+      }
+    ],
+    "en": [
+      "ACHE",
+      "ACHIEVE",
+      "EDEN",
+      "AUDITION",
+      "AUDIENCE",
+      "ADORN",
+      "DRIZZLE",
+      "DRYER",
+      "DECREE",
+      "DECORUM",
+      "DUNB",
+      "DUNE",
+      "DANK",
+      "DAHAB",
+      "DEBIT"
+    ],
+    "ru": [
+      "АКХИЕВЕ",
+      "АДОРН",
+      "ДРИЗЗЛЕ",
+      "ДРИЕР",
+      "ДЕКОР",
+      "ДЕКОРУМ",
+      "ДУНБ",
+      "ДУНЕ",
+      "ДАНК",
+      "ЯЗЫК",
+      "КАДЕТ",
+      "ТУНДРА",
+      "НЕРД"
+    ],
+    "de": [
+      "SCHMERZ",
+      "ACHIEVE",
+      "EDEN",
+      "AUDITION",
+      "AUDIENZ",
+      "ADORN",
+      "DRIZZLE",
+      "DRYER",
+      "DEKRET",
+      "DECORUM",
+      "DUNB",
+      "DUNE",
+      "DANK",
+      "DAHAB",
+      "DEBIT"
+    ],
+    "uz": []
+  },
+  "ر": {
+    "name": "رَاء",
+    "transliteration": "rāʾ",
+    "abjad": 200,
+    "top_roots": [
+      {
+        "root": "أ-خ-ر",
+        "amr": "ء(1)=ORIGIN | خ(600)=CREATION | ر(200)=MOVEMENT [=801]"
+      },
+      {
+        "root": "أ-ر-ض",
+        "amr": "ء(1)=ORIGIN | ر(200)=MOVEMENT | ض(800)=DISPLACEMENT [=1001]"
+      },
+      {
+        "root": "أ-م-ر",
+        "amr": "ء(1)=ORIGIN | م(40)=ENCLOSURE | ر(200)=MOVEMENT [=241]"
+      },
+      {
+        "root": "خ-ر-ج",
+        "amr": "خ(600)=CREATION | ر(200)=MOVEMENT | ج(3)=GATHERING [=803]"
+      },
+      {
+        "root": "ذ-ك-ر",
+        "amr": "ذ(700)=REMEMBRANCE | ك(20)=BEING | ر(200)=MOVEMENT [=920]"
+      }
+    ],
+    "en": [
+      "OCHRE",
+      "OGRE",
+      "Earth",
+      "ARID",
+      "Empire",
+      "Admiral",
+      "Army",
+      "AMOUR",
+      "EMIR",
+      "CHARGE",
+      "CARGO",
+      "DECREE",
+      "DECORUM",
+      "Mirror",
+      "RAY"
+    ],
+    "ru": [
+      "АРИД",
+      "ЗЕМЛЯ",
+      "АДМИРАЛ",
+      "АМОУР",
+      "ЕМИР",
+      "ХИРУРГИЯ",
+      "ДЕКОР",
+      "ДЕКОРУМ",
+      "РАИ",
+      "ЗЕРКАЛО",
+      "РЕБАР",
+      "РАВВИН",
+      "РООМ",
+      "РИФМА",
+      "РЕМЕСЛО"
+    ],
+    "de": [
+      "OCHRE",
+      "OGRE",
+      "ERDE",
+      "ARID",
+      "IMPERIUM",
+      "ADMIRAL",
+      "ARMEE",
+      "AMOUR",
+      "EMIR",
+      "CHARGE",
+      "CARGO",
+      "DEKRET",
+      "DECORUM",
+      "SPIEGEL",
+      "RAY"
+    ],
+    "uz": [
+      "amir",
+      "amr",
+      "rahm",
+      "rahmat",
+      "ramazon",
+      "rizq",
+      "ruh"
+    ]
+  },
+  "ز": {
+    "name": "زَاي",
+    "transliteration": "zāy",
+    "abjad": 7,
+    "top_roots": [
+      {
+        "root": "ج-ز-أ",
+        "amr": "ج(3)=GATHERING | ز(7)=PAIRING | ء(1)=ORIGIN [=11]"
+      },
+      {
+        "root": "ج-ز-ي",
+        "amr": "ج(3)=GATHERING | ز(7)=PAIRING | ي(10)=EXTENSION [=20]"
+      },
+      {
+        "root": "ر-ج-ز",
+        "amr": "ر(200)=MOVEMENT | ج(3)=GATHERING | ز(7)=PAIRING [=210]"
+      },
+      {
+        "root": "ر-ز-ق",
+        "amr": "ر(200)=MOVEMENT | ز(7)=PAIRING | ق(100)=SPEECH [=307]"
+      },
+      {
+        "root": "ز-ك-و",
+        "amr": "ز(7)=PAIRING | ك(20)=BEING | و(6)=CONNECTION [=33]"
+      }
+    ],
+    "en": [
+      "JUST",
+      "JUSTICE",
+      "JERSEY",
+      "Risk",
+      "SAKE",
+      "SIEGE",
+      "YOKE",
+      "JOUST",
+      "SEED",
+      "ZEAL",
+      "SANE",
+      "AGELESS",
+      "AZURE",
+      "ASSESS",
+      "ASSET"
+    ],
+    "ru": [
+      "ДжЕРСЕИ",
+      "РИСК",
+      "ИОКЕ",
+      "ДжОУСТ",
+      "ЗЕАЛ",
+      "АГЕЛЕСС",
+      "АССЕСС",
+      "АССЕТ",
+      "ЛАЗУРЬ",
+      "ФОЕС",
+      "НАСАЛ"
+    ],
+    "de": [
+      "JUST",
+      "JUSTICE",
+      "JERSEY",
+      "RISIKO",
+      "SAKE",
+      "BELAGERUNG",
+      "YOKE",
+      "JOUST",
+      "SEED",
+      "ZEAL",
+      "SANE",
+      "AGELESS",
+      "AZURBLAU",
+      "ASSESS",
+      "ASSET"
+    ],
+    "uz": [
+      "rizq",
+      "foiz",
+      "zanjir"
+    ]
+  },
+  "س": {
+    "name": "سِين",
+    "transliteration": "sīn",
+    "abjad": 60,
+    "top_roots": [
+      {
+        "root": "أ-ن-س",
+        "amr": "ء(1)=ORIGIN | ن(50)=CONTINUATION | س(60)=FLOW [=111]"
+      },
+      {
+        "root": "ح-س-ب",
+        "amr": "ح(8)=TRUTH | س(60)=FLOW | ب(2)=BUILDING [=70]"
+      },
+      {
+        "root": "ح-س-ن",
+        "amr": "ح(8)=TRUTH | س(60)=FLOW | ن(50)=CONTINUATION [=118]"
+      },
+      {
+        "root": "خ-س-ر",
+        "amr": "خ(600)=CREATION | س(60)=FLOW | ر(200)=MOVEMENT [=860]"
+      },
+      {
+        "root": "ر-س-ل",
+        "amr": "ر(200)=MOVEMENT | س(60)=FLOW | ل(30)=CONNECTION [=290]"
+      }
+    ],
+    "en": [
+      "ONUS",
+      "ANNOUNCE",
+      "HOPE",
+      "HESB",
+      "HASTY",
+      "HONEST",
+      "CURSOR",
+      "CENSER",
+      "MIRACLE",
+      "RESALE",
+      "SABLE",
+      "SYMBOL",
+      "Solemn",
+      "PSALM",
+      "SLAM"
+    ],
+    "ru": [
+      "АНИС",
+      "АННОУНКЕ",
+      "ХАСТИ",
+      "КУРСОР",
+      "КЕНСЕР",
+      "РЕМЕСЛО",
+      "РЕСАЛЕ",
+      "САБЛЯ",
+      "ЧАЛМА",
+      "ПСАЛМ",
+      "СЛАМ",
+      "СЕМАПХОРЕ",
+      "САМОВАР",
+      "СЕМИНАР",
+      "НАВЕ"
+    ],
+    "de": [
+      "LAST",
+      "ANNOUNCE",
+      "HOPE",
+      "HESB",
+      "HASTY",
+      "CURSOR",
+      "CENSER",
+      "MIRAKEL",
+      "RESALE",
+      "SABEL",
+      "SYMBOL",
+      "FEIERLICH",
+      "PSALM",
+      "SLAM",
+      "EINBERUFEN"
+    ],
+    "uz": [
+      "salom",
+      "islom",
+      "muslim",
+      "musulmon",
+      "nafs",
+      "nafas",
+      "masjid",
+      "savdo"
+    ]
+  },
+  "ش": {
+    "name": "شِين",
+    "transliteration": "shīn",
+    "abjad": 300,
+    "top_roots": [
+      {
+        "root": "ب-ش-ر",
+        "amr": "ب(2)=BUILDING | ش(300)=SPREADING | ر(200)=MOVEMENT [=502]"
+      },
+      {
+        "root": "ب-ط-ش",
+        "amr": "ب(2)=BUILDING | ط(9)=AUTHORITY | ش(300)=SPREADING [=311]"
+      },
+      {
+        "root": "ح-ش-ر",
+        "amr": "ح(8)=TRUTH | ش(300)=SPREADING | ر(200)=MOVEMENT [=508]"
+      },
+      {
+        "root": "خ-ش-ي",
+        "amr": "خ(600)=CREATION | ش(300)=SPREADING | ي(10)=EXTENSION [=910]"
+      },
+      {
+        "root": "ش-د-د",
+        "amr": "ش(300)=SPREADING | د(4)=CALLING | د(4)=CALLING [=308]"
+      }
+    ],
+    "en": [
+      "BASHER",
+      "HEARSE",
+      "HARSH",
+      "CAUTION",
+      "CASH",
+      "SHUDDER",
+      "SHAD",
+      "SHARE",
+      "SHARK",
+      "SHED",
+      "SHADOW",
+      "SHADE",
+      "SHOW",
+      "THRASH",
+      "ASHER"
+    ],
+    "ru": [
+      "БИТЬ",
+      "ХЕАРСЕ",
+      "ХАРСХ",
+      "КАСХ",
+      "СТРАЖА",
+      "ЩИТ",
+      "СХАД",
+      "ЧУРЕК",
+      "СХАРК",
+      "ШАХТА",
+      "СХАДЕ",
+      "ТХРАСХ",
+      "АСХЕР",
+      "ПАРУС",
+      "ПАРЧА"
+    ],
+    "de": [
+      "SCHLÄGER",
+      "HEARSE",
+      "HARSH",
+      "CASH",
+      "SHUDDER",
+      "SHAD",
+      "ANTEIL",
+      "SHARK",
+      "SHED",
+      "SHADOW",
+      "SHADE",
+      "ZEIGEN",
+      "THRASH",
+      "ASHER",
+      "EINRICHTEN"
+    ],
+    "uz": [
+      "shukr"
+    ]
+  },
+  "ص": {
+    "name": "صَاد",
+    "transliteration": "ṣād",
+    "abjad": 90,
+    "top_roots": [
+      {
+        "root": "ب-ص-ر",
+        "amr": "ب(2)=BUILDING | ص(90)=TRUTH | ر(200)=MOVEMENT [=292]"
+      },
+      {
+        "root": "ح-ي-ص",
+        "amr": "ح(8)=TRUTH | ي(10)=EXTENSION | ص(90)=TRUTH [=108]"
+      },
+      {
+        "root": "خ-ل-ص",
+        "amr": "خ(600)=CREATION | ل(30)=CONNECTION | ص(90)=TRUTH [=720]"
+      },
+      {
+        "root": "ر-ب-ص",
+        "amr": "ر(200)=MOVEMENT | ب(2)=BUILDING | ص(90)=TRUTH [=292]"
+      },
+      {
+        "root": "ص-ب-ر",
+        "amr": "ص(90)=TRUTH | ب(2)=BUILDING | ر(200)=MOVEMENT [=292]"
+      }
+    ],
+    "en": [
+      "VISOR",
+      "BESIEGE",
+      "Class",
+      "CLASSIC",
+      "REBUS",
+      "SPIRIT",
+      "SABRE",
+      "SABER",
+      "CYBER",
+      "SAHIB",
+      "SLAB",
+      "SYNDIC",
+      "SALUTE",
+      "SALVATION",
+      "SULK"
+    ],
+    "ru": [
+      "БИСЕР",
+      "БЕСИЕГЕ",
+      "ВИЗИР",
+      "ГЛАЗ",
+      "КЛАССИК",
+      "РЕБУС",
+      "ЗАБОР",
+      "САБЕР",
+      "КИБЕР",
+      "СЛАБ",
+      "СУЛК",
+      "СТИР",
+      "СИРЕ",
+      "ПОСОЛ",
+      "УКСУС"
+    ],
+    "de": [
+      "VISIER",
+      "BESIEGE",
+      "KLASSE",
+      "CLASSISCH",
+      "REBUS",
+      "GEIST",
+      "SÄBEL",
+      "SABER",
+      "CYBER",
+      "SAHIB",
+      "SLAB",
+      "SYNDISCH",
+      "SALVATION",
+      "SULK",
+      "STIR"
+    ],
+    "uz": [
+      "sabr",
+      "nasr",
+      "sifr"
+    ]
+  },
+  "ض": {
+    "name": "ضَاد",
+    "transliteration": "ḍād",
+    "abjad": 800,
+    "top_roots": [
+      {
+        "root": "أ-ر-ض",
+        "amr": "ء(1)=ORIGIN | ر(200)=MOVEMENT | ض(800)=DISPLACEMENT [=1001]"
+      },
+      {
+        "root": "ب-ع-ض",
+        "amr": "ب(2)=BUILDING | ع(70)=DEPTH | ض(800)=DISPLACEMENT [=872]"
+      },
+      {
+        "root": "ح-ض-ر",
+        "amr": "ح(8)=TRUTH | ض(800)=DISPLACEMENT | ر(200)=MOVEMENT [=1008]"
+      },
+      {
+        "root": "ر-و-ض",
+        "amr": "ر(200)=MOVEMENT | و(6)=CONNECTION | ض(800)=DISPLACEMENT [=1006]"
+      },
+      {
+        "root": "ض-ر-ب",
+        "amr": "ض(800)=DISPLACEMENT | ر(200)=MOVEMENT | ب(2)=BUILDING [=1002]"
+      }
+    ],
+    "en": [
+      "Earth",
+      "ARID",
+      "PATH",
+      "BATHE",
+      "BADGE",
+      "HAZIER",
+      "Drub",
+      "DISTURB",
+      "DREAD",
+      "TERROR",
+      "DIRE",
+      "DWARF",
+      "DEAF",
+      "THIEF",
+      "DULL"
+    ],
+    "ru": [
+      "АРИД",
+      "ЗЕМЛЯ",
+      "БАДГЕ",
+      "ХАЗИЕР",
+      "ДЕРЖАВА",
+      "ДЕРВИШ",
+      "ДИСТУРБ",
+      "ДЕЛИ",
+      "АРИСЕ",
+      "ПОДВАЛ",
+      "ФИСКАЛ",
+      "КАСЕ",
+      "КАУСЕ",
+      "КАДИ",
+      "МУРЗА"
+    ],
+    "de": [
+      "ERDE",
+      "ARID",
+      "PATH",
+      "BATHE",
+      "BADGE",
+      "HAZIER",
+      "VERPRÜGELN",
+      "DISTURB",
+      "DREAD",
+      "TERROR",
+      "DIRE",
+      "DWARF",
+      "DEAF",
+      "THIEF",
+      "STUMPF"
+    ],
+    "uz": []
+  },
+  "ط": {
+    "name": "طَاء",
+    "transliteration": "ṭāʾ",
+    "abjad": 9,
+    "top_roots": [
+      {
+        "root": "ب-ط-ل",
+        "amr": "ب(2)=BUILDING | ط(9)=AUTHORITY | ل(30)=CONNECTION [=41]"
+      },
+      {
+        "root": "ب-ط-ن",
+        "amr": "ب(2)=BUILDING | ط(9)=AUTHORITY | ن(50)=CONTINUATION [=61]"
+      },
+      {
+        "root": "ح-و-ط",
+        "amr": "ح(8)=TRUTH | و(6)=CONNECTION | ط(9)=AUTHORITY [=23]"
+      },
+      {
+        "root": "س-ل-ط",
+        "amr": "س(60)=FLOW | ل(30)=CONNECTION | ط(9)=AUTHORITY [=99]"
+      },
+      {
+        "root": "ش-ط-ن",
+        "amr": "ش(300)=SPREADING | ط(9)=AUTHORITY | ن(50)=CONTINUATION [=359]"
+      }
+    ],
+    "en": [
+      "BATTLE",
+      "BOTTLE",
+      "BUTTON",
+      "HOOT",
+      "Sultan",
+      "Sultana",
+      "Salute",
+      "SALT",
+      "ASSAULT",
+      "SHUNT",
+      "STAIN",
+      "STREET",
+      "STRAIT",
+      "TAME",
+      "THYME"
+    ],
+    "ru": [
+      "БАТТЛЕ",
+      "БОТТЛЕ",
+      "БУТТОН",
+      "ХООТ",
+      "САЛТ",
+      "АССАУЛТ",
+      "СУЛТАН",
+      "СУЛТАНКА",
+      "БАСТИОН",
+      "ИСТИНА",
+      "СМЕРТЬ",
+      "ШАРИАТ",
+      "СТРАИТ",
+      "ТХИМЕ",
+      "ТОВ"
+    ],
+    "de": [
+      "BATTLE",
+      "BOTTLE",
+      "BUTTON",
+      "HOOT",
+      "SULTAN",
+      "SALT",
+      "ASSAULT",
+      "SHUNT",
+      "STAIN",
+      "STRASSE",
+      "STRAIT",
+      "TAME",
+      "THYME",
+      "FROMM",
+      "TOW"
+    ],
+    "uz": []
+  },
+  "ظ": {
+    "name": "ظَاء",
+    "transliteration": "ẓāʾ",
+    "abjad": 900,
+    "top_roots": [
+      {
+        "root": "ح-ظ-ظ",
+        "amr": "ح(8)=TRUTH | ظ(900)=DISPLACEMENT | ظ(900)=DISPLACEMENT [=1808]"
+      },
+      {
+        "root": "ح-ف-ظ",
+        "amr": "ح(8)=TRUTH | ف(80)=SEPARATION | ظ(900)=DISPLACEMENT [=988]"
+      },
+      {
+        "root": "ظ-ل-ل",
+        "amr": "ظ(900)=DISPLACEMENT | ل(30)=CONNECTION | ل(30)=CONNECTION [=960]"
+      },
+      {
+        "root": "ظ-ل-م",
+        "amr": "ظ(900)=DISPLACEMENT | ل(30)=CONNECTION | م(40)=ENCLOSURE [=970]"
+      },
+      {
+        "root": "ظ-م-أ",
+        "amr": "ظ(900)=DISPLACEMENT | م(40)=ENCLOSURE | ء(1)=ORIGIN [=941]"
+      }
+    ],
+    "en": [
+      "HAFIZ",
+      "ZEALOT",
+      "GLOOM",
+      "REALM",
+      "THALAMI",
+      "ZONE",
+      "ZEN",
+      "AUTHOR",
+      "AMAZING",
+      "AMAZON",
+      "AUTUMN",
+      "Nadir",
+      "NATURE",
+      "WASTE"
+    ],
+    "ru": [
+      "ХАФИЗ",
+      "ЗЛОЙ",
+      "ТХАЛАМИ",
+      "АУТУМН",
+      "НАТУРЕ",
+      "НАДИР",
+      "ВАСТЕ"
+    ],
+    "de": [
+      "HAFIZ",
+      "ZELOT",
+      "GLOOM",
+      "REALM",
+      "THALAMI",
+      "ZONE",
+      "ZEN",
+      "AUTHOR",
+      "AMAZING",
+      "AMAZON",
+      "AUTUMN",
+      "NADIR",
+      "NATUR",
+      "WASTE"
+    ],
+    "uz": []
+  },
+  "ع": {
+    "name": "عَيْن",
+    "transliteration": "ʿayn",
+    "abjad": 70,
+    "top_roots": [
+      {
+        "root": "ب-ع-د",
+        "amr": "ب(2)=BUILDING | ع(70)=DEPTH | د(4)=CALLING [=76]"
+      },
+      {
+        "root": "ت-ب-ع",
+        "amr": "ت(400)=SUCCESSION | ب(2)=BUILDING | ع(70)=DEPTH [=472]"
+      },
+      {
+        "root": "ج-ع-ل",
+        "amr": "ج(3)=GATHERING | ع(70)=DEPTH | ل(30)=CONNECTION [=103]"
+      },
+      {
+        "root": "ج-م-ع",
+        "amr": "ج(3)=GATHERING | م(40)=ENCLOSURE | ع(70)=DEPTH [=113]"
+      },
+      {
+        "root": "د-ع-و",
+        "amr": "د(4)=CALLING | ع(70)=DEPTH | و(6)=CONNECTION [=80]"
+      }
+    ],
+    "en": [
+      "BAD",
+      "TAB",
+      "JEWEL",
+      "JELL",
+      "GAME",
+      "JAM",
+      "JUMBLE",
+      "GEM",
+      "GUM",
+      "JAMBOREE",
+      "DUE",
+      "DAW",
+      "RIDGE",
+      "SUMMON",
+      "SEMAPHORE"
+    ],
+    "ru": [
+      "ТАБУН",
+      "ДжЕЛЛ",
+      "ДАВ",
+      "СЕМАПХОРЕ",
+      "ТОВ",
+      "АУТУМН",
+      "АЛМА",
+      "АМЕЛИОРАТЕ",
+      "МУЛЛ",
+      "НОМЕ"
+    ],
+    "de": [
+      "REITER",
+      "JUWEL",
+      "JELL",
+      "FÄLLIG",
+      "DAW",
+      "GRAT",
+      "EINBERUFEN",
+      "SEMAPHORE",
+      "FROMM",
+      "TOW",
+      "WOHNSTÄTTE",
+      "ADEPT",
+      "ADAPT",
+      "ADOPT",
+      "AMAZING"
+    ],
+    "uz": [
+      "juma",
+      "jamoa",
+      "ilm",
+      "olim",
+      "olam",
+      "ma'lum",
+      "ta'lim",
+      "amal",
+      "aql",
+      "ishga",
+      "oilam"
+    ]
+  },
+  "غ": {
+    "name": "غَيْن",
+    "transliteration": "ghayn",
+    "abjad": 1000,
+    "top_roots": [
+      {
+        "root": "ب-غ-ت",
+        "amr": "ب(2)=BUILDING | غ(1000)=COVERING | ت(400)=SUCCESSION [=1402]"
+      },
+      {
+        "root": "ب-غ-ي",
+        "amr": "ب(2)=BUILDING | غ(1000)=COVERING | ي(10)=EXTENSION [=1012]"
+      },
+      {
+        "root": "ب-ل-غ",
+        "amr": "ب(2)=BUILDING | ل(30)=CONNECTION | غ(1000)=COVERING [=1032]"
+      },
+      {
+        "root": "ز-ي-غ",
+        "amr": "ز(7)=PAIRING | ي(10)=EXTENSION | غ(1000)=COVERING [=1017]"
+      },
+      {
+        "root": "ص-غ-ر",
+        "amr": "ص(90)=TRUTH | غ(1000)=COVERING | ر(200)=MOVEMENT [=1290]"
+      }
+    ],
+    "en": [
+      "BEG",
+      "BUG",
+      "BIG",
+      "BELONG",
+      "CIGAR",
+      "THUG",
+      "COVER",
+      "GOPHER",
+      "GAVEL",
+      "GAIN",
+      "GUINEA",
+      "GIVE",
+      "GYM",
+      "GEAR",
+      "GYRATE"
+    ],
+    "ru": [
+      "БОГАТСТВО",
+      "БИГ",
+      "КИГАР",
+      "ГОПХЕР",
+      "ГУИНЕА",
+      "ГИМ"
+    ],
+    "de": [
+      "BEG",
+      "BUG",
+      "BIG",
+      "CIGÄR",
+      "GOPHER",
+      "HAMMER",
+      "GEWINN",
+      "GUINEA",
+      "GEBEN",
+      "GYM",
+      "GEÄR",
+      "GYRAT"
+    ],
+    "uz": []
+  },
+  "ف": {
+    "name": "فَاء",
+    "transliteration": "fāʾ",
+    "abjad": 80,
+    "top_roots": [
+      {
+        "root": "أ-ل-ف",
+        "amr": "ء(1)=ORIGIN | ل(30)=CONNECTION | ف(80)=SEPARATION [=111]"
+      },
+      {
+        "root": "خ-ل-ف",
+        "amr": "خ(600)=CREATION | ل(30)=CONNECTION | ف(80)=SEPARATION [=710]"
+      },
+      {
+        "root": "خ-و-ف",
+        "amr": "خ(600)=CREATION | و(6)=CONNECTION | ف(80)=SEPARATION [=686]"
+      },
+      {
+        "root": "ض-ع-ف",
+        "amr": "ض(800)=DISPLACEMENT | ع(70)=DEPTH | ف(80)=SEPARATION [=950]"
+      },
+      {
+        "root": "ع-ر-ف",
+        "amr": "ع(70)=DEPTH | ر(200)=MOVEMENT | ف(80)=SEPARATION [=350]"
+      }
+    ],
+    "en": [
+      "ALFA",
+      "Caliphate",
+      "CALF",
+      "CALIPH",
+      "COWARD",
+      "COW",
+      "DWARF",
+      "DEAF",
+      "THIEF",
+      "Tariff",
+      "PROPHET",
+      "WHARF",
+      "COVER",
+      "GOPHER",
+      "FIRE"
+    ],
+    "ru": [
+      "АЛФА",
+      "ХЛОПОК",
+      "ХОЛОП",
+      "КАЛФ",
+      "КАЛИПХ",
+      "ТАРИФ",
+      "ВХАРФ",
+      "ГОПХЕР",
+      "ФУРРОВ",
+      "ПОРЯДОК",
+      "ПИРОГ",
+      "СЕВРЮГА",
+      "ПОРОГ",
+      "ФОРК",
+      "ФРЕАК"
+    ],
+    "de": [
+      "ALFA",
+      "KALIFAT",
+      "CALF",
+      "CALIPH",
+      "DWARF",
+      "DEAF",
+      "THIEF",
+      "TARIF",
+      "PROPHET",
+      "WHARF",
+      "GOPHER",
+      "FRANKREICH",
+      "KRAFT",
+      "PARASIT",
+      "FURROW"
+    ],
+    "uz": [
+      "nafs",
+      "nafas",
+      "fath",
+      "kalit",
+      "foiz"
+    ]
+  },
+  "ق": {
+    "name": "قَاف",
+    "transliteration": "qāf",
+    "abjad": 100,
+    "top_roots": [
+      {
+        "root": "ح-ق-ق",
+        "amr": "ح(8)=TRUTH | ق(100)=SPEECH | ق(100)=SPEECH [=208]"
+      },
+      {
+        "root": "خ-ل-ق",
+        "amr": "خ(600)=CREATION | ل(30)=CONNECTION | ق(100)=SPEECH [=730]"
+      },
+      {
+        "root": "ر-ز-ق",
+        "amr": "ر(200)=MOVEMENT | ز(7)=PAIRING | ق(100)=SPEECH [=307]"
+      },
+      {
+        "root": "ص-د-ق",
+        "amr": "ص(90)=TRUTH | د(4)=CALLING | ق(100)=SPEECH [=194]"
+      },
+      {
+        "root": "ع-ق-ب",
+        "amr": "ع(70)=DEPTH | ق(100)=SPEECH | ب(2)=BUILDING [=172]"
+      }
+    ],
+    "en": [
+      "CHECK",
+      "CHALK",
+      "Risk",
+      "SYNDIC",
+      "OCCUPY",
+      "Cabal",
+      "CATTLE",
+      "CUTLASS",
+      "KILL",
+      "KETTLE",
+      "Calibre",
+      "Calibrate",
+      "CLUB",
+      "KNOWLEDGE",
+      "CALL"
+    ],
+    "ru": [
+      "ХАКИ",
+      "ШЁЛК",
+      "РИСК",
+      "КУПОЛ",
+      "КАБЛУК",
+      "КАБАЛА",
+      "КОБЕЛЬ",
+      "КОТЁЛ",
+      "КИЛЛ",
+      "КЕТТЛЕ",
+      "ГОЛОВА",
+      "КЛУБ",
+      "КАРАКУЛИ",
+      "ГОЛОС",
+      "КАЛЛ"
+    ],
+    "de": [
+      "SCHACH",
+      "KREIDE",
+      "RISIKO",
+      "SYNDISCH",
+      "KABALE",
+      "CATTLE",
+      "CUTLASS",
+      "KILL",
+      "KETTLE",
+      "KALIBER",
+      "CALIBRAT",
+      "CLUB",
+      "KENNTNIS",
+      "CALL",
+      "COUNCIL"
+    ],
+    "uz": [
+      "haq",
+      "haqiqat",
+      "huquq",
+      "rizq",
+      "qalb",
+      "qavl",
+      "qalam"
+    ]
+  },
+  "ك": {
+    "name": "كَاف",
+    "transliteration": "kāf",
+    "abjad": 20,
+    "top_roots": [
+      {
+        "root": "أ-ك-ل",
+        "amr": "ء(1)=ORIGIN | ك(20)=BEING | ل(30)=CONNECTION [=51]"
+      },
+      {
+        "root": "ت-ر-ك",
+        "amr": "ت(400)=SUCCESSION | ر(200)=MOVEMENT | ك(20)=BEING [=620]"
+      },
+      {
+        "root": "ح-ك-م",
+        "amr": "ح(8)=TRUTH | ك(20)=BEING | م(40)=ENCLOSURE [=68]"
+      },
+      {
+        "root": "ذ-ك-ر",
+        "amr": "ذ(700)=REMEMBRANCE | ك(20)=BEING | ر(200)=MOVEMENT [=920]"
+      },
+      {
+        "root": "ش-ر-ك",
+        "amr": "ش(300)=SPREADING | ر(200)=MOVEMENT | ك(20)=BEING [=520]"
+      }
+    ],
+    "en": [
+      "ALKALI",
+      "UNCLE",
+      "TRACK",
+      "TRUCK",
+      "HACK",
+      "HOKUM",
+      "DECREE",
+      "DECORUM",
+      "SHARE",
+      "SHARK",
+      "SACRIFICE",
+      "CITE",
+      "SCRIPT",
+      "ACCRUE",
+      "CATHETER"
+    ],
+    "ru": [
+      "УНКЛЕ",
+      "ТРАКК",
+      "ТРУКК",
+      "ХОКУМ",
+      "ДЕКОР",
+      "ДЕКОРУМ",
+      "ЧУРЕК",
+      "СХАРК",
+      "КИТАБ",
+      "СКРИПТ",
+      "КАТХЕТЕР",
+      "КАДЕТ",
+      "КРЫТЬ",
+      "КАВАРДАК",
+      "КОФФЕР"
+    ],
+    "de": [
+      "UNCLE",
+      "TRACK",
+      "TRUCK",
+      "HACKEN",
+      "HOKUM",
+      "DEKRET",
+      "DECORUM",
+      "ANTEIL",
+      "SHARK",
+      "OPFER",
+      "ZITIEREN",
+      "SCRIPT",
+      "ANWACHSEN",
+      "CATHETER",
+      "TÄUSCHEN"
+    ],
+    "uz": [
+      "hukm",
+      "hakim",
+      "hikmat",
+      "hukumat",
+      "mahkama",
+      "shukr",
+      "kitob",
+      "kotib",
+      "maktab",
+      "maktub",
+      "kutubxona",
+      "mulk",
+      "malik",
+      "mamlakat"
+    ]
+  },
+  "ل": {
+    "name": "لَام",
+    "transliteration": "lām",
+    "abjad": 30,
+    "top_roots": [
+      {
+        "root": "أ-ل-ه",
+        "amr": "ء(1)=ORIGIN | ل(30)=CONNECTION | ه(5)=BREATH [=36]"
+      },
+      {
+        "root": "ج-ع-ل",
+        "amr": "ج(3)=GATHERING | ع(70)=DEPTH | ل(30)=CONNECTION [=103]"
+      },
+      {
+        "root": "خ-ل-ق",
+        "amr": "خ(600)=CREATION | ل(30)=CONNECTION | ق(100)=SPEECH [=730]"
+      },
+      {
+        "root": "ر-س-ل",
+        "amr": "ر(200)=MOVEMENT | س(60)=FLOW | ل(30)=CONNECTION [=290]"
+      },
+      {
+        "root": "ظ-ل-م",
+        "amr": "ظ(900)=DISPLACEMENT | ل(30)=CONNECTION | م(40)=ENCLOSURE [=970]"
+      }
+    ],
+    "en": [
+      "ALL",
+      "ELOHIM",
+      "JEWEL",
+      "JELL",
+      "CHALK",
+      "MIRACLE",
+      "RESALE",
+      "GLOOM",
+      "REALM",
+      "THALAMI",
+      "ALMA",
+      "MALL",
+      "AMELIORATE",
+      "MULL",
+      "KNOWLEDGE"
+    ],
+    "ru": [
+      "АЛЛЕЯ",
+      "ЕЛОХИМ",
+      "ДжЕЛЛ",
+      "ШЁЛК",
+      "РЕМЕСЛО",
+      "РЕСАЛЕ",
+      "ТХАЛАМИ",
+      "АЛМА",
+      "АМЕЛИОРАТЕ",
+      "МУЛЛ",
+      "КАРАКУЛИ",
+      "ГОЛОС",
+      "КАЛЛ",
+      "КОУНКИЛ",
+      "ЛАБИРИНТХ"
+    ],
+    "de": [
+      "ALLES",
+      "ELOHIM",
+      "JUWEL",
+      "JELL",
+      "KREIDE",
+      "MIRAKEL",
+      "RESALE",
+      "GLOOM",
+      "REALM",
+      "THALAMI",
+      "ALMA",
+      "EINKAUFSZENTRUM",
+      "AMELIORAT",
+      "MULL",
+      "KENNTNIS"
+    ],
+    "uz": [
+      "ilm",
+      "olim",
+      "olam",
+      "ma'lum",
+      "ta'lim",
+      "amal",
+      "qavl"
+    ]
+  },
+  "م": {
+    "name": "مِيم",
+    "transliteration": "mīm",
+    "abjad": 40,
+    "top_roots": [
+      {
+        "root": "أ-م-ر",
+        "amr": "ء(1)=ORIGIN | م(40)=ENCLOSURE | ر(200)=MOVEMENT [=241]"
+      },
+      {
+        "root": "أ-م-ن",
+        "amr": "ء(1)=ORIGIN | م(40)=ENCLOSURE | ن(50)=CONTINUATION [=91]"
+      },
+      {
+        "root": "ر-ح-م",
+        "amr": "ر(200)=MOVEMENT | ح(8)=TRUTH | م(40)=ENCLOSURE [=248]"
+      },
+      {
+        "root": "س-م-ع",
+        "amr": "س(60)=FLOW | م(40)=ENCLOSURE | ع(70)=DEPTH [=170]"
+      },
+      {
+        "root": "س-م-و",
+        "amr": "س(60)=FLOW | م(40)=ENCLOSURE | و(6)=CONNECTION [=106]"
+      }
+    ],
+    "en": [
+      "Empire",
+      "Admiral",
+      "Army",
+      "AMOUR",
+      "EMIR",
+      "Amen",
+      "ALMANIA",
+      "AMNESTY",
+      "RHYME",
+      "ROOM",
+      "SUMMON",
+      "SEMAPHORE",
+      "SUM",
+      "SUMMIT",
+      "SEMINAR"
+    ],
+    "ru": [
+      "АДМИРАЛ",
+      "АМОУР",
+      "ЕМИР",
+      "АМНЕСТИ",
+      "АМИНЬ",
+      "РООМ",
+      "РИФМА",
+      "СЕМАПХОРЕ",
+      "САМОВАР",
+      "СЕМИНАР",
+      "ТХАЛАМИ",
+      "АЛМА",
+      "АМЕЛИОРАТЕ",
+      "МУЛЛ",
+      "МОЛОКО"
+    ],
+    "de": [
+      "IMPERIUM",
+      "ADMIRAL",
+      "ARMEE",
+      "AMOUR",
+      "EMIR",
+      "AMEN",
+      "ALEMANNIEN",
+      "AMNESTY",
+      "REIM",
+      "ROOM",
+      "EINBERUFEN",
+      "SEMAPHORE",
+      "SUMME",
+      "SEMINÄR",
+      "GLOOM"
+    ],
+    "uz": [
+      "amir",
+      "amr",
+      "taʼminot",
+      "taʼmin",
+      "rahm",
+      "rahmat",
+      "ramazon",
+      "ilm",
+      "olim",
+      "olam",
+      "ma'lum",
+      "ta'lim",
+      "amal",
+      "mulk",
+      "malik"
+    ]
+  },
+  "ن": {
+    "name": "نُون",
+    "transliteration": "nūn",
+    "abjad": 50,
+    "top_roots": [
+      {
+        "root": "أ-م-ن",
+        "amr": "ء(1)=ORIGIN | م(40)=ENCLOSURE | ن(50)=CONTINUATION [=91]"
+      },
+      {
+        "root": "أ-ن-س",
+        "amr": "ء(1)=ORIGIN | ن(50)=CONTINUATION | س(60)=FLOW [=111]"
+      },
+      {
+        "root": "ب-ن-ي",
+        "amr": "ب(2)=BUILDING | ن(50)=CONTINUATION | ي(10)=EXTENSION [=62]"
+      },
+      {
+        "root": "ب-ي-ن",
+        "amr": "ب(2)=BUILDING | ي(10)=EXTENSION | ن(50)=CONTINUATION [=62]"
+      },
+      {
+        "root": "ج-ن-ن",
+        "amr": "ج(3)=GATHERING | ن(50)=CONTINUATION | ن(50)=CONTINUATION [=103]"
+      }
+    ],
+    "en": [
+      "Amen",
+      "ALMANIA",
+      "AMNESTY",
+      "ONUS",
+      "ANNOUNCE",
+      "BONE",
+      "BAN",
+      "BANNER",
+      "BANE",
+      "Genie",
+      "GENE",
+      "GENIUS",
+      "JINNI",
+      "HONEST",
+      "GAIN"
+    ],
+    "ru": [
+      "АМНЕСТИ",
+      "АМИНЬ",
+      "АНИС",
+      "АННОУНКЕ",
+      "ВОЙНА",
+      "БАНЕ",
+      "ГЕНЕ",
+      "ГЕНИУС",
+      "ДжИННИ",
+      "ДЖИНН",
+      "ГУИНЕА",
+      "КУВШИН",
+      "КОН",
+      "ТУНДРА",
+      "НЕРД"
+    ],
+    "de": [
+      "AMEN",
+      "ALEMANNIEN",
+      "AMNESTY",
+      "LAST",
+      "ANNOUNCE",
+      "BANNER",
+      "VERBANNEN",
+      "BANE",
+      "DSCHINN",
+      "GENE",
+      "GENIUS",
+      "JINNI",
+      "GEWINN",
+      "GUINEA",
+      "MÜNZE"
+    ],
+    "uz": [
+      "taʼminot",
+      "taʼmin",
+      "nafs",
+      "nafas",
+      "nasr",
+      "nikoh",
+      "narx",
+      "nonushta"
+    ]
+  },
+  "ه": {
+    "name": "هَاء",
+    "transliteration": "hāʾ",
+    "abjad": 5,
+    "top_roots": [
+      {
+        "root": "أ-ل-ه",
+        "amr": "ء(1)=ORIGIN | ل(30)=CONNECTION | ه(5)=BREATH [=36]"
+      },
+      {
+        "root": "أ-ه-ل",
+        "amr": "ء(1)=ORIGIN | ه(5)=BREATH | ل(30)=CONNECTION [=36]"
+      },
+      {
+        "root": "ج-ه-ن-م",
+        "amr": "ج(3)=GATHERING | ه(5)=BREATH | ن(50)=CONTINUATION | م(40)=ENCLOSURE [=98]"
+      },
+      {
+        "root": "ش-ه-د",
+        "amr": "ش(300)=SPREADING | ه(5)=BREATH | د(4)=CALLING [=309]"
+      },
+      {
+        "root": "ظ-ه-ر",
+        "amr": "ظ(900)=DISPLACEMENT | ه(5)=BREATH | ر(200)=MOVEMENT [=1105]"
+      }
+    ],
+    "en": [
+      "ALL",
+      "ELOHIM",
+      "HALE",
+      "SHED",
+      "SHADOW",
+      "SHADE",
+      "AUTHOR",
+      "CRACK",
+      "CREEK",
+      "MOAT",
+      "MONEY",
+      "NEAR",
+      "NAHAR",
+      "Heed",
+      "HIDE"
+    ],
+    "ru": [
+      "АЛЛЕЯ",
+      "ЕЛОХИМ",
+      "ШАХТА",
+      "СХАДЕ",
+      "КРАКК",
+      "КРЕЕК",
+      "МОНЕИ",
+      "НАХАР",
+      "ХОД",
+      "ХИДЕ",
+      "ГИД",
+      "ХАВОК",
+      "ХОВЛ",
+      "ХОВ",
+      "ХОЛЛОВ"
+    ],
+    "de": [
+      "ALLES",
+      "ELOHIM",
+      "RÜSTIG",
+      "SHED",
+      "SHADOW",
+      "SHADE",
+      "AUTHOR",
+      "CRACK",
+      "CREEK",
+      "MOAT",
+      "MONEY",
+      "NAH",
+      "NAHÄR",
+      "BEACHTUNG",
+      "HIDE"
+    ],
+    "uz": [
+      "hafta"
+    ]
+  },
+  "و": {
+    "name": "وَاو",
+    "transliteration": "wāw",
+    "abjad": 6,
+    "top_roots": [
+      {
+        "root": "أ-ل-و",
+        "amr": "ء(1)=ORIGIN | ل(30)=CONNECTION | و(6)=CONNECTION [=37]"
+      },
+      {
+        "root": "أ-و-ل",
+        "amr": "ء(1)=ORIGIN | و(6)=CONNECTION | ل(30)=CONNECTION [=37]"
+      },
+      {
+        "root": "ت-ل-و",
+        "amr": "ت(400)=SUCCESSION | ل(30)=CONNECTION | و(6)=CONNECTION [=436]"
+      },
+      {
+        "root": "د-ع-و",
+        "amr": "د(4)=CALLING | ع(70)=DEPTH | و(6)=CONNECTION [=80]"
+      },
+      {
+        "root": "س-م-و",
+        "amr": "س(60)=FLOW | م(40)=ENCLOSURE | و(6)=CONNECTION [=106]"
+      }
+    ],
+    "en": [
+      "ALLOT",
+      "OAL",
+      "OIL",
+      "TELL",
+      "TALE",
+      "DUE",
+      "DAW",
+      "SUM",
+      "SUMMIT",
+      "SEMINAR",
+      "SALUTE",
+      "SOLO",
+      "SALVO",
+      "KNOWLEDGE",
+      "CALL"
+    ],
+    "ru": [
+      "АЛЛОТ",
+      "ОАЛ",
+      "ОИЛ",
+      "СПРАВЕДЛИВОСТЬ",
+      "ДАВ",
+      "САМОВАР",
+      "СЕМИНАР",
+      "СОЛОВЕЙ",
+      "СЛОВО",
+      "СОЛО",
+      "САЛВО",
+      "КАРАКУЛИ",
+      "ГОЛОС",
+      "КАЛЛ",
+      "КОУНКИЛ"
+    ],
+    "de": [
+      "ALLOT",
+      "OAL",
+      "OIL",
+      "TELL",
+      "TALE",
+      "FÄLLIG",
+      "DAW",
+      "SUMME",
+      "SEMINÄR",
+      "GRUSS",
+      "SOLO",
+      "SALVO",
+      "KENNTNIS",
+      "CALL",
+      "COUNCIL"
+    ],
+    "uz": [
+      "qavl",
+      "vaqt",
+      "valad",
+      "ovqat"
+    ]
+  },
+  "ي": {
+    "name": "يَاء",
+    "transliteration": "yāʾ",
+    "abjad": 10,
+    "top_roots": [
+      {
+        "root": "أ-ت-ي",
+        "amr": "ء(1)=ORIGIN | ت(400)=SUCCESSION | ي(10)=EXTENSION [=411]"
+      },
+      {
+        "root": "أ-ي-ي",
+        "amr": "ء(1)=ORIGIN | ي(10)=EXTENSION | ي(10)=EXTENSION [=21]"
+      },
+      {
+        "root": "ب-ي-ن",
+        "amr": "ب(2)=BUILDING | ي(10)=EXTENSION | ن(50)=CONTINUATION [=62]"
+      },
+      {
+        "root": "ح-ي-ي",
+        "amr": "ح(8)=TRUTH | ي(10)=EXTENSION | ي(10)=EXTENSION [=28]"
+      },
+      {
+        "root": "خ-ي-ر",
+        "amr": "خ(600)=CREATION | ي(10)=EXTENSION | ر(200)=MOVEMENT [=810]"
+      }
+    ],
+    "en": [
+      "OUTTA",
+      "ATE",
+      "EYE",
+      "BAN",
+      "BANNER",
+      "BANE",
+      "HIGH",
+      "HIVE",
+      "HERO",
+      "CHOIR",
+      "SHOW",
+      "Heed",
+      "HIDE",
+      "PROTECT",
+      "WAKE"
+    ],
+    "ru": [
+      "АТЕ",
+      "ЕИЕ",
+      "ВОЙНА",
+      "БАНЕ",
+      "ХИВЕ",
+      "КХОИР",
+      "ХОД",
+      "ХИДЕ",
+      "ВАКЕ",
+      "ВАЛЕ",
+      "ВИЛЛ",
+      "ИТЕМ",
+      "ЕДА",
+      "ДжАДЕ",
+      "АИДЕ"
+    ],
+    "de": [
+      "OUTTA",
+      "AT",
+      "EYE",
+      "BANNER",
+      "VERBANNEN",
+      "BANE",
+      "HOCH",
+      "HIV",
+      "HELD",
+      "CHOIR",
+      "ZEIGEN",
+      "BEACHTUNG",
+      "HIDE",
+      "SCHÜTZEN",
+      "WAKE"
+    ],
+    "uz": []
+  }
+}

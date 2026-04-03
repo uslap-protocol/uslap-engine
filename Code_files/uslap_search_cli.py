@@ -6,6 +6,11 @@ No content generation - reports only what exists in the database.
 """
 
 import sqlite3
+try:
+    from uslap_db_connect import connect as _uslap_connect
+    _HAS_WRAPPER = True
+except ImportError:
+    _HAS_WRAPPER = False
 import sys
 import argparse
 from typing import List, Dict, Any
@@ -172,7 +177,8 @@ Examples:
     args = parser.parse_args()
     
     try:
-        conn = sqlite3.connect(args.db)
+        conn = _uslap_connect(args.db) if _HAS_WRAPPER else sqlite3.connect(args.db)
+    conn.execute("PRAGMA foreign_keys = ON")
         conn.text_factory = str  # Preserve UTF-8
         
         # Perform search

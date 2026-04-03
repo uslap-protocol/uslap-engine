@@ -108,7 +108,7 @@ class SelfReader:
                 'allah_name': entry.get('ALLAH_NAME_ID') or entry.get('ИМЯ_АЛЛАХА_ID', ''),
                 'phonetic_chain': entry.get('PHONETIC_CHAIN') or entry.get('ФОНЕТИЧЕСКАЯ_ЦЕПЬ', ''),
                 'score': entry.get('SCORE') or entry.get('БАЛЛ', 0),
-                'ar_word': entry.get('AR_WORD') or entry.get('АР_СЛОВО', ''),
+                'aa_word': entry.get('AR_WORD') or entry.get('АР_СЛОВО', ''),
                 'pattern': entry.get('PATTERN') or entry.get('ПАТТЕРН', ''),
                 'foundation_ref': entry.get('FOUNDATION_REF') or entry.get('ОСНОВАНИЕ', ''),
                 'connections': []
