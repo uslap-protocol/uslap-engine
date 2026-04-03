@@ -1,37 +1,51 @@
 # Python
 __pycache__/
-*.pyc
-*.pyo
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+*.egg-info/
+.eggs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 
 # OS
 .DS_Store
 Thumbs.db
+.AppleDouble
 
-# Backups (tracked separately, not needed in every clone)
-Code_files/backups/
-Code_files/*_backup_*.xlsx
-Code_files/USLaP_Final_Data_Consolidated_Master_backup_*.xlsx
-
-# Exports (regenerable)
-Code_files/exports/
-
-# Large generated files (regenerable from DB)
-USLaP_Quran_Root_Translation_FULL.json
-USLaP_Quran_Root_Translation_FULL.md
-uslap_audit_report.json
-
-# Legacy backups in root
-*_backup_*.xlsx
-*_BACKUP_*.xlsx
-
-# SQLite temp files
-*.db-wal
-*.db-shm
-*.db-journal
-
-# Claude Code internal
-.claude/
+# Large reference data (local only)
 Reference Data/
 backups/
 Prayer_Animations/
 Reports/
+Batch Reports/
+
+# Database backups
+*.db.bak
+*.db.old
+Code_files/uslap_database_v3_OLD.db
+Code_files/uslap_database_v3_pre_v4.db
+
+# Temporary files
+*.tmp
+*.log
+.claude/
+
+# Archives
+*.zip
+*.tar.gz
+*.tar
+
+# Local configs
+.env
+secrets.json
+config.local.json
